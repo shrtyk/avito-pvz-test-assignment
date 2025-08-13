@@ -3,18 +3,41 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: pvz-db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DBNAME}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d pvz-db"]
       interval: 10s
       retries: 5
+    ports:
+      - "5433:5432"
+
+  goose:
+    build:
+      context: .
+      dockerfile: build/goose/Dockerfile
+    container_name: goose
+    command: up
+    restart: no
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - GOOSE_DRIVER=${GOOSE_DRIVER}
+      - GOOSE_DBSTRING=host=db port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DBNAME} sslmode=${POSTGRES_SSL_MODE}
+      - GOOSE_VERBOSE=true
+    volumes:
+      - ./migrations:/migrations
 
   pvz:
-    build: .
+    build:
+      context: .
+      dockerfile: build/pvz_app/Dockerfile
     container_name: pvz
     ports:
       - "16700:16700"
