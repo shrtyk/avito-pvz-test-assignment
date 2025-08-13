@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: postgres:latest
     restart: always
     environment:
@@ -20,17 +20,17 @@ services:
       context: .
       dockerfile: build/goose/Dockerfile
     container_name: goose
-    command: up
     restart: no
     env_file:
       - .env
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     environment:
       - GOOSE_DRIVER=${GOOSE_DRIVER}
-      - GOOSE_DBSTRING=host=db port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DBNAME} sslmode=${POSTGRES_SSL_MODE}
+      - GOOSE_DBSTRING=host=postgres port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DBNAME} sslmode=${POSTGRES_SSL_MODE}
       - GOOSE_VERBOSE=true
+    command: ["up"]
     volumes:
       - ./migrations:/migrations
 
@@ -42,7 +42,7 @@ services:
     ports:
       - "16700:16700"
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
 
 volumes:
