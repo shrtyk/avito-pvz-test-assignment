@@ -1,6 +1,6 @@
 include .env
 
-.PHONY: docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status
+.PHONY: docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status generate/dto
 
 # Run app and
 run/app:
@@ -49,3 +49,7 @@ migrations/down-all:
 # Dump the migration status for the current DB
 migrations/status:
 	@docker-compose run --rm goose status
+
+# Generaate DTOs
+generate/dto:
+	@go generate ./...
