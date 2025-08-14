@@ -19,18 +19,18 @@ func init() {
 }
 
 type Config struct {
-	PvzCfg        pvzCfg        `yaml:"pvz"`
-	HttpServerCfg httpServerCfg `yaml:"http_server"`
-	GrpcServerCfg grpcServerCfg `yaml:"grpc_server"`
-	PostgresCfg   postgresCfg   `yaml:"postgres"`
+	PvzCfg        PvzCfg        `yaml:"pvz"`
+	HttpServerCfg HttpServerCfg `yaml:"http_server"`
+	GrpcServerCfg GrpcServerCfg `yaml:"grpc_server"`
+	PostgresCfg   PostgresCfg   `yaml:"postgres"`
 }
 
-type pvzCfg struct {
+type PvzCfg struct {
 	Env     string        `yaml:"env" env:"PVZ_ENV" env-default:"prod"`
 	Timeout time.Duration `yaml:"timeout" env:"PVZ_TIMEOUT" env-default:"5s"`
 }
 
-type httpServerCfg struct {
+type HttpServerCfg struct {
 	Host         string        `yaml:"host" env:"HTTP_SERVER_HOST" env-default:"localhost"`
 	Port         string        `yaml:"port" env:"HTTP_SERVER_PORT" env-default:"16700"`
 	IdleTimeout  time.Duration `yaml:"idle_timeout" env:"HTTP_SERVER_IDLE_TIMEOUT" env-default:"5s"`
@@ -38,12 +38,12 @@ type httpServerCfg struct {
 	ReadTimeout  time.Duration `yaml:"read_timeout" env:"HTTP_SERVER_READ_TIMEOUT" env-default:"10s"`
 }
 
-type grpcServerCfg struct {
+type GrpcServerCfg struct {
 	Host string `yaml:"host" env:"GRPC_SERVER_HOST" env-default:"localhost"`
 	Port string `yaml:"port" env:"GRPC_SERVER_PORT" env-default:"16701"`
 }
 
-type postgresCfg struct {
+type PostgresCfg struct {
 	User     string `yaml:"user" env:"PG_USER" env-default:"user"`
 	Password string `yaml:"password" env:"PG_PASSWORD" env-default:"password"`
 	Host     string `yaml:"host" env:"PG_HOST" env-default:"postgres"`
