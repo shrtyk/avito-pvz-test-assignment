@@ -3,9 +3,9 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DBNAME}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DBNAME}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,7 +28,7 @@ services:
         condition: service_healthy
     environment:
       - GOOSE_DRIVER=${GOOSE_DRIVER}
-      - GOOSE_DBSTRING=host=postgres port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DBNAME} sslmode=${POSTGRES_SSL_MODE}
+      - GOOSE_DBSTRING=host=postgres port=5432 user=${PG_USER} password=${PG_PASSWORD} dbname=${PG_DBNAME} sslmode=${PG_SSL_MODE}
       - GOOSE_VERBOSE=true
     command: ["up"]
     volumes:
