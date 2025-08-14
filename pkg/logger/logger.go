@@ -1,0 +1,54 @@
+package logger
+
+import (
+	"context"
+	"fmt"
+	"log/slog"
+	"os"
+)
+
+const (
+	devEnv  = "dev"
+	prodEnv = "prod"
+)
+
+var fallbackLogger = slog.New(
+	slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}),
+)
+
+func MustCreateNewLogger(env string) (log *slog.Logger) {
+	switch env {
+	case devEnv:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+				AddSource: true,
+				Level:     slog.LevelDebug,
+			}),
+		)
+	case prodEnv:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+				Level: slog.LevelInfo,
+			}),
+		)
+	default:
+		msg := fmt.Sprintf("Failed to create new logger. Unknown enviroment: '%s'", env)
+		panic(msg)
+	}
+	return
+}
+
+type ctxKey string
+
+const logCtxKey ctxKey = "logger"
+
+func FromCtx(ctx context.Context) *slog.Logger {
+	l, ok := ctx.Value(logCtxKey).(*slog.Logger)
+	if !ok {
+		fallbackLogger.Error("Failed to extract application logger out of context. Using fallback option.")
+		return fallbackLogger
+	}
+	return l
+}
