@@ -7,15 +7,13 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var path string
 
 func init() {
 	flag.StringVar(&path, "cfg_path", "", "Path to connfig file")
-
-	_ = godotenv.Load()
 }
 
 type Config struct {
@@ -31,16 +29,14 @@ type PvzCfg struct {
 }
 
 type HttpServerCfg struct {
-	Host         string        `yaml:"host" env:"HTTP_SERVER_HOST" env-default:"localhost"`
-	Port         string        `yaml:"port" env:"HTTP_SERVER_PORT" env-default:"16700"`
+	Port         string        `yaml:"port" env:"HTTP_SERVER_PORT" env-default:"8080"`
 	IdleTimeout  time.Duration `yaml:"idle_timeout" env:"HTTP_SERVER_IDLE_TIMEOUT" env-default:"5s"`
 	WriteTimeout time.Duration `yaml:"write_timeout" env:"HTTP_SERVER_WRITE_TIMEOUT" env-default:"10s"`
 	ReadTimeout  time.Duration `yaml:"read_timeout" env:"HTTP_SERVER_READ_TIMEOUT" env-default:"10s"`
 }
 
 type GrpcServerCfg struct {
-	Host string `yaml:"host" env:"GRPC_SERVER_HOST" env-default:"localhost"`
-	Port string `yaml:"port" env:"GRPC_SERVER_PORT" env-default:"16701"`
+	Port string `yaml:"port" env:"GRPC_SERVER_PORT" env-default:"3000"`
 }
 
 type PostgresCfg struct {
@@ -59,15 +55,19 @@ type PostgresCfg struct {
 
 func MustInitConfig() *Config {
 	cfgPath := cfgPath()
-
 	cfg := new(Config)
-	if err := cleanenv.ReadConfig(cfgPath, cfg); err != nil {
-		if envErr := cleanenv.ReadEnv(cfg); envErr != nil {
-			msg := fmt.Sprintf(
-				"couldn't read config data from config file or environment variables: %s: %s", err, envErr)
-			panic(msg)
+
+	if cfgPath != "" {
+		err := cleanenv.ReadConfig(cfgPath, cfg)
+		if err != nil && !os.IsNotExist(err) {
+			panic(fmt.Sprintf("failed to read config file: %s", err))
 		}
 	}
+
+	if err := cleanenv.ReadEnv(cfg); err != nil {
+		panic(fmt.Sprintf("failed to read environment variables: %s", err))
+	}
+
 	return cfg
 }
 
