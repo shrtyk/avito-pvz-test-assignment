@@ -2,6 +2,8 @@ include .env
 
 .PHONY: docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status generate/dto
 
+MIGRATIONS_DIR=./migrations
+
 # Run app and
 run/app:
 	@trap 'echo"\nStopping and removing containers..."; docker-compose down --volumes' EXIT; \
@@ -28,27 +30,31 @@ migrations/new:
 		echo "NAME is not set. Usage: make migrations/new NAME=your_migration_name"; \
 		exit 1; \
 	fi
-	@docker-compose run --rm goose create $(NAME) sql
+	@goose -dir $(MIGRATIONS_DIR) create $(NAME) sql
 
 # Migrate the DB to the most recent version available
 migrations/up:
-	@docker-compose run --rm goose up
+	@docker compose run --rm goose up
 
 # Migrate the DB up by 1
 migrations/up-by-one:
-	@docker-compose run --rm goose up-by-one
+	@docker compose run --rm goose up-by-one
 
 # Roll back the version by 1
 migrations/down:
-	@docker-compose run --rm goose down
+	@docker compose run --rm goose down
 
 # Roll back all migrations
 migrations/down-all:
-	@docker-compose run --rm goose down-to 0
+	@docker compose run --rm goose down-to 0
 
 # Dump the migration status for the current DB
 migrations/status:
-	@docker-compose run --rm goose status
+	@docker compose run --rm goose status
+
+# Open psql in postgres container
+psql/pvz:
+	@docker compose exec postgres psql -U user -d pvz-db
 
 # Generaate DTOs
 generate/dto:
