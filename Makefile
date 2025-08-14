@@ -2,12 +2,20 @@ include .env
 
 .PHONY: docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status
 
+# Run app and
+run/app:
+	@trap 'echo"\nStopping and removing containers..."; docker-compose down --volumes' EXIT; \
+	docker compose up --build
+
+# Build containers and start them in background
 docker/up:
 	@docker compose up -d --build
 
+# Stop and remove containers with their volumes
 docker/down:
 	@docker compose down --volumes
 
+# Recompile pvz.proto
 compile/pvz-proto:
 	@protoc -I ./proto/pvz \
 	--go_out ./proto/pvz/gen --go_opt=paths=source_relative \

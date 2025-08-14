@@ -1,0 +1,23 @@
+pvz:
+  env: dev
+  timeout: 10s
+http_server:
+  host: localhost
+  port: 16970
+  idle_timeout: 5s
+  write_timeout: 10s
+  read_timeout: 10s
+grpc_server:
+  host: localhost
+  port: 16971
+postgres:
+  user: user
+  password: password
+  host: localhost
+  port: 5432
+  db_name: pvz-db
+  sslmode: disable
+  max_open_conns: 20
+  max_idle_conns: 10
+  conn_max_lifetine: 30m
+  conn_max_idletime: 5m
