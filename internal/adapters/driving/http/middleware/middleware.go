@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
+	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 )
@@ -99,5 +101,60 @@ func (m Middlewares) LoggingMW(next http.Handler) http.Handler {
 			slog.Int("status_code", custWriter.statusCode),
 			slog.String("request_duration", ttp),
 		)
+	})
+}
+
+func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Vary", "Authorization")
+
+		bt, err := appHttp.ExtractBearerToken(r)
+		if err != nil {
+			switch {
+			case errors.Is(err, auth.ErrNotAuthRequest):
+				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+					Code:    http.StatusUnauthorized,
+					Message: "Wrong credentials provided",
+					Err:     err,
+				})
+			case errors.Is(err, auth.ErrInvalidJWT):
+				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+					Code:    http.StatusUnauthorized,
+					Message: "Invalid authentication token",
+					Err:     err,
+				})
+			default:
+				appHttp.WriteHTTPError(w, r, appHttp.InternalError(err))
+			}
+			return
+		}
+
+		claims, err := m.tService.GetTokenClaims(bt)
+		if err != nil {
+			switch {
+			case errors.Is(err, auth.ErrInvalidJWT):
+				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+					Code:    http.StatusUnauthorized,
+					Message: "Invalid JWT",
+					Err:     err,
+				})
+			case errors.Is(err, auth.ErrExpiredJWT):
+				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+					Code:    http.StatusUnauthorized,
+					Message: "JWT expired",
+					Err:     err,
+				})
+			default:
+				appHttp.WriteHTTPError(w, r, appHttp.InternalError(err))
+			}
+			return
+		}
+
+		l := logger.FromCtx(r.Context())
+		newLog := l.With(slog.String("user_id", claims.UserID()))
+		nCtx := logger.ToCtx(r.Context(), newLog)
+
+		newReq := r.WithContext(nCtx)
+		next.ServeHTTP(w, newReq)
 	})
 }

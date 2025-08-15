@@ -14,3 +14,7 @@ type AccessTokenClaims struct {
 	Role string `json:"role"`
 	jwt.RegisteredClaims
 }
+
+func (atc AccessTokenClaims) UserID() string {
+	return atc.RegisteredClaims.Subject
+}

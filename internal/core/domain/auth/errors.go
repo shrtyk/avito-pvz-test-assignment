@@ -3,9 +3,8 @@ package auth
 import "errors"
 
 var (
-	ErrJWTValidation = errors.New("invalid token")
-	ErrJWTExpired    = errors.New("jwt expired")
+	ErrInvalidJWT = errors.New("invalid token")
+	ErrExpiredJWT = errors.New("jwt expired")
 
-	ErrNotAuthRequest     = errors.New("not authorized")
-	ErrInvalidAccessToken = errors.New("invalid token")
+	ErrNotAuthRequest = errors.New("not authorized")
 )

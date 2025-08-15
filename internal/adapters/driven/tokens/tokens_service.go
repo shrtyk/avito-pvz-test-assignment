@@ -77,14 +77,14 @@ func (s *tokensService) GetTokenClaims(token string) (*auth.AccessTokenClaims, e
 	if err != nil {
 		switch {
 		case errors.Is(err, jwt.ErrTokenExpired):
-			return nil, auth.ErrJWTExpired
+			return nil, auth.ErrExpiredJWT
 		default:
-			return nil, auth.ErrJWTValidation
+			return nil, auth.ErrInvalidJWT
 		}
 	}
 
 	if !t.Valid {
-		return nil, auth.ErrJWTValidation
+		return nil, auth.ErrInvalidJWT
 	}
 
 	return tokenClaims, nil
