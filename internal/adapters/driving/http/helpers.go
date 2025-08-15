@@ -121,7 +121,7 @@ func GetUserAgentAndIP(r *http.Request) (string, string) {
 func ExtractBearerToken(r *http.Request) (string, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return "", auth.ErrNotAuthRequest
+		return "", auth.ErrNotAuthenticated
 	}
 
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")

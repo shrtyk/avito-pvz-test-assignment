@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
+	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
@@ -111,7 +112,7 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 		bt, err := appHttp.ExtractBearerToken(r)
 		if err != nil {
 			switch {
-			case errors.Is(err, auth.ErrNotAuthRequest):
+			case errors.Is(err, auth.ErrNotAuthenticated):
 				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
 					Code:    http.StatusUnauthorized,
 					Message: "Wrong credentials provided",
@@ -152,9 +153,31 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 
 		l := logger.FromCtx(r.Context())
 		newLog := l.With(slog.String("user_id", claims.UserID()))
-		nCtx := logger.ToCtx(r.Context(), newLog)
+		ctxWithLog := logger.ToCtx(r.Context(), newLog)
+		ctxWithClaims := auth.ClaimsToCtx(ctxWithLog, claims)
 
-		newReq := r.WithContext(nCtx)
+		newReq := r.WithContext(ctxWithClaims)
 		next.ServeHTTP(w, newReq)
+	})
+}
+
+func (m Middlewares) ModeratorAuthMW(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		claims, err := auth.ClaimsFromCtx(r.Context())
+		if err != nil {
+			appHttp.WriteHTTPError(w, r, appHttp.InternalError(err))
+			return
+		}
+
+		if claims.Role != string(dto.Moderator) {
+			appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+				Code:    http.StatusForbidden,
+				Message: "Not authorized to access this endpoint",
+				Err:     auth.ErrNotAuthorized,
+			})
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }
