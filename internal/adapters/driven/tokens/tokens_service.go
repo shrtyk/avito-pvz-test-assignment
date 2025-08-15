@@ -14,11 +14,6 @@ import (
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/config"
 )
 
-var (
-	ErrJWTValidation = errors.New("invalid token")
-	ErrJWTExpired    = errors.New("jwt expired")
-)
-
 type tokensService struct {
 	publicKey           *rsa.PublicKey
 	privateKey          *rsa.PrivateKey
@@ -82,14 +77,14 @@ func (s *tokensService) GetTokenClaims(token string) (*auth.AccessTokenClaims, e
 	if err != nil {
 		switch {
 		case errors.Is(err, jwt.ErrTokenExpired):
-			return nil, ErrJWTExpired
+			return nil, auth.ErrJWTExpired
 		default:
-			return nil, ErrJWTValidation
+			return nil, auth.ErrJWTValidation
 		}
 	}
 
 	if !t.Valid {
-		return nil, ErrJWTValidation
+		return nil, auth.ErrJWTValidation
 	}
 
 	return tokenClaims, nil
