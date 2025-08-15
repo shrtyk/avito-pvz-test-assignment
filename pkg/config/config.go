@@ -21,6 +21,7 @@ type Config struct {
 	HttpServerCfg HttpServerCfg `yaml:"http_server"`
 	GrpcServerCfg GrpcServerCfg `yaml:"grpc_server"`
 	PostgresCfg   PostgresCfg   `yaml:"postgres"`
+	AuthTokenCfg  AuthTokensCfg `yaml:"auth_tokens"`
 }
 
 type PvzCfg struct {
@@ -51,6 +52,12 @@ type PostgresCfg struct {
 	MaxIdleConns    int           `yaml:"max_idle_conns" env:"PG_MAX_IDLE_CONS" env-default:"10"`
 	ConnMaxLifetime time.Duration `yaml:"conn_max_lifetine" env:"PG_CONN_MAX_LIFETIME" env-default:"30m"`
 	ConnMaxIdletime time.Duration `yaml:"conn_max_idletime" env:"PG_CONN_MAX_IDLETIME" env-default:"5m"`
+}
+
+type AuthTokensCfg struct {
+	PublicRSAPath  string        `yaml:"public_key_path" env:"PUBLIC_RSA_PATH" env-default:"./keys/rsa/public_key.pem"`
+	PrivateRSAPath string        `yaml:"private_key_path" env:"PRIVATE_RSA_PATH" env-default:"./keys/rsa/private_key.pem"`
+	JWTLifetime    time.Duration `yaml:"jwt_lifetime" env:"JWT_LIFETIME" env-default:"15m"`
 }
 
 func MustInitConfig() *Config {
