@@ -6,5 +6,8 @@ var (
 	ErrInvalidJWT = errors.New("invalid token")
 	ErrExpiredJWT = errors.New("jwt expired")
 
-	ErrNotAuthRequest = errors.New("not authorized")
+	ErrNotAuthenticated = errors.New("not authenticated")
+	ErrNotAuthorized    = errors.New("not authorized")
+
+	ErrClaimsFormCtx = errors.New("failed to get JWT claims from context")
 )
