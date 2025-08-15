@@ -3,6 +3,8 @@ include .env
 .PHONY: docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status generate/dto
 
 MIGRATIONS_DIR=./migrations
+RSA_PRIVATE=./keys/rsa/private_key.pem
+RSA_PUBLIC=./keys/rsa/public_key.pem
 
 # Run app and
 run/app:
@@ -59,3 +61,9 @@ psql/pvz:
 # Generaate DTOs
 generate/dto:
 	@go generate ./...
+
+# Create keys directory and generate them
+gen/rsa:
+	@mkdir -p ./keys/rsa/
+	@openssl genrsa -out ${RSA_PRIVATE} 2048
+	@openssl rsa -pubout -in ${RSA_PRIVATE} -out ${RSA_PUBLIC}

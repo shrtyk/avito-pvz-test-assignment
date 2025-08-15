@@ -31,5 +31,7 @@ go.work.sum
 # .idea/
 # .vscode/
 
+keys
+
 # Ignore local configuration files, but keep the example
 configs/app_config.yml
