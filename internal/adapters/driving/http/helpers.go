@@ -89,16 +89,18 @@ func ReadJSON[T any](w http.ResponseWriter, r *http.Request, dst T) error {
 	return nil
 }
 
-func WriteError(w http.ResponseWriter, r *http.Request, status int, msg string) {
+func WriteHTTPError(w http.ResponseWriter, r *http.Request, e *HTTPError) {
 	l := logger.FromCtx(r.Context())
+	l.Error("Error occured", logger.WithErr(e))
+
 	err := WriteJSON(
 		w,
-		map[string]string{"message": msg},
-		status,
+		map[string]string{"message": e.Message},
+		e.Code,
 		nil,
 	)
 	if err != nil {
-		l.Error("error occurred", logger.WithErr(err))
+		l.Error("Failed to response with error", logger.WithErr(err))
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -124,7 +126,7 @@ func ExtractBearerToken(r *http.Request) (string, error) {
 
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	if tokenString == authHeader {
-		return "", auth.ErrInvalidAccessToken
+		return "", auth.ErrInvalidJWT
 	}
 
 	return tokenString, nil

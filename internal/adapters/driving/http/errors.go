@@ -22,3 +22,11 @@ func BadRequestError(err error) *HTTPError {
 		Err:     err,
 	}
 }
+
+func InternalError(err error) *HTTPError {
+	return &HTTPError{
+		Code:    http.StatusInternalServerError,
+		Message: "Internal error",
+		Err:     err,
+	}
+}

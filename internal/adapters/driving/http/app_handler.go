@@ -7,18 +7,18 @@ import (
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 )
 
-type appHandler func(http.ResponseWriter, *http.Request) error
+type AppHandler func(http.ResponseWriter, *http.Request) error
 
-func (h appHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	l := logger.FromCtx(r.Context())
 	if err := h(w, r); err != nil {
 		l.Error("Error during processing request", logger.WithErr(err))
 		var httpErr *HTTPError
 		switch {
 		case errors.As(err, &httpErr):
-			WriteError(w, r, httpErr.Code, httpErr.Message)
+			WriteHTTPError(w, r, httpErr)
 		default:
-			WriteError(w, r, http.StatusInternalServerError, "Internal error")
+			WriteHTTPError(w, r, InternalError(err))
 		}
 	}
 }

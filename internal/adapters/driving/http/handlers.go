@@ -22,10 +22,6 @@ func NewHandlers(tService ports.TokensService) *handlers {
 	}
 }
 
-func (h *handlers) HTTPHandler(aph appHandler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) { aph(w, r) }
-}
-
 func (h *handlers) DummyLogin(w http.ResponseWriter, r *http.Request) error {
 	req := new(dto.PostDummyLoginJSONRequestBody)
 	if err := ReadJSON(w, r, req); err != nil {
