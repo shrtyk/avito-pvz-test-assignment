@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
+	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 	"github.com/tomasen/realip"
 )
 
@@ -86,6 +87,20 @@ func ReadJSON[T any](w http.ResponseWriter, r *http.Request, dst T) error {
 	}
 
 	return nil
+}
+
+func WriteError(w http.ResponseWriter, r *http.Request, status int, msg string) {
+	l := logger.FromCtx(r.Context())
+	err := WriteJSON(
+		w,
+		map[string]string{"message": msg},
+		status,
+		nil,
+	)
+	if err != nil {
+		l.Error("error occurred", logger.WithErr(err))
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 func ReadIDParam(r *http.Request) (int64, error) {
