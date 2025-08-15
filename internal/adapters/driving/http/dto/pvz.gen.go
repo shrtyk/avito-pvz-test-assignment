@@ -65,9 +65,9 @@ type Error struct {
 
 // PVZ defines model for PVZ.
 type PVZ struct {
-	City             PVZCity             `json:"city"`
-	Id               *openapi_types.UUID `json:"id,omitempty"`
-	RegistrationDate *time.Time          `json:"registrationDate,omitempty"`
+	City             PVZCity             `json:"city" validate:"required,oneof=Москва Санкт-Петербург Казань"`
+	Id               *openapi_types.UUID `json:"id,omitempty" validate:"uuid"`
+	RegistrationDate *time.Time          `json:"registrationDate,omitempty" validate:"datetime"`
 }
 
 // PVZCity defines model for PVZ.City.
@@ -75,10 +75,10 @@ type PVZCity string
 
 // Product defines model for Product.
 type Product struct {
-	DateTime    *time.Time          `json:"dateTime,omitempty"`
-	Id          *openapi_types.UUID `json:"id,omitempty"`
-	ReceptionId openapi_types.UUID  `json:"receptionId"`
-	Type        ProductType         `json:"type"`
+	DateTime    *time.Time          `json:"dateTime,omitempty" validate:"datetime"`
+	Id          *openapi_types.UUID `json:"id,omitempty" validate:"uuid"`
+	ReceptionId openapi_types.UUID  `json:"receptionId" validate:"required,uuid"`
+	Type        ProductType         `json:"type" validate:"required,oneof=электроника одежда обувь"`
 }
 
 // ProductType defines model for Product.Type.
@@ -86,23 +86,25 @@ type ProductType string
 
 // Reception defines model for Reception.
 type Reception struct {
-	DateTime time.Time           `json:"dateTime"`
-	Id       *openapi_types.UUID `json:"id,omitempty"`
-	PvzId    openapi_types.UUID  `json:"pvzId"`
-	Status   ReceptionStatus     `json:"status"`
+	DateTime time.Time           `json:"dateTime" validate:"required,datetime"`
+	Id       *openapi_types.UUID `json:"id,omitempty" validate:"uuid"`
+	PvzId    openapi_types.UUID  `json:"pvzId" validate:"required,uuid"`
+	Status   ReceptionStatus     `json:"status" validate:"required,oneof=in_progress close"`
 }
 
 // ReceptionStatus defines model for Reception.Status.
 type ReceptionStatus string
 
 // Token defines model for Token.
-type Token = string
+type Token struct {
+	Jwt string `json:"jwt"`
+}
 
 // User defines model for User.
 type User struct {
-	Email openapi_types.Email `json:"email"`
-	Id    *openapi_types.UUID `json:"id,omitempty"`
-	Role  UserRole            `json:"role"`
+	Email openapi_types.Email `json:"email" validate:"required,email"`
+	Id    *openapi_types.UUID `json:"id,omitempty" validate:"uuid"`
+	Role  UserRole            `json:"role" validate:"required,oneof=employee moderator"`
 }
 
 // UserRole defines model for User.Role.
@@ -110,7 +112,7 @@ type UserRole string
 
 // PostDummyLoginJSONBody defines parameters for PostDummyLogin.
 type PostDummyLoginJSONBody struct {
-	Role PostDummyLoginJSONBodyRole `json:"role"`
+	Role PostDummyLoginJSONBodyRole `json:"role" validate:"required,oneof=employee moderator"`
 }
 
 // PostDummyLoginJSONBodyRole defines parameters for PostDummyLogin.
@@ -118,14 +120,14 @@ type PostDummyLoginJSONBodyRole string
 
 // PostLoginJSONBody defines parameters for PostLogin.
 type PostLoginJSONBody struct {
-	Email    openapi_types.Email `json:"email"`
-	Password string              `json:"password"`
+	Email    openapi_types.Email `json:"email" validate:"required,email"`
+	Password string              `json:"password" validate:"required,gte=6"`
 }
 
 // PostProductsJSONBody defines parameters for PostProducts.
 type PostProductsJSONBody struct {
-	PvzId openapi_types.UUID       `json:"pvzId"`
-	Type  PostProductsJSONBodyType `json:"type"`
+	PvzId openapi_types.UUID       `json:"pvzId" validate:"required,uuid"`
+	Type  PostProductsJSONBodyType `json:"type" validate:"required,oneof=электроника одежда обувь"`
 }
 
 // PostProductsJSONBodyType defines parameters for PostProducts.
@@ -134,28 +136,28 @@ type PostProductsJSONBodyType string
 // GetPvzParams defines parameters for GetPvz.
 type GetPvzParams struct {
 	// StartDate Начальная дата диапазона
-	StartDate *time.Time `form:"startDate,omitempty" json:"startDate,omitempty"`
+	StartDate *time.Time `form:"startDate,omitempty" json:"startDate,omitempty" validate:"datetime"`
 
 	// EndDate Конечная дата диапазона
-	EndDate *time.Time `form:"endDate,omitempty" json:"endDate,omitempty"`
+	EndDate *time.Time `form:"endDate,omitempty" json:"endDate,omitempty" validate:"datetime"`
 
 	// Page Номер страницы
-	Page *int `form:"page,omitempty" json:"page,omitempty"`
+	Page *int `form:"page,omitempty" json:"page,omitempty" validate:"min=1"`
 
 	// Limit Количество элементов на странице
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty" validate:"min=1,max=30"`
 }
 
 // PostReceptionsJSONBody defines parameters for PostReceptions.
 type PostReceptionsJSONBody struct {
-	PvzId openapi_types.UUID `json:"pvzId"`
+	PvzId openapi_types.UUID `json:"pvzId" validate:"required,uuid"`
 }
 
 // PostRegisterJSONBody defines parameters for PostRegister.
 type PostRegisterJSONBody struct {
-	Email    openapi_types.Email      `json:"email"`
-	Password string                   `json:"password"`
-	Role     PostRegisterJSONBodyRole `json:"role"`
+	Email    openapi_types.Email      `json:"email" validate:"required,email"`
+	Password string                   `json:"password" validate:"required,gte=6"`
+	Role     PostRegisterJSONBodyRole `json:"role" validate:"required,oneof=employee moderator"`
 }
 
 // PostRegisterJSONBodyRole defines parameters for PostRegister.

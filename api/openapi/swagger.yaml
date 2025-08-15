@@ -7,7 +7,11 @@ info:
 components:
   schemas:
     Token:
-      type: string
+      type: object
+      properties:
+        jwt:
+          type: string
+      required: [jwt]
 
     User:
       type: object
@@ -15,12 +19,18 @@ components:
         id:
           type: string
           format: uuid
+          x-oapi-codegen-extra-tags:
+            validate: "uuid"
         email:
           type: string
           format: email
+          x-oapi-codegen-extra-tags:
+            validate: "required,email"
         role:
           type: string
           enum: [employee, moderator]
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=employee moderator"
       required: [email, role]
 
     PVZ:
@@ -29,13 +39,19 @@ components:
         id:
           type: string
           format: uuid
+          x-oapi-codegen-extra-tags:
+            validate: "uuid"
         registrationDate:
           type: string
           format: date-time
+          x-oapi-codegen-extra-tags:
+            validate: "datetime"
         city:
           type: string
           enum: [Москва, Санкт-Петербург, Казань]
           x-enum-varnames: [Moscow, SaintPetersburg, Kazan]
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=Москва Санкт-Петербург Казань"
       required: [city]
 
     Reception:
@@ -44,15 +60,23 @@ components:
         id:
           type: string
           format: uuid
+          x-oapi-codegen-extra-tags:
+            validate: "uuid"
         dateTime:
           type: string
           format: date-time
+          x-oapi-codegen-extra-tags:
+            validate: "required,datetime"
         pvzId:
           type: string
           format: uuid
+          x-oapi-codegen-extra-tags:
+            validate: "required,uuid"
         status:
           type: string
           enum: [in_progress, close]
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=in_progress close"
       required: [dateTime, pvzId, status]
 
     Product:
@@ -61,16 +85,24 @@ components:
         id:
           type: string
           format: uuid
+          x-oapi-codegen-extra-tags:
+            validate: "uuid"
         dateTime:
           type: string
           format: date-time
+          x-oapi-codegen-extra-tags:
+            validate: "datetime"
         type:
           type: string
           enum: [электроника, одежда, обувь]
           x-enum-varnames: [Electronics, Clothing, Footwear]
+          x-oapi-codegen-extra-tags:
+            validate: "required,oneof=электроника одежда обувь"
         receptionId:
           type: string
           format: uuid
+          x-oapi-codegen-extra-tags:
+            validate: "required,uuid"
       required: [type, receptionId]
 
     Error:
@@ -100,6 +132,8 @@ paths:
                 role:
                   type: string
                   enum: [employee, moderator]
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,oneof=employee moderator"
               required: [role]
       responses:
         "200":
@@ -128,11 +162,17 @@ paths:
                 email:
                   type: string
                   format: email
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,email"
                 password:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,gte=6"
                 role:
                   type: string
                   enum: [employee, moderator]
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,oneof=employee moderator"
               required: [email, password, role]
       responses:
         "201":
@@ -161,8 +201,12 @@ paths:
                 email:
                   type: string
                   format: email
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,email"
                 password:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,gte=6"
               required: [email, password]
       responses:
         "200":
@@ -221,6 +265,8 @@ paths:
           schema:
             type: string
             format: date-time
+          x-oapi-codegen-extra-tags:
+            validate: "datetime"
         - name: endDate
           in: query
           description: Конечная дата диапазона
@@ -228,6 +274,8 @@ paths:
           schema:
             type: string
             format: date-time
+          x-oapi-codegen-extra-tags:
+            validate: "datetime"
         - name: page
           in: query
           description: Номер страницы
@@ -236,6 +284,8 @@ paths:
             type: integer
             minimum: 1
             default: 1
+          x-oapi-codegen-extra-tags:
+            validate: "min=1"
         - name: limit
           in: query
           description: Количество элементов на странице
@@ -245,6 +295,8 @@ paths:
             minimum: 1
             maximum: 30
             default: 10
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=30"
       responses:
         "200":
           description: Список ПВЗ
@@ -344,6 +396,8 @@ paths:
                 pvzId:
                   type: string
                   format: uuid
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,uuid"
               required: [pvzId]
       responses:
         "201":
@@ -381,9 +435,13 @@ paths:
                   type: string
                   enum: [электроника, одежда, обувь]
                   x-enum-varnames: [Electronics, Clothing, Footwear]
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,oneof=электроника одежда обувь"
                 pvzId:
                   type: string
                   format: uuid
+                  x-oapi-codegen-extra-tags:
+                    validate: "required,uuid"
               required: [type, pvzId]
       responses:
         "201":
