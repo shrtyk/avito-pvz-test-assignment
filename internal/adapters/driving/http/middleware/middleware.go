@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
+	"github.com/google/uuid"
+	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports"
+	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 )
 
 type Middlewares struct {
@@ -28,5 +32,62 @@ func (m Middlewares) PanicRecoveryMW(next http.Handler) http.Handler {
 		}()
 
 		next.ServeHTTP(w, r)
+	})
+}
+
+type customResponseWriter struct {
+	http.ResponseWriter
+	statusCode  int
+	wroteHeader bool
+}
+
+func (w *customResponseWriter) WriteHeader(statusCode int) {
+	if w.wroteHeader {
+		return
+	}
+
+	w.statusCode = statusCode
+	w.wroteHeader = true
+	w.ResponseWriter.WriteHeader(statusCode)
+}
+
+func (w *customResponseWriter) Write(b []byte) (int, error) {
+	if !w.wroteHeader {
+		w.WriteHeader(http.StatusOK)
+	}
+	return w.ResponseWriter.Write(b)
+}
+
+func (m Middlewares) LoggingMW(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ua, ip := appHttp.GetUserAgentAndIP(r)
+		reqID := uuid.NewString()
+
+		l := m.log.With(
+			slog.String("ip", ip),
+			slog.String("user_agent", ua),
+			slog.String("request_id", reqID),
+			slog.String("method", r.Method),
+			slog.String("uri", r.URL.RequestURI()),
+		)
+
+		l.Debug("New HTTP request")
+		newCtx := logger.ToCtx(r.Context(), l)
+		newReq := r.WithContext(newCtx)
+		custWriter := &customResponseWriter{
+			ResponseWriter: w,
+			statusCode:     http.StatusOK,
+		}
+
+		reqStart := time.Now()
+		next.ServeHTTP(custWriter, newReq)
+		reqEnd := time.Since(reqStart)
+
+		ttp := fmt.Sprintf("%.5fs", reqEnd.Seconds())
+		l.Debug(
+			"HTTP request processed",
+			slog.Int("status_code", custWriter.statusCode),
+			slog.String("request_duration", ttp),
+		)
 	})
 }

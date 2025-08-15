@@ -44,6 +44,10 @@ type ctxKey string
 
 const logCtxKey ctxKey = "logger"
 
+func ToCtx(ctx context.Context, log *slog.Logger) context.Context {
+	return context.WithValue(ctx, logCtxKey, log)
+}
+
 func FromCtx(ctx context.Context) *slog.Logger {
 	l, ok := ctx.Value(logCtxKey).(*slog.Logger)
 	if !ok {
@@ -51,4 +55,8 @@ func FromCtx(ctx context.Context) *slog.Logger {
 		return fallbackLogger
 	}
 	return l
+}
+
+func WithErr(err error) slog.Attr {
+	return slog.String("error", err.Error())
 }
