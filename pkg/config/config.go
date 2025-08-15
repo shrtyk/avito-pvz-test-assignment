@@ -17,16 +17,17 @@ func init() {
 }
 
 type Config struct {
-	PvzCfg        PvzCfg        `yaml:"pvz"`
+	AppCfg        AppCfg        `yaml:"app"`
 	HttpServerCfg HttpServerCfg `yaml:"http_server"`
 	GrpcServerCfg GrpcServerCfg `yaml:"grpc_server"`
 	PostgresCfg   PostgresCfg   `yaml:"postgres"`
 	AuthTokenCfg  AuthTokensCfg `yaml:"auth_tokens"`
 }
 
-type PvzCfg struct {
-	Env     string        `yaml:"env" env:"PVZ_ENV" env-default:"prod"`
-	Timeout time.Duration `yaml:"timeout" env:"PVZ_TIMEOUT" env-default:"5s"`
+type AppCfg struct {
+	Env             string        `yaml:"env" env:"APP_ENV" env-default:"prod"`
+	Timeout         time.Duration `yaml:"timeout" env:"APP_TIMEOUT" env-default:"5s"`
+	ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APP_SHUTDOWN_TIMEOUT" env-default:"10s"`
 }
 
 type HttpServerCfg struct {

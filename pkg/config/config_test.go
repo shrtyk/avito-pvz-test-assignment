@@ -60,8 +60,8 @@ postgres:
 
 		cfg := MustInitConfig()
 
-		assert.Equal(t, "dev", cfg.PvzCfg.Env)
-		assert.Equal(t, 10*time.Second, cfg.PvzCfg.Timeout)
+		assert.Equal(t, "dev", cfg.AppCfg.Env)
+		assert.Equal(t, 10*time.Second, cfg.AppCfg.Timeout)
 		assert.Equal(t, "file_host", cfg.PostgresCfg.Host)
 		assert.Equal(t, "file_user", cfg.PostgresCfg.User)
 
@@ -78,7 +78,7 @@ postgres:
 
 		cfg := MustInitConfig()
 
-		assert.Equal(t, "dev", cfg.PvzCfg.Env)
+		assert.Equal(t, "dev", cfg.AppCfg.Env)
 		assert.Equal(t, "env_host", cfg.PostgresCfg.Host)
 		assert.Equal(t, "5433", cfg.PostgresCfg.Port)
 		assert.Equal(t, "8080", cfg.HttpServerCfg.Port)
@@ -99,7 +99,7 @@ postgres:
 
 		cfg := MustInitConfig()
 
-		assert.Equal(t, "env_env_override", cfg.PvzCfg.Env)
+		assert.Equal(t, "env_env_override", cfg.AppCfg.Env)
 		assert.Equal(t, "env_host_override", cfg.PostgresCfg.Host)
 	})
 
@@ -111,8 +111,8 @@ postgres:
 
 		cfg := MustInitConfig()
 
-		assert.Equal(t, "prod", cfg.PvzCfg.Env)
-		assert.Equal(t, "5s", cfg.PvzCfg.Timeout.String())
+		assert.Equal(t, "prod", cfg.AppCfg.Env)
+		assert.Equal(t, "5s", cfg.AppCfg.Timeout.String())
 		assert.Equal(t, "postgres", cfg.PostgresCfg.Host)
 		assert.Equal(t, "user", cfg.PostgresCfg.User)
 	})
