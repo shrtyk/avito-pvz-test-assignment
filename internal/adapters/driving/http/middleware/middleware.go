@@ -17,11 +17,21 @@ type Middlewares struct {
 	log      *slog.Logger
 }
 
+func NewMiddlewares(
+	tService ports.TokensService,
+	log *slog.Logger,
+) *Middlewares {
+	return &Middlewares{
+		tService: tService,
+		log:      log,
+	}
+}
+
 func (m Middlewares) PanicRecoveryMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				m.log.Error("error occured", "error", fmt.Sprintf("%s", err))
+				m.log.Error("Error occured", "error", fmt.Sprintf("%s", err))
 				w.Header().Set("Connection", "close")
 				http.Error(
 					w,
