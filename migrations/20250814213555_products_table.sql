@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS products (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   received_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   reception_id UUID NOT NULL,
   type product_types NOT NULL,
