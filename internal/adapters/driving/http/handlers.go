@@ -99,11 +99,12 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	newRec, err := h.appService.NewReception(r.Context(), newRec)
 	if err != nil {
 		var rErr *pService.ErrReceptionInProgress
-		if errors.As(err, &rErr) {
+		var pErr *pService.ErrPvzNotExists
+		if errors.As(err, &rErr) || errors.As(err, &pErr) {
 			return &HTTPError{
 				Code:    http.StatusBadRequest,
-				Message: rErr.Error(),
-				Err:     rErr,
+				Message: err.Error(),
+				Err:     err,
 			}
 		}
 		return InternalError(err)

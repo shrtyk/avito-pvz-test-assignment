@@ -43,9 +43,17 @@ func (s *service) NewReception(ctx context.Context, rec *domain.Reception) (*dom
 	if err != nil {
 		var cErr *pRepo.ErrConstraintViolation
 		if errors.As(err, &cErr) {
-			return nil, &pService.ErrReceptionInProgress{
-				PvzId: rec.PvzId,
-				Err:   err,
+			switch cErr.Constraint {
+			case "fk_pvz_id":
+				return nil, &pService.ErrPvzNotExists{
+					PvzId: rec.PvzId,
+					Err:   cErr,
+				}
+			case "one_in_progress_reception_per_pvz_id":
+				return nil, &pService.ErrReceptionInProgress{
+					PvzId: rec.PvzId,
+					Err:   cErr,
+				}
 			}
 		}
 		return nil, fmt.Errorf("service: failed to create new reception: %w", err)

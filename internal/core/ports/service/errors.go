@@ -18,3 +18,16 @@ func (e *ErrReceptionInProgress) Error() string {
 func (e *ErrReceptionInProgress) Unwrap() error {
 	return e.Err
 }
+
+type ErrPvzNotExists struct {
+	PvzId uuid.UUID
+	Err   error
+}
+
+func (e *ErrPvzNotExists) Error() string {
+	return fmt.Sprintf("pvz %s doesn't not exists", e.PvzId)
+}
+
+func (e *ErrPvzNotExists) Unwrap() error {
+	return e.Err
+}
