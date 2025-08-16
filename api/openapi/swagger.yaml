@@ -20,7 +20,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "uuid"
+            validate: "omitempty,uuid"
         email:
           type: string
           format: email
@@ -40,12 +40,12 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "uuid"
+            validate: "omitempty,uuid"
         registrationDate:
           type: string
           format: date-time
           x-oapi-codegen-extra-tags:
-            validate: "datetime"
+            validate: "omitempty,datetime"
         city:
           type: string
           enum: [Москва, Санкт-Петербург, Казань]
@@ -61,7 +61,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "uuid"
+            validate: "omitempty,uuid"
         dateTime:
           type: string
           format: date-time
@@ -86,12 +86,12 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "uuid"
+            validate: "omitempty,uuid"
         dateTime:
           type: string
           format: date-time
           x-oapi-codegen-extra-tags:
-            validate: "datetime"
+            validate: "omitempty,datetime"
         type:
           type: string
           enum: [электроника, одежда, обувь]
@@ -266,7 +266,7 @@ paths:
             type: string
             format: date-time
           x-oapi-codegen-extra-tags:
-            validate: "datetime"
+            validate: "omitempty,datetime"
         - name: endDate
           in: query
           description: Конечная дата диапазона
@@ -275,7 +275,7 @@ paths:
             type: string
             format: date-time
           x-oapi-codegen-extra-tags:
-            validate: "datetime"
+            validate: "omitempty,datetime"
         - name: page
           in: query
           description: Номер страницы
@@ -285,7 +285,7 @@ paths:
             minimum: 1
             default: 1
           x-oapi-codegen-extra-tags:
-            validate: "min=1"
+            validate: "omitempty,min=1"
         - name: limit
           in: query
           description: Количество элементов на странице
@@ -296,7 +296,7 @@ paths:
             maximum: 30
             default: 10
           x-oapi-codegen-extra-tags:
-            validate: "min=1,max=30"
+            validate: "omitempty,min=1,max=30"
       responses:
         "200":
           description: Список ПВЗ
