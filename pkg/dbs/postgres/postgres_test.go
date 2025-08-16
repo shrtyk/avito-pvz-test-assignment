@@ -9,62 +9,54 @@ import (
 func TestBuildDSN(t *testing.T) {
 	testCases := []struct {
 		name     string
-		cfg      *config.Config
+		cfg      *config.PostgresCfg
 		expected string
 	}{
 		{
 			name: "Standard configuration",
-			cfg: &config.Config{
-				PostgresCfg: config.PostgresCfg{
-					User:     "testuser",
-					Password: "testpassword",
-					Host:     "localhost",
-					Port:     "5432",
-					DBName:   "test-db",
-					SSLMode:  "disable",
-				},
+			cfg: &config.PostgresCfg{
+				User:     "testuser",
+				Password: "testpassword",
+				Host:     "localhost",
+				Port:     "5432",
+				DBName:   "test-db",
+				SSLMode:  "disable",
 			},
 			expected: "postgres://testuser:testpassword@localhost:5432/test-db?sslmode=disable",
 		},
 		{
 			name: "SSLMode require",
-			cfg: &config.Config{
-				PostgresCfg: config.PostgresCfg{
-					User:     "produser",
-					Password: "prodpassword",
-					Host:     "db.example.com",
-					Port:     "5432",
-					DBName:   "prod-db",
-					SSLMode:  "require",
-				},
+			cfg: &config.PostgresCfg{
+				User:     "produser",
+				Password: "prodpassword",
+				Host:     "db.example.com",
+				Port:     "5432",
+				DBName:   "prod-db",
+				SSLMode:  "require",
 			},
 			expected: "postgres://produser:prodpassword@db.example.com:5432/prod-db?sslmode=require",
 		},
 		{
 			name: "User and password with special characters",
-			cfg: &config.Config{
-				PostgresCfg: config.PostgresCfg{
-					User:     "user@name",
-					Password: "password#123",
-					Host:     "127.0.0.1",
-					Port:     "5433",
-					DBName:   "app-db",
-					SSLMode:  "allow",
-				},
+			cfg: &config.PostgresCfg{
+				User:     "user@name",
+				Password: "password#123",
+				Host:     "127.0.0.1",
+				Port:     "5433",
+				DBName:   "app-db",
+				SSLMode:  "allow",
 			},
 			expected: "postgres://user%40name:password%23123@127.0.0.1:5433/app-db?sslmode=allow",
 		},
 		{
 			name: "Empty password",
-			cfg: &config.Config{
-				PostgresCfg: config.PostgresCfg{
-					User:     "nopassuser",
-					Password: "",
-					Host:     "localhost",
-					Port:     "5432",
-					DBName:   "testdb",
-					SSLMode:  "disable",
-				},
+			cfg: &config.PostgresCfg{
+				User:     "nopassuser",
+				Password: "",
+				Host:     "localhost",
+				Port:     "5432",
+				DBName:   "testdb",
+				SSLMode:  "disable",
 			},
 			expected: "postgres://nopassuser:@localhost:5432/testdb?sslmode=disable",
 		},

@@ -9,7 +9,7 @@ import (
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/config"
 )
 
-func MustCreateConnectionPool(cfg *config.Config) *sql.DB {
+func MustCreateConnectionPool(cfg *config.PostgresCfg) *sql.DB {
 	dsn := buildDSN(cfg)
 
 	db, err := sql.Open("pgx", dsn)
@@ -18,10 +18,10 @@ func MustCreateConnectionPool(cfg *config.Config) *sql.DB {
 		panic(msg)
 	}
 
-	db.SetMaxOpenConns(cfg.PostgresCfg.MaxOpenConns)
-	db.SetMaxIdleConns(cfg.PostgresCfg.MaxIdleConns)
-	db.SetConnMaxLifetime(cfg.PostgresCfg.ConnMaxLifetime)
-	db.SetConnMaxIdleTime(cfg.PostgresCfg.ConnMaxIdletime)
+	db.SetMaxOpenConns(cfg.MaxOpenConns)
+	db.SetMaxIdleConns(cfg.MaxIdleConns)
+	db.SetConnMaxLifetime(cfg.ConnMaxLifetime)
+	db.SetConnMaxIdleTime(cfg.ConnMaxIdletime)
 
 	if err = db.Ping(); err != nil {
 		panic(fmt.Sprintf("Couldn't ping DB: %s", err))
@@ -30,16 +30,16 @@ func MustCreateConnectionPool(cfg *config.Config) *sql.DB {
 	return db
 }
 
-func buildDSN(cfg *config.Config) string {
+func buildDSN(cfg *config.PostgresCfg) string {
 	url := &url.URL{
 		Scheme: "postgres",
-		User:   url.UserPassword(cfg.PostgresCfg.User, cfg.PostgresCfg.Password),
-		Host:   fmt.Sprintf("%s:%s", cfg.PostgresCfg.Host, cfg.PostgresCfg.Port),
-		Path:   cfg.PostgresCfg.DBName,
+		User:   url.UserPassword(cfg.User, cfg.Password),
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Path:   cfg.DBName,
 	}
 
 	q := url.Query()
-	q.Set("sslmode", cfg.PostgresCfg.SSLMode)
+	q.Set("sslmode", cfg.SSLMode)
 	url.RawQuery = q.Encode()
 
 	return url.String()
