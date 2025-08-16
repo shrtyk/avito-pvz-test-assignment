@@ -12,6 +12,7 @@ type Application struct {
 	Logger       *slog.Logger
 	Repo         ports.Repository
 	TokenService ports.TokensService
+	AppService   ports.Service
 }
 
 type option func(*Application)
@@ -47,5 +48,11 @@ func WithRepo(repo ports.Repository) option {
 func WithTokenService(tService ports.TokensService) option {
 	return func(app *Application) {
 		app.TokenService = tService
+	}
+}
+
+func WithService(s ports.Service) option {
+	return func(app *Application) {
+		app.AppService = s
 	}
 }

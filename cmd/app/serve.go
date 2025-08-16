@@ -52,13 +52,15 @@ func (app Application) Serve(ctx context.Context) {
 
 func (app *Application) router() *chi.Mux {
 	mws := middleware.NewMiddlewares(app.TokenService, app.Logger)
-	h := appHttp.NewHandlers(app.TokenService)
+	h := appHttp.NewHandlers(app.AppService, app.TokenService)
 
 	r := chi.NewRouter()
 
 	r.Use(mws.PanicRecoveryMW, mws.LoggingMW)
 	r.Group(func(r chi.Router) {
-		r.Get("/dummyLogin", h.HTTPHandler(h.DummyLogin))
+		r.Method(http.MethodPost, "/dummyLogin", appHttp.AppHandler(h.DummyLogin))
+
+		r.Method(http.MethodPost, "/test", appHttp.AppHandler(h.NewPVZHandler))
 	})
 
 	return r
