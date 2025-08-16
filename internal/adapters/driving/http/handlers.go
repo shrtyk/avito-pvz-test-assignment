@@ -33,8 +33,7 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 	}
 
 	if err := h.validator.Struct(req); err != nil {
-		// Would be better to return StatusUnprocessableEntity but i followed swagger.yaml
-		return BadRequestError(err)
+		return ValidationError(err)
 	}
 
 	jwt, err := h.tService.GenerateAccessToken(auth.AccessTokenData{
@@ -61,7 +60,7 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	if err = h.validator.Struct(pvz); err != nil {
-		return BadRequestError(err)
+		return ValidationError(err)
 	}
 
 	newPvz := toDomainPVZ(pvz)
@@ -93,7 +92,7 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	}
 
 	if err := h.validator.Struct(rec); err != nil {
-		return BadRequestError(err)
+		return ValidationError(err)
 	}
 
 	newRec := toDomainReception(rec)

@@ -30,3 +30,11 @@ func InternalError(err error) *HTTPError {
 		Err:     err,
 	}
 }
+
+func ValidationError(err error) *HTTPError {
+	return &HTTPError{
+		Code:    http.StatusBadRequest, // Would be better to use StatusUnprocessableEntity but i followed swagger.yaml
+		Message: "Invalid data in request body",
+		Err:     err,
+	}
+}
