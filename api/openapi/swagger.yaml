@@ -20,7 +20,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "omitempty,uuid"
+            validate: "omitempty,oapi_uuid"
         email:
           type: string
           format: email
@@ -40,7 +40,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "omitempty,uuid"
+            validate: "omitempty,oapi_uuid"
         registrationDate:
           type: string
           format: date-time
@@ -61,7 +61,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "omitempty,uuid"
+            validate: "omitempty,oapi_uuid"
         dateTime:
           type: string
           format: date-time
@@ -71,7 +71,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "required,uuid"
+            validate: "required,oapi_uuid"
         status:
           type: string
           enum: [in_progress, close]
@@ -86,7 +86,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "omitempty,uuid"
+            validate: "omitempty,oapi_uuid"
         dateTime:
           type: string
           format: date-time
@@ -102,7 +102,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            validate: "required,uuid"
+            validate: "required,oapi_uuid"
       required: [type, receptionId]
 
     Error:
@@ -397,7 +397,7 @@ paths:
                   type: string
                   format: uuid
                   x-oapi-codegen-extra-tags:
-                    validate: "required,uuid"
+                    validate: "required,oapi_uuid"
               required: [pvzId]
       responses:
         "201":
@@ -441,7 +441,7 @@ paths:
                   type: string
                   format: uuid
                   x-oapi-codegen-extra-tags:
-                    validate: "required,uuid"
+                    validate: "required,oapi_uuid"
               required: [type, pvzId]
       responses:
         "201":
