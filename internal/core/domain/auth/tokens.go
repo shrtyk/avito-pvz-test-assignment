@@ -2,12 +2,11 @@ package auth
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/users"
 )
 
 type AccessTokenData struct {
 	UserID int64
-	Role   users.UserRole
+	Role   UserRole
 }
 
 type AccessTokenClaims struct {

@@ -1,4 +1,4 @@
-package users
+package auth
 
 type UserRole string
 
