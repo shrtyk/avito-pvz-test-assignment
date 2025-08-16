@@ -3,16 +3,18 @@ package main
 import (
 	"log/slog"
 
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports"
+	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
+	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
+	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/config"
 )
 
 type Application struct {
 	Cfg          *config.Config
 	Logger       *slog.Logger
-	Repo         ports.Repository
-	TokenService ports.TokensService
-	AppService   ports.Service
+	Repo         pRepo.Repository
+	TokenService pAuth.TokensService
+	AppService   pService.Service
 }
 
 type option func(*Application)
@@ -39,19 +41,19 @@ func WithLogger(log *slog.Logger) option {
 	}
 }
 
-func WithRepo(repo ports.Repository) option {
+func WithRepo(repo pRepo.Repository) option {
 	return func(app *Application) {
 		app.Repo = repo
 	}
 }
 
-func WithTokenService(tService ports.TokensService) option {
+func WithTokenService(tService pAuth.TokensService) option {
 	return func(app *Application) {
 		app.TokenService = tService
 	}
 }
 
-func WithService(s ports.Service) option {
+func WithService(s pService.Service) option {
 	return func(app *Application) {
 		app.AppService = s
 	}

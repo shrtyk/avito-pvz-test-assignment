@@ -11,17 +11,17 @@ import (
 	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports"
+	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 )
 
 type Middlewares struct {
-	tService ports.TokensService
+	tService pAuth.TokensService
 	log      *slog.Logger
 }
 
 func NewMiddlewares(
-	tService ports.TokensService,
+	tService pAuth.TokensService,
 	log *slog.Logger,
 ) *Middlewares {
 	return &Middlewares{

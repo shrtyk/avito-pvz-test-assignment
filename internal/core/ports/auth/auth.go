@@ -1,4 +1,4 @@
-package ports
+package auth
 
 import "github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 

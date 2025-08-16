@@ -57,10 +57,11 @@ func (app *Application) router() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(mws.PanicRecoveryMW, mws.LoggingMW)
-	r.Group(func(r chi.Router) {
-		r.Method(http.MethodPost, "/dummyLogin", appHttp.AppHandler(h.DummyLogin))
+	r.Method(http.MethodPost, "/dummyLogin", appHttp.AppHandler(h.DummyLoginHandler))
 
-		r.Method(http.MethodPost, "/test", appHttp.AppHandler(h.NewPVZHandler))
+	r.With().Group(func(r chi.Router) {
+		r.Method(http.MethodPost, "/pvz", appHttp.AppHandler(h.NewPVZHandler))
+		r.Method(http.MethodPost, "/receptions", appHttp.AppHandler(h.NewReceptionHandler))
 	})
 
 	return r
