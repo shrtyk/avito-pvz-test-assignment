@@ -92,7 +92,11 @@ func ReadJSON[T any](w http.ResponseWriter, r *http.Request, dst T) error {
 
 func WriteHTTPError(w http.ResponseWriter, r *http.Request, e *HTTPError) {
 	l := logger.FromCtx(r.Context())
-	l.Error("Error occured", logger.WithErr(e))
+	if e.Code >= 500 {
+		l.Error("Server error", logger.WithErr(e))
+	} else {
+		l.Info("Client error", logger.WithErr(e))
+	}
 
 	err := WriteJSON(
 		w,
@@ -117,10 +121,6 @@ func ReadIDParam(r *http.Request) (int64, error) {
 
 func ReadPvzIDParam(r *http.Request) (*uuid.UUID, error) {
 	strId := chi.URLParam(r, "pvzId")
-	if err := uuid.Validate(strId); err != nil {
-		return nil, err
-	}
-
 	if err := uuid.Validate(strId); err != nil {
 		return nil, err
 	}

@@ -39,7 +39,7 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 		&pvz.RegistrationDate,
 	)
 	if err != nil {
-		return nil, xerr.NewErr(op, pRepo.KindFailed, err)
+		return nil, xerr.NewErr(op, pRepo.Failed, err)
 	}
 
 	return pvz, nil
@@ -67,12 +67,12 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 		if errors.As(err, &pgErr) {
 			switch pgErr.ConstraintName {
 			case "fk_pvz_id":
-				return nil, xerr.NewErr(op, pRepo.KindInvalidReference, err)
+				return nil, xerr.NewErr(op, pRepo.InvalidReference, err)
 			case "one_in_progress_reception_per_pvz_id":
-				return nil, xerr.NewErr(op, pRepo.KindConflict, err)
+				return nil, xerr.NewErr(op, pRepo.Conflict, err)
 			}
 		}
-		return nil, xerr.NewErr(op, pRepo.KindFailed, err)
+		return nil, xerr.NewErr(op, pRepo.Failed, err)
 	}
 
 	return rec, nil
@@ -85,7 +85,7 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 		INSERT INTO
 			products (reception_id, type)
 		VALUES(
-			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = 'in_progress'), $3
+			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = 'in_progress'), $2
 		)
 		RETURNING
 			id, added_at, reception_id, type
@@ -100,9 +100,9 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows) {
-			return nil, xerr.NewErr(op, pRepo.KindNotFound, err)
+			return nil, xerr.NewErr(op, pRepo.NotFound, err)
 		}
-		return nil, xerr.NewErr(op, pRepo.KindFailed, err)
+		return nil, xerr.NewErr(op, pRepo.Failed, err)
 	}
 
 	return prod, nil
@@ -127,16 +127,16 @@ func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 
 	res, err := r.db.ExecContext(ctx, query, pvzId)
 	if err != nil {
-		return xerr.NewErr(op, pRepo.KindFailed, err)
+		return xerr.NewErr(op, pRepo.Failed, err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return xerr.NewErr(op, pRepo.KindFailed, err)
+		return xerr.NewErr(op, pRepo.Failed, err)
 	}
 
 	if rowsAffected == 0 {
-		return xerr.NewErr(op, pRepo.KindNotFound, sql.ErrNoRows)
+		return xerr.NewErr(op, pRepo.NotFound, sql.ErrNoRows)
 	}
 
 	return nil

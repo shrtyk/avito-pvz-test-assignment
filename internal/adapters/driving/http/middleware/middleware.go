@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -16,17 +15,23 @@ import (
 )
 
 type Middlewares struct {
-	tService pAuth.TokensService
-	log      *slog.Logger
+	tService      pAuth.TokensService
+	log           *slog.Logger
+	handleAuthErr func(http.ResponseWriter, *http.Request, error)
 }
 
 func NewMiddlewares(
 	tService pAuth.TokensService,
 	log *slog.Logger,
 ) *Middlewares {
+	eh := func(w http.ResponseWriter, r *http.Request, err error) {
+		appHttp.WriteHTTPError(w, r, appHttp.MapAuthServiceErrsToHTTP(err))
+	}
+
 	return &Middlewares{
-		tService: tService,
-		log:      log,
+		tService:      tService,
+		log:           log,
+		handleAuthErr: eh,
 	}
 }
 
@@ -111,43 +116,13 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 
 		bt, err := appHttp.ExtractBearerToken(r)
 		if err != nil {
-			switch {
-			case errors.Is(err, auth.ErrNotAuthenticated):
-				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
-					Code:    http.StatusUnauthorized,
-					Message: "Wrong credentials provided",
-					Err:     err,
-				})
-			case errors.Is(err, auth.ErrInvalidJWT):
-				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
-					Code:    http.StatusUnauthorized,
-					Message: "Invalid authentication token",
-					Err:     err,
-				})
-			default:
-				appHttp.WriteHTTPError(w, r, appHttp.InternalError(err))
-			}
+			m.handleAuthErr(w, r, err)
 			return
 		}
 
 		claims, err := m.tService.GetTokenClaims(bt)
 		if err != nil {
-			switch {
-			case errors.Is(err, auth.ErrInvalidJWT):
-				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
-					Code:    http.StatusUnauthorized,
-					Message: "Invalid JWT",
-					Err:     err,
-				})
-			case errors.Is(err, auth.ErrExpiredJWT):
-				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
-					Code:    http.StatusUnauthorized,
-					Message: "JWT expired",
-					Err:     err,
-				})
-			default:
-				appHttp.WriteHTTPError(w, r, appHttp.InternalError(err))
-			}
+			m.handleAuthErr(w, r, err)
 			return
 		}
 
@@ -165,16 +140,12 @@ func (m Middlewares) ModeratorAuthMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, err := auth.ClaimsFromCtx(r.Context())
 		if err != nil {
-			appHttp.WriteHTTPError(w, r, appHttp.InternalError(err))
+			m.handleAuthErr(w, r, err)
 			return
 		}
 
 		if claims.Role != string(dto.Moderator) {
-			appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
-				Code:    http.StatusForbidden,
-				Message: "Not authorized to access this endpoint",
-				Err:     auth.ErrNotAuthorized,
-			})
+			m.handleAuthErr(w, r, err)
 			return
 		}
 

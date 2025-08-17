@@ -11,7 +11,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
+	pa "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/config"
+	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 )
 
 type tokensService struct {
@@ -67,6 +69,8 @@ func (s *tokensService) GenerateAccessToken(tokenData auth.AccessTokenData) (str
 }
 
 func (s *tokensService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {
+	op := "token_service.GetTokenClaims"
+
 	tokenClaims := new(auth.AccessTokenClaims)
 	t, err := jwt.ParseWithClaims(token, tokenClaims, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodRSA); !ok {
@@ -77,14 +81,14 @@ func (s *tokensService) GetTokenClaims(token string) (*auth.AccessTokenClaims, e
 	if err != nil {
 		switch {
 		case errors.Is(err, jwt.ErrTokenExpired):
-			return nil, auth.ErrExpiredJWT
+			return nil, xerr.NewErr(op, pa.ExpiredJwt, err)
 		default:
-			return nil, auth.ErrInvalidJWT
+			return nil, xerr.NewErr(op, pa.InvalidJwt, err)
 		}
 	}
 
 	if !t.Valid {
-		return nil, auth.ErrInvalidJWT
+		return nil, xerr.NewErr(op, pa.InvalidJwt, err)
 	}
 
 	return tokenClaims, nil

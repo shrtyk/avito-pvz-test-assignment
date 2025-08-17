@@ -7,8 +7,8 @@ func (e RepoErrKind) String() string {
 }
 
 const (
-	KindFailed           RepoErrKind = "operation failed"
-	KindNotFound         RepoErrKind = "entity not found"
-	KindConflict         RepoErrKind = "entity conflicts with existing data"
-	KindInvalidReference RepoErrKind = "invalid reference to another entity"
+	Failed           RepoErrKind = "operation failed"
+	NotFound         RepoErrKind = "entity not found"
+	Conflict         RepoErrKind = "entity conflicts with existing data"
+	InvalidReference RepoErrKind = "invalid reference to another entity"
 )

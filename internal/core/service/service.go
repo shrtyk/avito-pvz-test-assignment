@@ -32,7 +32,7 @@ func (s *service) NewPVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 
 	pvz, err := s.repo.CreatePVZ(tctx, pvz)
 	if err != nil {
-		return nil, xerr.NewErr(op, pService.KindFailedToAddPvz, err)
+		return nil, xerr.NewErr(op, pService.FailedToAddPvz, err)
 	}
 
 	return pvz, nil
@@ -49,13 +49,13 @@ func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception
 		var repoErr *xerr.BaseErr[pRepo.RepoErrKind]
 		if errors.As(err, &repoErr) {
 			switch repoErr.Kind {
-			case pRepo.KindInvalidReference:
-				return nil, xerr.NewErr(op, pService.KindPvzNotFound, err)
-			case pRepo.KindConflict:
-				return nil, xerr.NewErr(op, pService.KindActiveReceptionExists, err)
+			case pRepo.InvalidReference:
+				return nil, xerr.NewErr(op, pService.PvzNotFound, err)
+			case pRepo.Conflict:
+				return nil, xerr.NewErr(op, pService.ActiveReceptionExists, err)
 			}
 		}
-		return nil, xerr.NewErr(op, pService.KindFailed, err)
+		return nil, xerr.NewErr(op, pService.Failed, err)
 	}
 
 	return newRec, nil
@@ -70,10 +70,10 @@ func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*dom
 	newProd, err := s.repo.CreateProduct(tctx, prod)
 	if err != nil {
 		var repoErr *xerr.BaseErr[pRepo.RepoErrKind]
-		if errors.As(err, &repoErr) && repoErr.Kind == pRepo.KindNotFound {
-			return nil, xerr.NewErr(op, pService.KindNoActiveReception, err)
+		if errors.As(err, &repoErr) && repoErr.Kind == pRepo.NotFound {
+			return nil, xerr.NewErr(op, pService.NoActiveReception, err)
 		}
-		return nil, xerr.NewErr(op, pService.KindFailed, err)
+		return nil, xerr.NewErr(op, pService.Failed, err)
 	}
 
 	return newProd, nil
@@ -87,10 +87,10 @@ func (s *service) DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) er
 
 	if err := s.repo.DeleteLastProduct(tctx, pvzId); err != nil {
 		var bErr *xerr.BaseErr[pRepo.RepoErrKind]
-		if errors.As(err, &bErr) && bErr.Kind == pRepo.KindNotFound {
-			return xerr.NewErr(op, pService.KindNoProdOrActiveReception, err)
+		if errors.As(err, &bErr) && bErr.Kind == pRepo.NotFound {
+			return xerr.NewErr(op, pService.NoProdOrActiveReception, err)
 		}
-		return xerr.NewErr(op, pService.KindFailed, err)
+		return xerr.NewErr(op, pService.Failed, err)
 	}
 
 	return nil

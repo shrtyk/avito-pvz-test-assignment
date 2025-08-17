@@ -1,14 +1,12 @@
 package http
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
-	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 
 	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 )
@@ -42,12 +40,12 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 		Role:   auth.UserRole(req.Role),
 	})
 	if err != nil {
-		return err
+		return MapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, dto.Token{Jwt: jwt}, http.StatusOK, nil)
 	if err != nil {
-		return err
+		return InternalError(err)
 	}
 
 	return nil
@@ -67,19 +65,11 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 	newPvz := toDomainPVZ(pvz)
 	newPvz, err = h.appService.NewPVZ(r.Context(), newPvz)
 	if err != nil {
-		return InternalError(err)
+		return MapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, toDTOPVZ(newPvz), http.StatusCreated, nil)
 	if err != nil {
-		var bErr *xerr.BaseErr[pService.ServiceErrKind]
-		if errors.As(err, &bErr) && bErr.Kind == pService.KindFailedToAddPvz {
-			return &HTTPError{
-				Code:    http.StatusBadRequest,
-				Message: pService.KindFailedToAddPvz.String(),
-				Err:     err,
-			}
-		}
 		return InternalError(err)
 	}
 
@@ -99,24 +89,7 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	newRec := toDomainReception(rec)
 	newRec, err := h.appService.OpenNewPVZReception(r.Context(), newRec)
 	if err != nil {
-		var bErr *xerr.BaseErr[pService.ServiceErrKind]
-		if errors.As(err, &bErr) {
-			switch bErr.Kind {
-			case pService.KindActiveReceptionExists:
-				return &HTTPError{
-					Code:    http.StatusBadRequest,
-					Message: bErr.Kind.String(),
-					Err:     err,
-				}
-			case pService.KindPvzNotFound:
-				return &HTTPError{
-					Code:    http.StatusBadRequest,
-					Message: bErr.Kind.String(),
-					Err:     err,
-				}
-			}
-		}
-		return InternalError(err)
+		return MapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, toDTOReception(newRec), http.StatusCreated, nil)
@@ -139,15 +112,7 @@ func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) err
 
 	newProd, err := h.appService.AddProductPVZ(r.Context(), toDomainProduct(prod))
 	if err != nil {
-		var bErr *xerr.BaseErr[pService.ServiceErrKind]
-		if errors.As(err, &bErr) && bErr.Kind == pService.KindNoActiveReception {
-			return &HTTPError{
-				Code:    http.StatusBadRequest,
-				Message: bErr.Kind.String(),
-				Err:     bErr,
-			}
-		}
-		return InternalError(err)
+		return MapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, toDTOProduct(newProd), http.StatusCreated, nil)
@@ -165,15 +130,7 @@ func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	if err = h.appService.DeleteLastProductPvz(r.Context(), pvzId); err != nil {
-		var bErr *xerr.BaseErr[pService.ServiceErrKind]
-		if errors.As(err, &bErr) && bErr.Kind == pService.KindNoProdOrActiveReception {
-			return &HTTPError{
-				Code:    http.StatusBadRequest,
-				Message: bErr.Kind.String(),
-				Err:     bErr,
-			}
-		}
-		return InternalError(err)
+		return MapAppServiceErrsToHTTP(err)
 	}
 
 	return nil
