@@ -62,6 +62,7 @@ func (app *Application) router() *chi.Mux {
 	r.With().Group(func(r chi.Router) {
 		r.Method(http.MethodPost, "/pvz", appHttp.AppHandler(h.NewPVZHandler))
 		r.Method(http.MethodPost, "/receptions", appHttp.AppHandler(h.NewReceptionHandler))
+		r.Method(http.MethodPost, "/products", appHttp.AppHandler(h.AddProductHandler))
 	})
 
 	return r
