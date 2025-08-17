@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
@@ -21,7 +22,7 @@ func NewRepo(db *sql.DB) *repo {
 	}
 }
 
-func (r *repo) SavePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
+func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
 	op := "repository.SavePVZ"
 
 	query := `
@@ -84,13 +85,13 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 		INSERT INTO
 			products (reception_id, type)
 		VALUES(
-			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2), $3
+			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = 'in_progress'), $3
 		)
 		RETURNING
 			id, added_at, reception_id, type
 	`
 
-	err := r.db.QueryRowContext(ctx, query, prod.PvzId, domain.InProgress, prod.Type).Scan(
+	err := r.db.QueryRowContext(ctx, query, prod.PvzId, prod.Type).Scan(
 		&prod.Id,
 		&prod.DateTime,
 		&prod.ReceptionId,
@@ -105,4 +106,38 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 	}
 
 	return prod, nil
+}
+
+func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
+	op := "repository.DeleteLastProduct"
+
+	query := `
+		DELETE FROM
+			products
+		WHERE
+			id = (
+			SELECT id FROM products
+			WHERE reception_id = (
+				SELECT id FROM receptions WHERE pvz_id = $1 AND status = 'in_progress'
+			)
+			ORDER BY added_at DESC
+			LIMIT 1
+		)
+	`
+
+	res, err := r.db.ExecContext(ctx, query, pvzId)
+	if err != nil {
+		return xerr.NewErr(op, pRepo.KindFailed, err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return xerr.NewErr(op, pRepo.KindFailed, err)
+	}
+
+	if rowsAffected == 0 {
+		return xerr.NewErr(op, pRepo.KindNotFound, sql.ErrNoRows)
+	}
+
+	return nil
 }

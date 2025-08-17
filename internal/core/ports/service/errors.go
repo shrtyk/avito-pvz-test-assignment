@@ -7,9 +7,10 @@ func (e ServiceErrKind) String() string {
 }
 
 const (
-	KindFailed                ServiceErrKind = "operation failed"
-	KindFailedToAddPvz        ServiceErrKind = "failed to add pvz"
-	KindActiveReceptionExists ServiceErrKind = "opened reception already exists"
-	KindPvzNotFound           ServiceErrKind = "pvz not found"
-	KindNoActiveReception     ServiceErrKind = "no opened reception"
+	KindFailed                  ServiceErrKind = "operation failed"
+	KindFailedToAddPvz          ServiceErrKind = "failed to add pvz"
+	KindActiveReceptionExists   ServiceErrKind = "opened reception already exists"
+	KindPvzNotFound             ServiceErrKind = "pvz not found"
+	KindNoActiveReception       ServiceErrKind = "no opened reception"
+	KindNoProdOrActiveReception ServiceErrKind = "no product to delete or active reception"
 )

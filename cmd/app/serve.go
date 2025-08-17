@@ -63,6 +63,7 @@ func (app *Application) router() *chi.Mux {
 		r.Method(http.MethodPost, "/pvz", appHttp.AppHandler(h.NewPVZHandler))
 		r.Method(http.MethodPost, "/receptions", appHttp.AppHandler(h.NewReceptionHandler))
 		r.Method(http.MethodPost, "/products", appHttp.AppHandler(h.AddProductHandler))
+		r.Method(http.MethodDelete, "/{pvzId}/delete_last_product", appHttp.AppHandler(h.DeleteLastProductHandler))
 	})
 
 	return r

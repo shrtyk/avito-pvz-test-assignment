@@ -157,3 +157,24 @@ func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) err
 
 	return nil
 }
+
+func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Request) error {
+	pvzId, err := ReadPvzIDParam(r)
+	if err != nil {
+		return BadRequestError(err)
+	}
+
+	if err = h.appService.DeleteLastProductPvz(r.Context(), pvzId); err != nil {
+		var bErr *xerr.BaseErr[pService.ServiceErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pService.KindNoProdOrActiveReception {
+			return &HTTPError{
+				Code:    http.StatusBadRequest,
+				Message: bErr.Kind.String(),
+				Err:     bErr,
+			}
+		}
+		return InternalError(err)
+	}
+
+	return nil
+}

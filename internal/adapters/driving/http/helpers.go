@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 	"github.com/tomasen/realip"
@@ -112,6 +113,24 @@ func ReadIDParam(r *http.Request) (int64, error) {
 		return 0, errors.New("invalid id parameter")
 	}
 	return id, nil
+}
+
+func ReadPvzIDParam(r *http.Request) (*uuid.UUID, error) {
+	strId := chi.URLParam(r, "pvzId")
+	if err := uuid.Validate(strId); err != nil {
+		return nil, err
+	}
+
+	if err := uuid.Validate(strId); err != nil {
+		return nil, err
+	}
+
+	pvzId, err := uuid.Parse(strId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pvzId, nil
 }
 
 func GetUserAgentAndIP(r *http.Request) (string, string) {

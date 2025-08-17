@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
 	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
@@ -29,7 +30,7 @@ func (s *service) NewPVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
-	pvz, err := s.repo.SavePVZ(tctx, pvz)
+	pvz, err := s.repo.CreatePVZ(tctx, pvz)
 	if err != nil {
 		return nil, xerr.NewErr(op, pService.KindFailedToAddPvz, err)
 	}
@@ -76,4 +77,21 @@ func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*dom
 	}
 
 	return newProd, nil
+}
+
+func (s *service) DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) error {
+	op := "service.DeleteLastProductPvz"
+
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	if err := s.repo.DeleteLastProduct(tctx, pvzId); err != nil {
+		var bErr *xerr.BaseErr[pRepo.RepoErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pRepo.KindNotFound {
+			return xerr.NewErr(op, pService.KindNoProdOrActiveReception, err)
+		}
+		return xerr.NewErr(op, pService.KindFailed, err)
+	}
+
+	return nil
 }
