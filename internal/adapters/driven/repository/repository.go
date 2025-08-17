@@ -38,7 +38,7 @@ func (r *repo) SavePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error
 		&pvz.RegistrationDate,
 	)
 	if err != nil {
-		return nil, xerr.NewErr(op, pRepo.KindFailedInsertPvz, err)
+		return nil, xerr.NewErr(op, pRepo.KindFailed, err)
 	}
 
 	return pvz, nil
@@ -66,12 +66,12 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 		if errors.As(err, &pgErr) {
 			switch pgErr.ConstraintName {
 			case "fk_pvz_id":
-				return nil, xerr.NewErr(op, pRepo.KindPvzNotFound, err)
+				return nil, xerr.NewErr(op, pRepo.KindInvalidReference, err)
 			case "one_in_progress_reception_per_pvz_id":
-				return nil, xerr.NewErr(op, pRepo.KindActiveReceptionExists, err)
+				return nil, xerr.NewErr(op, pRepo.KindConflict, err)
 			}
 		}
-		return nil, xerr.NewErr(op, pRepo.KindUnexpected, err)
+		return nil, xerr.NewErr(op, pRepo.KindFailed, err)
 	}
 
 	return rec, nil
@@ -98,11 +98,10 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		switch {
-		case (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows):
-			return nil, xerr.NewErr(op, pRepo.KindNoActiveReception, err)
+		if (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows) {
+			return nil, xerr.NewErr(op, pRepo.KindNotFound, err)
 		}
-		return nil, xerr.NewErr(op, pRepo.KindUnexpected, err)
+		return nil, xerr.NewErr(op, pRepo.KindFailed, err)
 	}
 
 	return prod, nil

@@ -19,7 +19,7 @@ func NewErr[T Stringer](op string, kind T, err error) error {
 }
 
 func (e *BaseErr[T]) Error() string {
-	return fmt.Sprintf("op: %s, kind %s: %s", e.Op, e.Kind, e.Err)
+	return fmt.Sprintf("Op: %s, Kind: %s, Error: %s", e.Op, e.Kind, e.Err)
 }
 
 func (e *BaseErr[T]) Unwrap() error {

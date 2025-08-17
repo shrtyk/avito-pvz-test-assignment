@@ -45,16 +45,16 @@ func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception
 
 	newRec, err := s.repo.CreateReception(tctx, rec)
 	if err != nil {
-		var xErr *xerr.BaseErr[pRepo.RepoErrKind]
-		if errors.As(err, &xErr) {
-			switch xErr.Kind {
-			case pRepo.KindPvzNotFound:
+		var repoErr *xerr.BaseErr[pRepo.RepoErrKind]
+		if errors.As(err, &repoErr) {
+			switch repoErr.Kind {
+			case pRepo.KindInvalidReference:
 				return nil, xerr.NewErr(op, pService.KindPvzNotFound, err)
-			case pRepo.KindActiveReceptionExists:
+			case pRepo.KindConflict:
 				return nil, xerr.NewErr(op, pService.KindActiveReceptionExists, err)
 			}
 		}
-		return nil, xerr.NewErr(op, pService.KindUnexpected, err)
+		return nil, xerr.NewErr(op, pService.KindFailed, err)
 	}
 
 	return newRec, nil
@@ -68,11 +68,11 @@ func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*dom
 
 	newProd, err := s.repo.CreateProduct(tctx, prod)
 	if err != nil {
-		var xErr *xerr.BaseErr[pRepo.RepoErrKind]
-		if errors.As(err, &xErr) {
+		var repoErr *xerr.BaseErr[pRepo.RepoErrKind]
+		if errors.As(err, &repoErr) && repoErr.Kind == pRepo.KindNotFound {
 			return nil, xerr.NewErr(op, pService.KindNoActiveReception, err)
 		}
-		return nil, xerr.NewErr(op, pService.KindUnexpected, err)
+		return nil, xerr.NewErr(op, pService.KindFailed, err)
 	}
 
 	return newProd, nil

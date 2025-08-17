@@ -36,11 +36,11 @@ func (m Middlewares) PanicRecoveryMW(next http.Handler) http.Handler {
 			if err := recover(); err != nil {
 				m.log.Error("Error occured", "error", fmt.Sprintf("%s", err))
 				w.Header().Set("Connection", "close")
-				http.Error(
-					w,
-					"The server encountered a problem and could not process your request",
-					http.StatusInternalServerError,
-				)
+				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+					Code:    http.StatusInternalServerError,
+					Message: "The server encountered a problem and could not process your request",
+					Err:     fmt.Errorf("%s", err),
+				})
 			}
 		}()
 
