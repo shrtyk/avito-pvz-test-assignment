@@ -1,15 +1,24 @@
 include .env
 
-.PHONY: docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status generate/dto
+.PHONY: run/app start/db stop/db docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status generate/dto
 
 MIGRATIONS_DIR=./migrations
 RSA_PRIVATE=./keys/rsa/private_key.pem
 RSA_PUBLIC=./keys/rsa/public_key.pem
 
-# Run app and
+# Run app
 run/app:
-	@trap 'echo"\nStopping and removing containers..."; docker-compose down --volumes' EXIT; \
-	docker compose up --build
+	@trap 'docker-compose down pvz' EXIT; \
+	docker compose up --build pvz
+
+# Run db with migrations in background
+start/db:
+	@docker compose up -d --build postgres goose
+	@docker compose logs goose
+
+# Stop db
+stop/db:
+	@docker compose down --volumes postgres goose
 
 # Build containers and start them in background
 docker/up:
