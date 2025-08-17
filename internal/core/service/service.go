@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
 	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
+	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 )
 
 type service struct {
@@ -24,59 +24,55 @@ func NewAppService(timeout time.Duration, repo pRepo.Repository) *service {
 }
 
 func (s *service) NewPVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
+	op := "service.NewPVZ"
+
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
-	pvz, err := s.repo.CreatePVZ(tctx, pvz)
+	pvz, err := s.repo.SavePVZ(tctx, pvz)
 	if err != nil {
-		return nil, fmt.Errorf("service: failed to create new pvz: %w", err)
+		return nil, xerr.NewErr(op, pService.KindFailedToAddPvz, err)
 	}
 
 	return pvz, nil
 }
 
 func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
+	op := "service.OpenNewPVZReception"
+
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
 	newRec, err := s.repo.CreateReception(tctx, rec)
 	if err != nil {
-		var cErr *pRepo.ErrConstraintViolation
-		if errors.As(err, &cErr) {
-			switch cErr.Constraint {
-			case "fk_pvz_id":
-				return nil, &pService.ErrPvzNotExists{
-					PvzId: rec.PvzId,
-					Err:   cErr,
-				}
-			case "one_in_progress_reception_per_pvz_id":
-				return nil, &pService.ErrReceptionInProgress{
-					PvzId: rec.PvzId,
-					Err:   cErr,
-				}
+		var xErr *xerr.BaseErr[pRepo.RepoErrKind]
+		if errors.As(err, &xErr) {
+			switch xErr.Kind {
+			case pRepo.KindPvzNotFound:
+				return nil, xerr.NewErr(op, pService.KindPvzNotFound, err)
+			case pRepo.KindActiveReceptionExists:
+				return nil, xerr.NewErr(op, pService.KindActiveReceptionExists, err)
 			}
 		}
-		return nil, fmt.Errorf("service: failed to create new reception: %w", err)
+		return nil, xerr.NewErr(op, pService.KindUnexpected, err)
 	}
 
 	return newRec, nil
 }
 
 func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
+	op := "service.AddProductPVZ"
+
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
 	newProd, err := s.repo.CreateProduct(tctx, prod)
 	if err != nil {
-		var rErr *pRepo.ErrNoRowsInserted
-		var nErr *pRepo.ErrNullConstraint
-		if errors.As(err, &rErr) || errors.As(err, &nErr) {
-			return nil, &pService.ErrNoOpenedReception{
-				PvzId: prod.PvzId,
-				Err:   err,
-			}
+		var xErr *xerr.BaseErr[pRepo.RepoErrKind]
+		if errors.As(err, &xErr) {
+			return nil, xerr.NewErr(op, pService.KindNoActiveReception, err)
 		}
-		return nil, fmt.Errorf("failed to add product to the reception: %w", err)
+		return nil, xerr.NewErr(op, pService.KindUnexpected, err)
 	}
 
 	return newProd, nil

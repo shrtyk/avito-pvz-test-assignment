@@ -8,6 +8,7 @@ import (
 	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
+	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 
 	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 )
@@ -71,11 +72,11 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 
 	err = WriteJSON(w, toDTOPVZ(newPvz), http.StatusCreated, nil)
 	if err != nil {
-		var rErr *pService.ErrReceptionInProgress
-		if errors.As(err, &rErr) {
+		var bErr *xerr.BaseErr[pService.ServiceErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pService.KindFailedToAddPvz {
 			return &HTTPError{
 				Code:    http.StatusBadRequest,
-				Message: err.Error(),
+				Message: pService.KindFailedToAddPvz.String(),
 				Err:     err,
 			}
 		}
@@ -98,13 +99,21 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	newRec := toDomainReception(rec)
 	newRec, err := h.appService.OpenNewPVZReception(r.Context(), newRec)
 	if err != nil {
-		var rErr *pService.ErrReceptionInProgress
-		var pErr *pService.ErrPvzNotExists
-		if errors.As(err, &rErr) || errors.As(err, &pErr) {
-			return &HTTPError{
-				Code:    http.StatusBadRequest,
-				Message: err.Error(),
-				Err:     err,
+		var bErr *xerr.BaseErr[pService.ServiceErrKind]
+		if errors.As(err, &bErr) {
+			switch bErr.Kind {
+			case pService.KindActiveReceptionExists:
+				return &HTTPError{
+					Code:    http.StatusBadRequest,
+					Message: bErr.Kind.String(),
+					Err:     err,
+				}
+			case pService.KindPvzNotFound:
+				return &HTTPError{
+					Code:    http.StatusBadRequest,
+					Message: bErr.Kind.String(),
+					Err:     err,
+				}
 			}
 		}
 		return InternalError(err)
@@ -130,12 +139,12 @@ func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) err
 
 	newProd, err := h.appService.AddProductPVZ(r.Context(), toDomainProduct(prod))
 	if err != nil {
-		var rErr *pService.ErrNoOpenedReception
-		if errors.As(err, &rErr) {
+		var bErr *xerr.BaseErr[pService.ServiceErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pService.KindNoActiveReception {
 			return &HTTPError{
 				Code:    http.StatusBadRequest,
-				Message: err.Error(),
-				Err:     err,
+				Message: bErr.Kind.String(),
+				Err:     bErr,
 			}
 		}
 		return InternalError(err)

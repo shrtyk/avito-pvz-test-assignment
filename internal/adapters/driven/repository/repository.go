@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
+	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 )
 
 type repo struct {
@@ -21,7 +21,9 @@ func NewRepo(db *sql.DB) *repo {
 	}
 }
 
-func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
+func (r *repo) SavePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
+	op := "repository.SavePVZ"
+
 	query := `
 		INSERT INTO
 			pvzs (city)
@@ -36,12 +38,15 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 		&pvz.RegistrationDate,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("repository: failed to insert pvz: %w", err)
+		return nil, xerr.NewErr(op, pRepo.KindFailedInsertPvz, err)
 	}
+
 	return pvz, nil
 }
 
 func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
+	op := "repository.CreateReception"
+
 	query := `
 		INSERT INTO
 			receptions (pvz_id)
@@ -58,19 +63,23 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && (pgErr.Code == "23505" || pgErr.Code == "23503") {
-			return nil, &pRepo.ErrConstraintViolation{
-				Constraint: pgErr.ConstraintName,
-				Err:        err,
+		if errors.As(err, &pgErr) {
+			switch pgErr.ConstraintName {
+			case "fk_pvz_id":
+				return nil, xerr.NewErr(op, pRepo.KindPvzNotFound, err)
+			case "one_in_progress_reception_per_pvz_id":
+				return nil, xerr.NewErr(op, pRepo.KindActiveReceptionExists, err)
 			}
 		}
-		return nil, fmt.Errorf("repository: failed to insert reception: %w", err)
+		return nil, xerr.NewErr(op, pRepo.KindUnexpected, err)
 	}
 
 	return rec, nil
 }
 
 func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
+	op := "repository.CreateProduct"
+
 	query := `
 		INSERT INTO
 			products (reception_id, type)
@@ -90,12 +99,10 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 	if err != nil {
 		var pgErr *pgconn.PgError
 		switch {
-		case errors.As(err, &pgErr) && pgErr.Code == "23502":
-			return nil, &pRepo.ErrNullConstraint{Err: err}
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, &pRepo.ErrNoRowsInserted{Err: err}
+		case (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows):
+			return nil, xerr.NewErr(op, pRepo.KindNoActiveReception, err)
 		}
-		return nil, fmt.Errorf("repository: failed to add product: %w", err)
+		return nil, xerr.NewErr(op, pRepo.KindUnexpected, err)
 	}
 
 	return prod, nil

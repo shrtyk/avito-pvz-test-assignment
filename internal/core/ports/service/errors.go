@@ -1,46 +1,15 @@
 package service
 
-import (
-	"fmt"
+type ServiceErrKind string
 
-	"github.com/google/uuid"
+func (e ServiceErrKind) String() string {
+	return string(e)
+}
+
+const (
+	KindUnexpected            ServiceErrKind = "unexpected error"
+	KindFailedToAddPvz        ServiceErrKind = "failed to add pvz"
+	KindActiveReceptionExists ServiceErrKind = "opened reception already exists"
+	KindPvzNotFound           ServiceErrKind = "pvz not found"
+	KindNoActiveReception     ServiceErrKind = "no opened reception"
 )
-
-type ErrReceptionInProgress struct {
-	PvzId uuid.UUID
-	Err   error
-}
-
-func (e *ErrReceptionInProgress) Error() string {
-	return fmt.Sprintf("reception for pvz %s is already in progress", e.PvzId)
-}
-
-func (e *ErrReceptionInProgress) Unwrap() error {
-	return e.Err
-}
-
-type ErrPvzNotExists struct {
-	PvzId uuid.UUID
-	Err   error
-}
-
-func (e *ErrPvzNotExists) Error() string {
-	return fmt.Sprintf("pvz %s doesn't not exists", e.PvzId)
-}
-
-func (e *ErrPvzNotExists) Unwrap() error {
-	return e.Err
-}
-
-type ErrNoOpenedReception struct {
-	PvzId uuid.UUID
-	Err   error
-}
-
-func (e *ErrNoOpenedReception) Error() string {
-	return fmt.Sprintf("no opened reception in pvz %s", e.PvzId)
-}
-
-func (e *ErrNoOpenedReception) Unwrap() error {
-	return e.Err
-}

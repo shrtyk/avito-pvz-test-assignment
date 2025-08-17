@@ -7,7 +7,7 @@ import (
 )
 
 type Repository interface {
-	CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error)
+	SavePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error)
 	CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
 	CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error)
 }
