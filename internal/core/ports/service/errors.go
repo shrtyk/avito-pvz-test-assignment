@@ -31,3 +31,16 @@ func (e *ErrPvzNotExists) Error() string {
 func (e *ErrPvzNotExists) Unwrap() error {
 	return e.Err
 }
+
+type ErrNoOpenedReception struct {
+	PvzId uuid.UUID
+	Err   error
+}
+
+func (e *ErrNoOpenedReception) Error() string {
+	return fmt.Sprintf("no opened reception in pvz %s", e.PvzId)
+}
+
+func (e *ErrNoOpenedReception) Unwrap() error {
+	return e.Err
+}

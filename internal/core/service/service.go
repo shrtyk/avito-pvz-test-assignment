@@ -35,7 +35,7 @@ func (s *service) NewPVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 	return pvz, nil
 }
 
-func (s *service) NewReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
+func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
@@ -60,4 +60,24 @@ func (s *service) NewReception(ctx context.Context, rec *domain.Reception) (*dom
 	}
 
 	return newRec, nil
+}
+
+func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	newProd, err := s.repo.CreateProduct(tctx, prod)
+	if err != nil {
+		var rErr *pRepo.ErrNoRowsInserted
+		var nErr *pRepo.ErrNullConstraint
+		if errors.As(err, &rErr) || errors.As(err, &nErr) {
+			return nil, &pService.ErrNoOpenedReception{
+				PvzId: prod.PvzId,
+				Err:   err,
+			}
+		}
+		return nil, fmt.Errorf("failed to add product to the reception: %w", err)
+	}
+
+	return newProd, nil
 }
