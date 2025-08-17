@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  received_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   reception_id UUID NOT NULL,
   type product_types NOT NULL,
   CONSTRAINT fk_reception_id FOREIGN KEY (reception_id) REFERENCES receptions (id) ON DELETE CASCADE

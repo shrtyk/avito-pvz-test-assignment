@@ -40,6 +40,7 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 	}
 	return pvz, nil
 }
+
 func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
 	query := `
 		INSERT INTO
@@ -67,4 +68,35 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 	}
 
 	return rec, nil
+}
+
+func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
+	query := `
+		INSERT INTO
+			products (reception_id, type)
+		VALUES(
+			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2), $3
+		)
+		RETURNING
+			id, added_at, reception_id, type
+	`
+
+	err := r.db.QueryRowContext(ctx, query, prod.PvzId, domain.InProgress, prod.Type).Scan(
+		&prod.Id,
+		&prod.DateTime,
+		&prod.ReceptionId,
+		&prod.Type,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		switch {
+		case errors.As(err, &pgErr) && pgErr.Code == "23502":
+			return nil, &pRepo.ErrNullConstraint{Err: err}
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, &pRepo.ErrNoRowsInserted{Err: err}
+		}
+		return nil, fmt.Errorf("repository: failed to add product: %w", err)
+	}
+
+	return prod, nil
 }
