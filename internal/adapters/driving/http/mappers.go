@@ -33,3 +33,19 @@ func toDTOReception(domainRec *domain.Reception) *dto.Reception {
 		DateTime: domainRec.DateTime,
 	}
 }
+
+func toDomainProduct(dtoProd *dto.PostProductsJSONRequestBody) *domain.Product {
+	return &domain.Product{
+		PvzId: dtoProd.PvzId,
+		Type:  domain.ProductType(dtoProd.Type),
+	}
+}
+
+func toDTOProduct(domainProd *domain.Product) *dto.Product {
+	return &dto.Product{
+		Id:          &domainProd.Id,
+		ReceptionId: domainProd.ReceptionId,
+		DateTime:    &domainProd.DateTime,
+		Type:        dto.ProductType(domainProd.Type),
+	}
+}

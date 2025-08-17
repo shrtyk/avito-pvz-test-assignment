@@ -96,7 +96,7 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	}
 
 	newRec := toDomainReception(rec)
-	newRec, err := h.appService.NewReception(r.Context(), newRec)
+	newRec, err := h.appService.OpenNewPVZReception(r.Context(), newRec)
 	if err != nil {
 		var rErr *pService.ErrReceptionInProgress
 		var pErr *pService.ErrPvzNotExists
@@ -111,6 +111,37 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	}
 
 	err = WriteJSON(w, toDTOReception(newRec), http.StatusCreated, nil)
+	if err != nil {
+		return InternalError(err)
+	}
+
+	return nil
+}
+
+func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) error {
+	prod := new(dto.PostProductsJSONRequestBody)
+	if err := ReadJSON(w, r, prod); err != nil {
+		return BadRequestError(err)
+	}
+
+	if err := h.validator.Struct(prod); err != nil {
+		return ValidationError(err)
+	}
+
+	newProd, err := h.appService.AddProductPVZ(r.Context(), toDomainProduct(prod))
+	if err != nil {
+		var rErr *pService.ErrNoOpenedReception
+		if errors.As(err, &rErr) {
+			return &HTTPError{
+				Code:    http.StatusBadRequest,
+				Message: err.Error(),
+				Err:     err,
+			}
+		}
+		return InternalError(err)
+	}
+
+	err = WriteJSON(w, toDTOProduct(newProd), http.StatusCreated, nil)
 	if err != nil {
 		return InternalError(err)
 	}
