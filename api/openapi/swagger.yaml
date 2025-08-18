@@ -105,6 +105,24 @@ components:
             validate: "required,oapi_uuid"
       required: [type, receptionId]
 
+    PvzReceptions:
+      type: object
+      properties:
+        pvz: { $ref: "#/components/schemas/PVZ" }
+        receptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReceptionProducts"
+
+    ReceptionProducts:
+      type: object
+      properties:
+        reception: { $ref: "#/components/schemas/Reception" }
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+
     Error:
       type: object
       properties:
@@ -305,21 +323,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    pvz:
-                      $ref: "#/components/schemas/PVZ"
-                    receptions:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          reception:
-                            $ref: "#/components/schemas/Reception"
-                          products:
-                            type: array
-                            items:
-                              $ref: "#/components/schemas/Product"
+                  $ref: "#/components/schemas/PvzReceptions"
 
   /pvz/{pvzId}/close_last_reception:
     post:

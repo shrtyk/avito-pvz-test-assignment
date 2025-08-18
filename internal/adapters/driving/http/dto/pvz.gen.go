@@ -84,6 +84,12 @@ type Product struct {
 // ProductType defines model for Product.Type.
 type ProductType string
 
+// PvzReceptions defines model for PvzReceptions.
+type PvzReceptions struct {
+	Pvz        *PVZ                 `json:"pvz,omitempty"`
+	Receptions *[]ReceptionProducts `json:"receptions,omitempty"`
+}
+
 // Reception defines model for Reception.
 type Reception struct {
 	DateTime time.Time           `json:"dateTime" validate:"required,datetime"`
@@ -94,6 +100,12 @@ type Reception struct {
 
 // ReceptionStatus defines model for Reception.Status.
 type ReceptionStatus string
+
+// ReceptionProducts defines model for ReceptionProducts.
+type ReceptionProducts struct {
+	Products  *[]Product `json:"products,omitempty"`
+	Reception *Reception `json:"reception,omitempty"`
+}
 
 // Token defines model for Token.
 type Token struct {
