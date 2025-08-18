@@ -1,4 +1,4 @@
-package tokens
+package tservice
 
 import (
 	"crypto/rsa"
@@ -81,14 +81,14 @@ func (s *tokensService) GetTokenClaims(token string) (*auth.AccessTokenClaims, e
 	if err != nil {
 		switch {
 		case errors.Is(err, jwt.ErrTokenExpired):
-			return nil, xerr.NewErr(op, pa.ExpiredJwt, err)
+			return nil, xerr.WrapErr(op, pa.ExpiredJwt, err)
 		default:
-			return nil, xerr.NewErr(op, pa.InvalidJwt, err)
+			return nil, xerr.WrapErr(op, pa.InvalidJwt, err)
 		}
 	}
 
 	if !t.Valid {
-		return nil, xerr.NewErr(op, pa.InvalidJwt, err)
+		return nil, xerr.WrapErr(op, pa.InvalidJwt, err)
 	}
 
 	return tokenClaims, nil

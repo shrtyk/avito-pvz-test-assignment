@@ -13,8 +13,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
+	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
+	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 	"github.com/tomasen/realip"
 )
 
@@ -138,14 +139,15 @@ func GetUserAgentAndIP(r *http.Request) (string, string) {
 }
 
 func ExtractBearerToken(r *http.Request) (string, error) {
+	op := "helpers.ExtractBearerToken"
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return "", auth.ErrNotAuthenticated
+		return "", xerr.NewErr(op, auth.NotAuthenticated)
 	}
 
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	if tokenString == authHeader {
-		return "", auth.ErrInvalidJWT
+		return "", xerr.NewErr(op, auth.InvalidJwt)
 	}
 
 	return tokenString, nil

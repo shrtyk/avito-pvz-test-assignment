@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driven/repository"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driven/tokens"
+	tservice "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driven/token_service"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/service"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/config"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/dbs/postgres"
@@ -16,7 +16,7 @@ import (
 func main() {
 	cfg := config.MustInitConfig()
 	log := logger.MustCreateNewLogger(cfg.AppCfg.Env)
-	tService := tokens.MustCreateTokenService(&cfg.AuthTokenCfg)
+	tService := tservice.MustCreateTokenService(&cfg.AuthTokenCfg)
 	db := postgres.MustCreateConnectionPool(&cfg.PostgresCfg)
 	repo := repository.NewRepo(db)
 	appService := service.NewAppService(cfg.AppCfg.Timeout, repo)

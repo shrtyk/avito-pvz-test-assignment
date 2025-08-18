@@ -1,6 +1,7 @@
 package xerr
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -14,8 +15,12 @@ type BaseErr[T Stringer] struct {
 	Err  error
 }
 
-func NewErr[T Stringer](op string, kind T, err error) error {
+func WrapErr[T Stringer](op string, kind T, err error) error {
 	return &BaseErr[T]{Op: op, Kind: kind, Err: err}
+}
+
+func NewErr[T Stringer](op string, kind T) error {
+	return &BaseErr[T]{Op: op, Kind: kind, Err: errors.New(kind.String())}
 }
 
 func (e *BaseErr[T]) Error() string {

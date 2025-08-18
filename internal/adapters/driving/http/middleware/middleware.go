@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
+	tservice "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driven/token_service"
 	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
+	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 )
 
 type Middlewares struct {
@@ -129,26 +131,30 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 		l := logger.FromCtx(r.Context())
 		newLog := l.With(slog.String("user_id", claims.UserID()))
 		ctxWithLog := logger.ToCtx(r.Context(), newLog)
-		ctxWithClaims := auth.ClaimsToCtx(ctxWithLog, claims)
+		ctxWithClaims := tservice.ClaimsToCtx(ctxWithLog, claims)
 
 		newReq := r.WithContext(ctxWithClaims)
 		next.ServeHTTP(w, newReq)
 	})
 }
 
-func (m Middlewares) ModeratorAuthMW(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		claims, err := auth.ClaimsFromCtx(r.Context())
-		if err != nil {
-			m.handleAuthErr(w, r, err)
-			return
-		}
+func (m *Middlewares) AuthorizeRoles(allowedRoles ...auth.UserRole) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			op := "middlewares.AuthorizeRoles"
 
-		if claims.Role != string(dto.Moderator) {
-			m.handleAuthErr(w, r, err)
-			return
-		}
+			claims, err := tservice.ClaimsFromCtx(r.Context())
+			if err != nil {
+				m.handleAuthErr(w, r, err)
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			if !slices.Contains(allowedRoles, auth.UserRole(claims.Role)) {
+				m.handleAuthErr(w, r, xerr.NewErr(op, pAuth.NotAuthorized))
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }

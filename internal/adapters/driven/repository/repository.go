@@ -39,7 +39,7 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 		&pvz.RegistrationDate,
 	)
 	if err != nil {
-		return nil, xerr.NewErr(op, pRepo.FailedCreatePvz, err)
+		return nil, xerr.WrapErr(op, pRepo.FailedCreatePvz, err)
 	}
 
 	return pvz, nil
@@ -67,12 +67,12 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 		if errors.As(err, &pgErr) {
 			switch pgErr.ConstraintName {
 			case "fk_pvz_id":
-				return nil, xerr.NewErr(op, pRepo.InvalidReference, err)
+				return nil, xerr.WrapErr(op, pRepo.InvalidReference, err)
 			case "one_in_progress_reception_per_pvz_id":
-				return nil, xerr.NewErr(op, pRepo.Conflict, err)
+				return nil, xerr.WrapErr(op, pRepo.Conflict, err)
 			}
 		}
-		return nil, xerr.NewErr(op, pRepo.Unexpected, err)
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
 	return rec, nil
@@ -100,9 +100,9 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows) {
-			return nil, xerr.NewErr(op, pRepo.NotFound, err)
+			return nil, xerr.WrapErr(op, pRepo.NotFound, err)
 		}
-		return nil, xerr.NewErr(op, pRepo.Unexpected, err)
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
 	return prod, nil
@@ -127,16 +127,16 @@ func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 
 	res, err := r.db.ExecContext(ctx, query, pvzId, domain.InProgress)
 	if err != nil {
-		return xerr.NewErr(op, pRepo.Unexpected, err)
+		return xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return xerr.NewErr(op, pRepo.Unexpected, err)
+		return xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
 	if rowsAffected == 0 {
-		return xerr.NewErr(op, pRepo.NotFound, sql.ErrNoRows)
+		return xerr.WrapErr(op, pRepo.NotFound, sql.ErrNoRows)
 	}
 
 	return nil
@@ -156,16 +156,16 @@ func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error 
 
 	res, err := r.db.ExecContext(ctx, query, domain.Close, pvzId, domain.InProgress)
 	if err != nil {
-		return xerr.NewErr(op, pRepo.Unexpected, err)
+		return xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return xerr.NewErr(op, pRepo.Unexpected, err)
+		return xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
 	if rowsAffected == 0 {
-		return xerr.NewErr(op, pRepo.Conflict, sql.ErrNoRows)
+		return xerr.WrapErr(op, pRepo.Conflict, sql.ErrNoRows)
 	}
 
 	return nil
