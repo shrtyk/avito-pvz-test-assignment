@@ -12,4 +12,5 @@ type Repository interface {
 	CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
 	CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error)
 	DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error
+	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 }

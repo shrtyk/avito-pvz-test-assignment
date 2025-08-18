@@ -39,7 +39,7 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 		&pvz.RegistrationDate,
 	)
 	if err != nil {
-		return nil, xerr.NewErr(op, pRepo.Failed, err)
+		return nil, xerr.NewErr(op, pRepo.FailedCreatePvz, err)
 	}
 
 	return pvz, nil
@@ -72,7 +72,7 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 				return nil, xerr.NewErr(op, pRepo.Conflict, err)
 			}
 		}
-		return nil, xerr.NewErr(op, pRepo.Failed, err)
+		return nil, xerr.NewErr(op, pRepo.Unexpected, err)
 	}
 
 	return rec, nil
@@ -85,13 +85,13 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 		INSERT INTO
 			products (reception_id, type)
 		VALUES(
-			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = 'in_progress'), $2
+			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2), $3
 		)
 		RETURNING
 			id, added_at, reception_id, type
 	`
 
-	err := r.db.QueryRowContext(ctx, query, prod.PvzId, prod.Type).Scan(
+	err := r.db.QueryRowContext(ctx, query, prod.PvzId, domain.InProgress, prod.Type).Scan(
 		&prod.Id,
 		&prod.DateTime,
 		&prod.ReceptionId,
@@ -102,7 +102,7 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 		if (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows) {
 			return nil, xerr.NewErr(op, pRepo.NotFound, err)
 		}
-		return nil, xerr.NewErr(op, pRepo.Failed, err)
+		return nil, xerr.NewErr(op, pRepo.Unexpected, err)
 	}
 
 	return prod, nil
@@ -118,25 +118,54 @@ func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 			id = (
 			SELECT id FROM products
 			WHERE reception_id = (
-				SELECT id FROM receptions WHERE pvz_id = $1 AND status = 'in_progress'
+				SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2
 			)
 			ORDER BY added_at DESC
 			LIMIT 1
 		)
 	`
 
-	res, err := r.db.ExecContext(ctx, query, pvzId)
+	res, err := r.db.ExecContext(ctx, query, pvzId, domain.InProgress)
 	if err != nil {
-		return xerr.NewErr(op, pRepo.Failed, err)
+		return xerr.NewErr(op, pRepo.Unexpected, err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return xerr.NewErr(op, pRepo.Failed, err)
+		return xerr.NewErr(op, pRepo.Unexpected, err)
 	}
 
 	if rowsAffected == 0 {
 		return xerr.NewErr(op, pRepo.NotFound, sql.ErrNoRows)
+	}
+
+	return nil
+}
+
+func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error {
+	op := "repository.CloseReceptionInPvz"
+
+	query := `
+		UPDATE
+			receptions
+		SET
+			status = $1
+		WHERE
+			id = (SELECT id FROM receptions WHERE pvz_id = $2 AND status = $3)
+	`
+
+	res, err := r.db.ExecContext(ctx, query, domain.Close, pvzId, domain.InProgress)
+	if err != nil {
+		return xerr.NewErr(op, pRepo.Unexpected, err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return xerr.NewErr(op, pRepo.Unexpected, err)
+	}
+
+	if rowsAffected == 0 {
+		return xerr.NewErr(op, pRepo.Conflict, sql.ErrNoRows)
 	}
 
 	return nil

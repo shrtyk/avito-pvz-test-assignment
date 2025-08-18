@@ -7,7 +7,8 @@ func (e RepoErrKind) String() string {
 }
 
 const (
-	Failed           RepoErrKind = "operation failed"
+	Unexpected       RepoErrKind = "unexpected error"
+	FailedCreatePvz  RepoErrKind = "failed create pvz"
 	NotFound         RepoErrKind = "entity not found"
 	Conflict         RepoErrKind = "entity conflicts with existing data"
 	InvalidReference RepoErrKind = "invalid reference to another entity"

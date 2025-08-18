@@ -11,21 +11,20 @@ import (
 )
 
 type HTTPError struct {
-	Op      string
 	Code    int
 	Message string
 	Err     error
 }
 
 func (e *HTTPError) Error() string {
-	return fmt.Sprintf("HTTP Code: %d, op: %s. Message: %s. Error: %s", e.Code, e.Op, e.Message, e.Err)
+	return fmt.Sprintf("HTTP Code: %d. Message: %s. Error: %s", e.Code, e.Message, e.Err)
 }
 
 func (e *HTTPError) Unwrap() error {
 	return e.Err
 }
 
-func MapAppServiceErrsToHTTP(err error) *HTTPError {
+func mapAppServiceErrsToHTTP(err error) *HTTPError {
 	e := new(HTTPError)
 
 	var bErr *xerr.BaseErr[ps.ServiceErrKind]
@@ -34,12 +33,13 @@ func MapAppServiceErrsToHTTP(err error) *HTTPError {
 		e.Err = bErr
 
 		switch bErr.Kind {
-		case ps.Failed, ps.FailedToAddPvz:
+		case ps.Unexpected, ps.FailedToAddPvz:
 			e.Code = http.StatusInternalServerError
 		case ps.ActiveReceptionExists,
 			ps.PvzNotFound,
 			ps.NoActiveReception,
-			ps.NoProdOrActiveReception:
+			ps.NoProdOrActiveReception,
+			ps.FailedToCloseReception:
 			e.Code = http.StatusBadRequest
 		}
 		return e

@@ -12,4 +12,5 @@ type Service interface {
 	OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
 	AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error)
 	DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) error
+	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 }

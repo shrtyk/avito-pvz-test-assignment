@@ -40,7 +40,7 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 		Role:   auth.UserRole(req.Role),
 	})
 	if err != nil {
-		return MapAppServiceErrsToHTTP(err)
+		return mapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, dto.Token{Jwt: jwt}, http.StatusOK, nil)
@@ -65,7 +65,7 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 	newPvz := toDomainPVZ(pvz)
 	newPvz, err = h.appService.NewPVZ(r.Context(), newPvz)
 	if err != nil {
-		return MapAppServiceErrsToHTTP(err)
+		return mapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, toDTOPVZ(newPvz), http.StatusCreated, nil)
@@ -89,7 +89,7 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 	newRec := toDomainReception(rec)
 	newRec, err := h.appService.OpenNewPVZReception(r.Context(), newRec)
 	if err != nil {
-		return MapAppServiceErrsToHTTP(err)
+		return mapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, toDTOReception(newRec), http.StatusCreated, nil)
@@ -112,7 +112,7 @@ func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) err
 
 	newProd, err := h.appService.AddProductPVZ(r.Context(), toDomainProduct(prod))
 	if err != nil {
-		return MapAppServiceErrsToHTTP(err)
+		return mapAppServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, toDTOProduct(newProd), http.StatusCreated, nil)
@@ -130,7 +130,20 @@ func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	if err = h.appService.DeleteLastProductPvz(r.Context(), pvzId); err != nil {
-		return MapAppServiceErrsToHTTP(err)
+		return mapAppServiceErrsToHTTP(err)
+	}
+
+	return nil
+}
+
+func (h *handlers) CloseReceptionHandler(w http.ResponseWriter, r *http.Request) error {
+	pvzId, err := ReadPvzIDParam(r)
+	if err != nil {
+		return BadRequestError(err)
+	}
+
+	if err := h.appService.CloseReceptionInPvz(r.Context(), pvzId); err != nil {
+		return mapAppServiceErrsToHTTP(err)
 	}
 
 	return nil
