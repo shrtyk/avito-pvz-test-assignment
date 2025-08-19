@@ -13,5 +13,5 @@ type Service interface {
 	AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error)
 	DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) error
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
-	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptionsProducts, error)
+	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)
 }

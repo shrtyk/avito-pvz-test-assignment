@@ -114,7 +114,7 @@ func (s *service) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) err
 	return nil
 }
 
-func (s *service) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptionsProducts, error) {
+func (s *service) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error) {
 	op := "service.GetPvzsData"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)

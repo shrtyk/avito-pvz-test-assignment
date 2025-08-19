@@ -124,7 +124,7 @@ func toDTOReceptionProducts(dm *domain.ReceptionProducts) *dto.ReceptionProducts
 	return dt
 }
 
-func toDTOPvzReceptionsProducts(dm *domain.PvzReceptionsProducts) *dto.PvzReceptions {
+func toDTOPvzReceptionsProducts(dm *domain.PvzReceptions) *dto.PvzReceptions {
 	if dm == nil {
 		return nil
 	}
@@ -146,7 +146,7 @@ func toDTOPvzReceptionsProducts(dm *domain.PvzReceptionsProducts) *dto.PvzRecept
 	return dt
 }
 
-func toDTOPvzData(dd []*domain.PvzReceptionsProducts) []*dto.PvzReceptions {
+func toDTOPvzData(dd []*domain.PvzReceptions) []*dto.PvzReceptions {
 	res := make([]*dto.PvzReceptions, len(dd))
 	if dd == nil {
 		return res

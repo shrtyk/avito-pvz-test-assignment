@@ -82,7 +82,7 @@ func (w *customResponseWriter) Write(b []byte) (int, error) {
 
 func (m Middlewares) LoggingMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ua, ip := GetUserAgentAndIP(r)
+		ua, ip := UserAgentAndIP(r)
 		reqID := uuid.NewString()
 
 		l := m.log.With(
@@ -118,7 +118,7 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Vary", "Authorization")
 
-		bt, err := ExtractBearerToken(r)
+		bt, err := BearerToken(r)
 		if err != nil {
 			m.handleAuthErr(w, r, err)
 			return

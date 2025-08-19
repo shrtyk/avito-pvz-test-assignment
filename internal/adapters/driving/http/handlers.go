@@ -27,7 +27,7 @@ func NewHandlers(appService pService.Service, tService pAuth.TokensService) *han
 
 func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) error {
 	req := new(dto.PostDummyLoginJSONRequestBody)
-	if err := ReadJSON(w, r, req); err != nil {
+	if err := Json(w, r, req); err != nil {
 		return BadRequestBodyError(err)
 	}
 
@@ -53,7 +53,7 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 
 func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 	pvz := new(dto.PVZ)
-	err := ReadJSON(w, r, pvz)
+	err := Json(w, r, pvz)
 	if err != nil {
 		return BadRequestBodyError(err)
 	}
@@ -78,7 +78,7 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 
 func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) error {
 	rec := new(dto.PostReceptionsJSONBody)
-	if err := ReadJSON(w, r, rec); err != nil {
+	if err := Json(w, r, rec); err != nil {
 		return BadRequestBodyError(err)
 	}
 
@@ -102,7 +102,7 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 
 func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) error {
 	prod := new(dto.PostProductsJSONRequestBody)
-	if err := ReadJSON(w, r, prod); err != nil {
+	if err := Json(w, r, prod); err != nil {
 		return BadRequestBodyError(err)
 	}
 
@@ -124,7 +124,7 @@ func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) err
 }
 
 func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Request) error {
-	pvzId, err := ReadPvzIDParam(r)
+	pvzId, err := PvzIdParam(r)
 	if err != nil {
 		return BadRequestBodyError(err)
 	}
@@ -137,7 +137,7 @@ func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Reque
 }
 
 func (h *handlers) CloseReceptionHandler(w http.ResponseWriter, r *http.Request) error {
-	pvzId, err := ReadPvzIDParam(r)
+	pvzId, err := PvzIdParam(r)
 	if err != nil {
 		return BadRequestBodyError(err)
 	}
@@ -150,7 +150,7 @@ func (h *handlers) CloseReceptionHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *handlers) GetPvzHandler(w http.ResponseWriter, r *http.Request) error {
-	params, err := readPvzParamsFromURL(r)
+	params, err := PvzParamsFromURL(r)
 	if err != nil {
 		return BadRequestQueryParamsError(err)
 	}

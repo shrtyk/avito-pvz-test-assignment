@@ -34,14 +34,14 @@ func scanPvzRow(rows *sql.Rows) (pvzRow, error) {
 }
 
 type pvzAggregator struct {
-	pvzMap  map[string]*domain.PvzReceptionsProducts
+	pvzMap  map[string]*domain.PvzReceptions
 	recMap  map[string]*domain.ReceptionProducts
-	ordPvzs []*domain.PvzReceptionsProducts
+	ordPvzs []*domain.PvzReceptions
 }
 
 func newPvzAggregator() *pvzAggregator {
 	return &pvzAggregator{
-		pvzMap: make(map[string]*domain.PvzReceptionsProducts),
+		pvzMap: make(map[string]*domain.PvzReceptions),
 		recMap: make(map[string]*domain.ReceptionProducts),
 	}
 }
@@ -75,7 +75,7 @@ func (a *pvzAggregator) processPvz(row pvzRow) error {
 		RegistrationDate: row.PvzCreatedAt,
 	}
 
-	pvzData := &domain.PvzReceptionsProducts{
+	pvzData := &domain.PvzReceptions{
 		Pvz:        pvz,
 		Receptions: []*domain.ReceptionProducts{},
 	}
@@ -151,7 +151,7 @@ func (a *pvzAggregator) processProduct(row pvzRow, recData *domain.ReceptionProd
 	return nil
 }
 
-func (a *pvzAggregator) Results() []*domain.PvzReceptionsProducts {
+func (a *pvzAggregator) Results() []*domain.PvzReceptions {
 	return a.ordPvzs
 }
 

@@ -1,12 +1,10 @@
 package http
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"maps"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,37 +14,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
-	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 	"github.com/tomasen/realip"
 )
 
-func WriteJSON[T any](w http.ResponseWriter, data T, status int, headers http.Header) error {
-	b, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	// Uncomment to add extra readability during manual testing:
-	b = append(b, '\n')
-	buf := bytes.Buffer{}
-	if err := json.Indent(&buf, b, "", "\t"); err != nil {
-		return err
-	}
-	b = buf.Bytes()
-
-	maps.Copy(w.Header(), headers)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-
-	if _, err = w.Write(b); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func ReadJSON[T any](w http.ResponseWriter, r *http.Request, dst T) error {
+func Json[T any](w http.ResponseWriter, r *http.Request, dst T) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
@@ -93,27 +65,7 @@ func ReadJSON[T any](w http.ResponseWriter, r *http.Request, dst T) error {
 	return nil
 }
 
-func WriteHTTPError(w http.ResponseWriter, r *http.Request, e *HTTPError) {
-	l := logger.FromCtx(r.Context())
-	if e.Code >= 500 {
-		l.Error("Server error", logger.WithErr(e))
-	} else {
-		l.Info("Client error", logger.WithErr(e))
-	}
-
-	err := WriteJSON(
-		w,
-		map[string]string{"message": e.Message},
-		e.Code,
-		nil,
-	)
-	if err != nil {
-		l.Error("Failed to response with error", logger.WithErr(err))
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-}
-
-func ReadIDParam(r *http.Request) (int64, error) {
+func IdParam(r *http.Request) (int64, error) {
 	idParam := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil || id < 1 {
@@ -122,7 +74,7 @@ func ReadIDParam(r *http.Request) (int64, error) {
 	return id, nil
 }
 
-func ReadPvzIDParam(r *http.Request) (*uuid.UUID, error) {
+func PvzIdParam(r *http.Request) (*uuid.UUID, error) {
 	strId := chi.URLParam(r, "pvzId")
 	if err := uuid.Validate(strId); err != nil {
 		return nil, err
@@ -136,11 +88,11 @@ func ReadPvzIDParam(r *http.Request) (*uuid.UUID, error) {
 	return &pvzId, nil
 }
 
-func GetUserAgentAndIP(r *http.Request) (string, string) {
+func UserAgentAndIP(r *http.Request) (string, string) {
 	return r.UserAgent(), realip.FromRequest(r)
 }
 
-func ExtractBearerToken(r *http.Request) (string, error) {
+func BearerToken(r *http.Request) (string, error) {
 	op := "helpers.ExtractBearerToken"
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
@@ -155,7 +107,7 @@ func ExtractBearerToken(r *http.Request) (string, error) {
 	return tokenString, nil
 }
 
-func readPvzParamsFromURL(r *http.Request) (*dto.GetPvzParams, error) {
+func PvzParamsFromURL(r *http.Request) (*dto.GetPvzParams, error) {
 	params := &dto.GetPvzParams{}
 	query := r.URL.Query()
 

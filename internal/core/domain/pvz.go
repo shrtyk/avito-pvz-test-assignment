@@ -27,7 +27,7 @@ type PvzsReadParams struct {
 	Limit     int
 }
 
-type PvzReceptionsProducts struct {
+type PvzReceptions struct {
 	Pvz        *Pvz
 	Receptions []*ReceptionProducts
 }

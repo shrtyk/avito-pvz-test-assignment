@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func unsetEnvForTest(t *testing.T, keys ...string) {
@@ -34,7 +35,7 @@ func createTempConfigFile(t *testing.T, content string) string {
 	if err != nil {
 		t.Fatalf("Failed to write to temp config file: %v", err)
 	}
-	file.Close()
+	require.NoError(t, file.Close())
 	return file.Name()
 }
 
