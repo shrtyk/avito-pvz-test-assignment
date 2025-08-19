@@ -43,12 +43,12 @@ func TestMustInitConfig(t *testing.T) {
 	t.Run("should load config from yaml file", func(t *testing.T) {
 		unsetEnvForTest(
 			t,
-			"PVZ_ENV", "PVZ_TIMEOUT", "PG_HOST",
+			"APP_ENV", "APP_TIMEOUT", "PG_HOST",
 			"PG_PORT", "PG_USER", "HTTP_SERVER_PORT",
 		)
 
 		configContent := `
-pvz:
+app:
   env: dev
   timeout: 10s
 postgres:
@@ -72,7 +72,7 @@ postgres:
 	t.Run("should load config from environment variables", func(t *testing.T) {
 		unsetEnvForTest(t, "CONFIG_PATH")
 
-		t.Setenv("PVZ_ENV", "dev")
+		t.Setenv("APP_ENV", "dev")
 		t.Setenv("PG_HOST", "env_host")
 		t.Setenv("PG_PORT", "5433")
 		t.Setenv("HTTP_SERVER_PORT", "8080")
@@ -87,7 +87,7 @@ postgres:
 
 	t.Run("should allow environment variables to override file config", func(t *testing.T) {
 		configContent := `
-pvz:
+app:
   env: file_env
 postgres:
   host: file_host
@@ -95,7 +95,7 @@ postgres:
 		filePath := createTempConfigFile(t, configContent)
 		t.Setenv("CONFIG_PATH", filePath)
 
-		t.Setenv("PVZ_ENV", "env_env_override")
+		t.Setenv("APP_ENV", "env_env_override")
 		t.Setenv("PG_HOST", "env_host_override")
 
 		cfg := MustInitConfig()
@@ -107,7 +107,7 @@ postgres:
 	t.Run("should use default values when no file or env var is provided", func(t *testing.T) {
 		unsetEnvForTest(
 			t,
-			"CONFIG_PATH", "PVZ_ENV", "PVZ_TIMEOUT", "PG_HOST", "PG_USER",
+			"CONFIG_PATH", "APP_ENV", "APP_TIMEOUT", "PG_HOST", "PG_USER",
 		)
 
 		cfg := MustInitConfig()
