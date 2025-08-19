@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
+	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
 )
 
@@ -127,15 +128,25 @@ func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error 
 	return nil
 }
 
-func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptionsProducts, error) {
+func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error) {
 	op := "repository.GetPvzsData"
+	l := logger.FromCtx(ctx)
 
 	q, args := buildGetPvzDataQuery(params)
 	rows, err := r.db.QueryContext(ctx, string(q), args...)
 	if err != nil {
 		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
-	defer rows.Close()
+	defer func() {
+		cerr := rows.Close()
+		if cerr != nil {
+			if err == nil {
+				err = xerr.WrapErr(op, pRepo.Unexpected, cerr)
+			} else {
+				l.Warn("failed to close rows", logger.WithErr(cerr))
+			}
+		}
+	}()
 
 	aggregator := newPvzAggregator()
 
