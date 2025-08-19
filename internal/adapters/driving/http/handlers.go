@@ -40,7 +40,7 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 		Role:   auth.UserRole(req.Role),
 	})
 	if err != nil {
-		return mapAppServiceErrsToHTTP(err)
+		return mapAuthServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, dto.Token{Jwt: jwt}, http.StatusOK, nil)

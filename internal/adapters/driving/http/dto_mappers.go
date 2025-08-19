@@ -93,7 +93,7 @@ func toDomainPvzReadParams(dtoParams *dto.GetPvzParams) *domain.PvzsReadParams {
 		domainParams.Limit = *dtoParams.Limit
 	}
 
-	if dtoParams.Page == nil && *dtoParams.Page >= 1 {
+	if dtoParams.Page != nil && *dtoParams.Page >= 1 {
 		domainParams.Page = *dtoParams.Page
 	}
 
