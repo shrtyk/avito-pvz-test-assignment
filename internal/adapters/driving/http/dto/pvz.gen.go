@@ -148,16 +148,16 @@ type PostProductsJSONBodyType string
 // GetPvzParams defines parameters for GetPvz.
 type GetPvzParams struct {
 	// StartDate Начальная дата диапазона
-	StartDate *time.Time `form:"startDate,omitempty" json:"startDate,omitempty" validate:"omitempty,datetime"`
+	StartDate *time.Time `form:"startDate,omitempty" json:"startDate,omitempty"`
 
 	// EndDate Конечная дата диапазона
-	EndDate *time.Time `form:"endDate,omitempty" json:"endDate,omitempty" validate:"omitempty,datetime"`
+	EndDate *time.Time `form:"endDate,omitempty" json:"endDate,omitempty"`
 
 	// Page Номер страницы
-	Page *int `form:"page,omitempty" json:"page,omitempty" validate:"omitempty,min=1"`
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
 
 	// Limit Количество элементов на странице
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty" validate:"omitempty,min=1,max=30"`
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // PostReceptionsJSONBody defines parameters for PostReceptions.

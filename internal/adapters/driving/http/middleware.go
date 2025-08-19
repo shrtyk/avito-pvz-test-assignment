@@ -1,4 +1,4 @@
-package middleware
+package http
 
 import (
 	"fmt"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/google/uuid"
 	tservice "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driven/token_service"
-	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
@@ -27,7 +26,7 @@ func NewMiddlewares(
 	log *slog.Logger,
 ) *Middlewares {
 	eh := func(w http.ResponseWriter, r *http.Request, err error) {
-		appHttp.WriteHTTPError(w, r, appHttp.MapAuthServiceErrsToHTTP(err))
+		WriteHTTPError(w, r, mapAuthServiceErrsToHTTP(err))
 	}
 
 	return &Middlewares{
@@ -41,9 +40,12 @@ func (m Middlewares) PanicRecoveryMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				m.log.Error("Error occured", "error", fmt.Sprintf("%s", err))
+				m.log.Error(
+					"Error occured",
+					"error", fmt.Sprintf("%s", err),
+				)
 				w.Header().Set("Connection", "close")
-				appHttp.WriteHTTPError(w, r, &appHttp.HTTPError{
+				WriteHTTPError(w, r, &HTTPError{
 					Code:    http.StatusInternalServerError,
 					Message: "The server encountered a problem and could not process your request",
 					Err:     fmt.Errorf("%s", err),
@@ -80,7 +82,7 @@ func (w *customResponseWriter) Write(b []byte) (int, error) {
 
 func (m Middlewares) LoggingMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ua, ip := appHttp.GetUserAgentAndIP(r)
+		ua, ip := GetUserAgentAndIP(r)
 		reqID := uuid.NewString()
 
 		l := m.log.With(
@@ -116,7 +118,7 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Vary", "Authorization")
 
-		bt, err := appHttp.ExtractBearerToken(r)
+		bt, err := ExtractBearerToken(r)
 		if err != nil {
 			m.handleAuthErr(w, r, err)
 			return

@@ -8,9 +8,10 @@ import (
 )
 
 type Service interface {
-	NewPVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error)
+	NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error)
 	OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
 	AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error)
 	DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) error
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
+	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptionsProducts, error)
 }

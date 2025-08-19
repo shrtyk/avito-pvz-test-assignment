@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
 	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
@@ -24,7 +25,7 @@ func NewAppService(timeout time.Duration, repo pRepo.Repository) *service {
 	}
 }
 
-func (s *service) NewPVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
+func (s *service) NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error) {
 	op := "service.NewPVZ"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
@@ -111,4 +112,18 @@ func (s *service) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) err
 	}
 
 	return nil
+}
+
+func (s *service) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptionsProducts, error) {
+	op := "service.GetPvzsData"
+
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	res, err := s.repo.GetPvzsData(tctx, params)
+	if err != nil {
+		return nil, xerr.WrapErr(op, pService.Unexpected, err)
+	}
+
+	return res, nil
 }

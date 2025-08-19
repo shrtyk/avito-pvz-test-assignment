@@ -10,9 +10,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
@@ -151,4 +153,48 @@ func ExtractBearerToken(r *http.Request) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func readPvzParamsFromURL(r *http.Request) (*dto.GetPvzParams, error) {
+	params := &dto.GetPvzParams{}
+	query := r.URL.Query()
+
+	if startDateStr := query.Get("startDate"); startDateStr != "" {
+		sd, err := time.Parse(time.RFC3339, startDateStr)
+		if err != nil {
+			return nil, wrapConvertionError("startDate", startDateStr, "time.Time", err)
+		}
+		params.StartDate = &sd
+	}
+
+	if endDateStr := query.Get("endDate"); endDateStr != "" {
+		ed, err := time.Parse(time.RFC3339, endDateStr)
+		if err != nil {
+			return nil, wrapConvertionError("endDate", endDateStr, "time.Time", err)
+		}
+		params.EndDate = &ed
+	}
+
+	if pageStr := query.Get("page"); pageStr != "" {
+		pg, err := strconv.Atoi(pageStr)
+		if err != nil {
+			return nil, wrapConvertionError("page", pageStr, "int", err)
+		}
+		params.Page = &pg
+	}
+
+	if limitStr := query.Get("limit"); limitStr != "" {
+		l, err := strconv.Atoi(limitStr)
+		if err != nil {
+			return nil, wrapConvertionError("limit", limitStr, "int", err)
+		}
+		params.Limit = &l
+	}
+
+	return params, nil
+}
+
+func wrapConvertionError(paramName, param, paramKind string, err error) error {
+	tmp := "failed to convert '%s' query param '%s' into '%s': %w"
+	return fmt.Errorf(tmp, paramName, param, paramKind, err)
 }

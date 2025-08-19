@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/middleware"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 )
 
@@ -51,7 +50,7 @@ func (app Application) Serve(ctx context.Context) {
 }
 
 func (app *Application) router() *chi.Mux {
-	mws := middleware.NewMiddlewares(app.TokenService, app.Logger)
+	mws := appHttp.NewMiddlewares(app.TokenService, app.Logger)
 	h := appHttp.NewHandlers(app.AppService, app.TokenService)
 
 	r := chi.NewRouter()
@@ -65,6 +64,7 @@ func (app *Application) router() *chi.Mux {
 		r.Method(http.MethodPost, "/products", appHttp.AppHandler(h.AddProductHandler))
 		r.Method(http.MethodPost, "/{pvzId}/delete_last_product", appHttp.AppHandler(h.DeleteLastProductHandler))
 		r.Method(http.MethodPost, "/{pvzId}/close_last_reception", appHttp.AppHandler(h.CloseReceptionHandler))
+		r.Method(http.MethodGet, "/pvz", appHttp.AppHandler(h.GetPvzHandler))
 	})
 
 	return r

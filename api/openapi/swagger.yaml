@@ -283,8 +283,6 @@ paths:
           schema:
             type: string
             format: date-time
-          x-oapi-codegen-extra-tags:
-            validate: "omitempty,datetime"
         - name: endDate
           in: query
           description: Конечная дата диапазона
@@ -292,8 +290,6 @@ paths:
           schema:
             type: string
             format: date-time
-          x-oapi-codegen-extra-tags:
-            validate: "omitempty,datetime"
         - name: page
           in: query
           description: Номер страницы
@@ -302,8 +298,6 @@ paths:
             type: integer
             minimum: 1
             default: 1
-          x-oapi-codegen-extra-tags:
-            validate: "omitempty,min=1"
         - name: limit
           in: query
           description: Количество элементов на странице
@@ -313,8 +307,6 @@ paths:
             minimum: 1
             maximum: 30
             default: 10
-          x-oapi-codegen-extra-tags:
-            validate: "omitempty,min=1,max=30"
       responses:
         "200":
           description: Список ПВЗ

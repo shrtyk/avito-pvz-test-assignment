@@ -14,8 +14,25 @@ const (
 	Kazan           PVZCity = "Казань"
 )
 
-type PVZ struct {
+type Pvz struct {
 	Id               uuid.UUID
 	City             PVZCity
 	RegistrationDate time.Time
+}
+
+type PvzsReadParams struct {
+	StartDate *time.Time
+	EndDate   *time.Time
+	Page      int
+	Limit     int
+}
+
+type PvzReceptionsProducts struct {
+	Pvz        *Pvz
+	Receptions []*ReceptionProducts
+}
+
+type ReceptionProducts struct {
+	Reception *Reception
+	Products  []*Product
 }

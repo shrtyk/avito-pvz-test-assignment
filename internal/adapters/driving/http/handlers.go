@@ -28,7 +28,7 @@ func NewHandlers(appService pService.Service, tService pAuth.TokensService) *han
 func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) error {
 	req := new(dto.PostDummyLoginJSONRequestBody)
 	if err := ReadJSON(w, r, req); err != nil {
-		return BadRequestError(err)
+		return BadRequestBodyError(err)
 	}
 
 	if err := h.validator.Struct(req); err != nil {
@@ -55,7 +55,7 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 	pvz := new(dto.PVZ)
 	err := ReadJSON(w, r, pvz)
 	if err != nil {
-		return BadRequestError(err)
+		return BadRequestBodyError(err)
 	}
 
 	if err = h.validator.Struct(pvz); err != nil {
@@ -79,7 +79,7 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) error {
 	rec := new(dto.PostReceptionsJSONBody)
 	if err := ReadJSON(w, r, rec); err != nil {
-		return BadRequestError(err)
+		return BadRequestBodyError(err)
 	}
 
 	if err := h.validator.Struct(rec); err != nil {
@@ -103,7 +103,7 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) error {
 	prod := new(dto.PostProductsJSONRequestBody)
 	if err := ReadJSON(w, r, prod); err != nil {
-		return BadRequestError(err)
+		return BadRequestBodyError(err)
 	}
 
 	if err := h.validator.Struct(prod); err != nil {
@@ -126,7 +126,7 @@ func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) err
 func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Request) error {
 	pvzId, err := ReadPvzIDParam(r)
 	if err != nil {
-		return BadRequestError(err)
+		return BadRequestBodyError(err)
 	}
 
 	if err = h.appService.DeleteLastProductPvz(r.Context(), pvzId); err != nil {
@@ -139,11 +139,32 @@ func (h *handlers) DeleteLastProductHandler(w http.ResponseWriter, r *http.Reque
 func (h *handlers) CloseReceptionHandler(w http.ResponseWriter, r *http.Request) error {
 	pvzId, err := ReadPvzIDParam(r)
 	if err != nil {
-		return BadRequestError(err)
+		return BadRequestBodyError(err)
 	}
 
 	if err := h.appService.CloseReceptionInPvz(r.Context(), pvzId); err != nil {
 		return mapAppServiceErrsToHTTP(err)
+	}
+
+	return nil
+}
+
+func (h *handlers) GetPvzHandler(w http.ResponseWriter, r *http.Request) error {
+	params, err := readPvzParamsFromURL(r)
+	if err != nil {
+		return BadRequestQueryParamsError(err)
+	}
+
+	domainParams := toDomainPvzReadParams(params)
+
+	pvzsData, err := h.appService.GetPvzsData(r.Context(), domainParams)
+	if err != nil {
+		return mapAppServiceErrsToHTTP(err)
+	}
+
+	resp := toDTOPvzData(pvzsData)
+	if err = WriteJSON(w, resp, http.StatusOK, nil); err != nil {
+		return InternalError(err)
 	}
 
 	return nil

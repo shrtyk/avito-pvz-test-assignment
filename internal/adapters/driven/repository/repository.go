@@ -22,19 +22,10 @@ func NewRepo(db *sql.DB) *repo {
 	}
 }
 
-func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, error) {
-	op := "repository.SavePVZ"
+func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error) {
+	op := "repository.CreatePVZ"
 
-	query := `
-		INSERT INTO
-			pvzs (city)
-		VALUES
-			($1)
-		RETURNING
-			id, created_at
-	`
-
-	err := r.db.QueryRowContext(ctx, query, pvz.City).Scan(
+	err := r.db.QueryRowContext(ctx, string(createPvzQuery), pvz.City).Scan(
 		&pvz.Id,
 		&pvz.RegistrationDate,
 	)
@@ -48,20 +39,11 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.PVZ) (*domain.PVZ, err
 func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
 	op := "repository.CreateReception"
 
-	query := `
-		INSERT INTO
-			receptions (pvz_id)
-		VALUES
-			($1)
-		RETURNING
-			id, created_at, status
-	`
-
-	err := r.db.QueryRowContext(ctx, query, rec.PvzId).Scan(
-		&rec.Id,
-		&rec.DateTime,
-		&rec.Status,
-	)
+	err := r.db.QueryRowContext(
+		ctx,
+		string(createReceptionQuery),
+		rec.PvzId).
+		Scan(&rec.Id, &rec.DateTime, &rec.Status)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -81,22 +63,13 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
 	op := "repository.CreateProduct"
 
-	query := `
-		INSERT INTO
-			products (reception_id, type)
-		VALUES(
-			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2), $3
-		)
-		RETURNING
-			id, added_at, reception_id, type
-	`
-
-	err := r.db.QueryRowContext(ctx, query, prod.PvzId, domain.InProgress, prod.Type).Scan(
-		&prod.Id,
-		&prod.DateTime,
-		&prod.ReceptionId,
-		&prod.Type,
-	)
+	err := r.db.QueryRowContext(
+		ctx,
+		string(createProductQuery),
+		prod.PvzId,
+		domain.InProgress,
+		prod.Type).
+		Scan(&prod.Id, &prod.DateTime, &prod.ReceptionId, &prod.Type)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if (errors.As(err, &pgErr) && pgErr.Code == "23502") || errors.Is(err, sql.ErrNoRows) {
@@ -111,21 +84,7 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 	op := "repository.DeleteLastProduct"
 
-	query := `
-		DELETE FROM
-			products
-		WHERE
-			id = (
-			SELECT id FROM products
-			WHERE reception_id = (
-				SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2
-			)
-			ORDER BY added_at DESC
-			LIMIT 1
-		)
-	`
-
-	res, err := r.db.ExecContext(ctx, query, pvzId, domain.InProgress)
+	res, err := r.db.ExecContext(ctx, string(deleteLastProductQuery), pvzId, domain.InProgress)
 	if err != nil {
 		return xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
@@ -145,16 +104,13 @@ func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error {
 	op := "repository.CloseReceptionInPvz"
 
-	query := `
-		UPDATE
-			receptions
-		SET
-			status = $1
-		WHERE
-			id = (SELECT id FROM receptions WHERE pvz_id = $2 AND status = $3)
-	`
-
-	res, err := r.db.ExecContext(ctx, query, domain.Close, pvzId, domain.InProgress)
+	res, err := r.db.ExecContext(
+		ctx,
+		string(closeReceptionPvzQuery),
+		domain.Close,
+		pvzId,
+		domain.InProgress,
+	)
 	if err != nil {
 		return xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
@@ -169,4 +125,34 @@ func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error 
 	}
 
 	return nil
+}
+
+func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptionsProducts, error) {
+	op := "repository.GetPvzsData"
+
+	q, args := buildGetPvzDataQuery(params)
+	rows, err := r.db.QueryContext(ctx, string(q), args...)
+	if err != nil {
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+	defer rows.Close()
+
+	aggregator := newPvzAggregator()
+
+	for rows.Next() {
+		row, err := scanPvzRow(rows)
+		if err != nil {
+			return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+		}
+
+		if err := aggregator.processRow(row); err != nil {
+			return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+
+	return aggregator.Results(), nil
 }
