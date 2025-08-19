@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
+	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
 	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
 )
 
@@ -17,6 +18,7 @@ func (app Application) Serve(ctx context.Context) {
 		Handler:      app.router(),
 		IdleTimeout:  app.Cfg.HttpServerCfg.IdleTimeout,
 		WriteTimeout: app.Cfg.HttpServerCfg.WriteTimeout,
+		ReadTimeout:  app.Cfg.HttpServerCfg.ReadTimeout,
 		ErrorLog:     slog.NewLogLogger(app.Logger.Handler(), slog.LevelError),
 	}
 
@@ -56,15 +58,36 @@ func (app *Application) router() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(mws.PanicRecoveryMW, mws.LoggingMW)
-	r.Method(http.MethodPost, "/dummyLogin", appHttp.AppHandler(h.DummyLoginHandler))
+	r.Post("/dummyLogin", appHttp.Handle(h.DummyLoginHandler))
 
-	r.With().Group(func(r chi.Router) {
-		r.Method(http.MethodPost, "/pvz", appHttp.AppHandler(h.NewPVZHandler))
-		r.Method(http.MethodPost, "/receptions", appHttp.AppHandler(h.NewReceptionHandler))
-		r.Method(http.MethodPost, "/products", appHttp.AppHandler(h.AddProductHandler))
-		r.Method(http.MethodPost, "/{pvzId}/delete_last_product", appHttp.AppHandler(h.DeleteLastProductHandler))
-		r.Method(http.MethodPost, "/{pvzId}/close_last_reception", appHttp.AppHandler(h.CloseReceptionHandler))
-		r.Method(http.MethodGet, "/pvz", appHttp.AppHandler(h.GetPvzHandler))
+	// Authenticated only:
+	r.Group(func(r chi.Router) {
+		r.Use(mws.AuthenticationMW)
+
+		// Moderators only:
+		r.Group(func(r chi.Router) {
+			r.Use(mws.AuthorizeRoles(auth.UserRoleModerator))
+
+			r.Post("/pvz", appHttp.Handle(h.NewPVZHandler))
+		})
+
+		// Employees only:
+		r.Group(func(r chi.Router) {
+			r.Use(mws.AuthorizeRoles(auth.UserRoleEmployee))
+
+			r.Post("/receptions", appHttp.Handle(h.NewReceptionHandler))
+			r.Post("/products", appHttp.Handle(h.AddProductHandler))
+			r.Post("/{pvzId}/delete_last_product", appHttp.Handle(h.DeleteLastProductHandler))
+			r.Post("/{pvzId}/close_last_reception", appHttp.Handle(h.CloseReceptionHandler))
+		})
+
+		// Moderators and employees:
+		r.Group(func(r chi.Router) {
+			r.Use(mws.AuthorizeRoles(auth.UserRoleEmployee, auth.UserRoleModerator))
+
+			r.Get("/pvz", appHttp.Handle(h.GetPvzHandler))
+		})
+
 	})
 
 	return r
