@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -59,4 +60,14 @@ func FromCtx(ctx context.Context) *slog.Logger {
 
 func WithErr(err error) slog.Attr {
 	return slog.String("error", err.Error())
+}
+
+func NewTestLogger() (*slog.Logger, *bytes.Buffer) {
+	var buf bytes.Buffer
+	l := slog.New(
+		slog.NewJSONHandler(&buf, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		}),
+	)
+	return l, &buf
 }

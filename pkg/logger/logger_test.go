@@ -31,3 +31,12 @@ func TestLoggerFromCtx(t *testing.T) {
 	assert.IsType(t, &slog.Logger{}, fbLogger)
 	assert.NotEqual(t, ctxLogger.Handler(), fbLogger.Handler())
 }
+
+func TestNewTestLogger(t *testing.T) {
+	l, buf := NewTestLogger()
+	assert.NotNil(t, l)
+	assert.NotNil(t, buf)
+
+	l.Info("test message")
+	assert.Contains(t, buf.String(), "test message")
+}
