@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
-	ps "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
-	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	ps "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
+	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
 func mapAppServiceErrsToHTTP(err error) *HTTPError {

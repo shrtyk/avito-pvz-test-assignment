@@ -7,10 +7,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
-	pRepo "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/repository"
-	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
-	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
+	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
+	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
 type repo struct {

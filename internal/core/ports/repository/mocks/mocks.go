@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
 	mock "github.com/stretchr/testify/mock"
 )
 

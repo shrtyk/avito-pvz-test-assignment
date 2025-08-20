@@ -6,7 +6,7 @@ import (
 	"maps"
 	"net/http"
 
-	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
+	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 )
 
 func WriteHTTPError(w http.ResponseWriter, r *http.Request, e *HTTPError) {

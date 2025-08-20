@@ -1,8 +1,8 @@
 package http
 
 import (
-	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driving/http/dto"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
 )
 
 const (

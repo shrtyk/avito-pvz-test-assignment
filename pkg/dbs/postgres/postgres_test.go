@@ -3,7 +3,7 @@ package postgres
 import (
 	"testing"
 
-	"github.com/shrtyk/avito-backend-spring-2025/pkg/config"
+	"github.com/shrtyk/avito-pvz-test-assignment/pkg/config"
 )
 
 func TestBuildDSN(t *testing.T) {

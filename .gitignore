@@ -36,3 +36,5 @@ task*
 
 # Ignore local configuration files, but keep the example
 configs/app_config.yml
+
+*script.sh

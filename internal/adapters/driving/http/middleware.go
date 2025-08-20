@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	tservice "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driven/token_service"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
-	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
-	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
-	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
+	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driven/token_service"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
+	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
 type Middlewares struct {

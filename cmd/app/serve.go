@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	appHttp "github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
-	"github.com/shrtyk/avito-backend-spring-2025/pkg/logger"
+	appHttp "github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driving/http"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 )
 
 func (app Application) Serve(ctx context.Context) {

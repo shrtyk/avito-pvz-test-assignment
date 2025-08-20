@@ -3,9 +3,9 @@ package tservice
 import (
 	"context"
 
-	dAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
-	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
-	xerr "github.com/shrtyk/avito-backend-spring-2025/pkg/xerrors"
+	dAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
 type ctxKey string

@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/adapters/driving/http/dto"
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
-	pService "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/service"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driving/http/dto"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
 
-	pAuth "github.com/shrtyk/avito-backend-spring-2025/internal/core/ports/auth"
+	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
 )
 
 type handlers struct {

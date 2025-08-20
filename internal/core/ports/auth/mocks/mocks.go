@@ -5,7 +5,7 @@
 package authmocks
 
 import (
-	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain/auth"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	mock "github.com/stretchr/testify/mock"
 )
 

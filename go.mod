@@ -1,4 +1,4 @@
-module github.com/shrtyk/avito-backend-spring-2025
+module github.com/shrtyk/avito-pvz-test-assignment
 
 go 1.24.6
 
