@@ -26,9 +26,7 @@ jobs:
 
       - name: Run Tests with Coverage
         run: |
-          # Create coverage directory
           mkdir -p coverage
-          # Run tests with coverage for all packages
           go test -v -race -coverprofile=coverage/coverage.out -covermode=atomic \
           $(go list ./... | grep -v /mocks | grep -v /gen | grep -v /dto | grep -v /cmd)
 

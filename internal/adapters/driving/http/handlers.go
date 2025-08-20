@@ -25,6 +25,11 @@ func NewHandlers(appService pService.Service, tService pAuth.TokensService) *han
 	}
 }
 
+func (h *handlers) HealthZ(w http.ResponseWriter, r *http.Request) error {
+	w.WriteHeader(http.StatusOK)
+	return nil
+}
+
 func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) error {
 	req := new(dto.PostDummyLoginJSONRequestBody)
 	if err := ReadJson(w, r, req); err != nil {

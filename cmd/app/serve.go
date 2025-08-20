@@ -59,6 +59,7 @@ func (app *Application) router() *chi.Mux {
 
 	r.Use(mws.PanicRecoveryMW, mws.LoggingMW)
 	r.Post("/dummyLogin", appHttp.Handle(h.DummyLoginHandler))
+	r.Get("/healthz", appHttp.Handle(h.HealthZ))
 
 	// Authenticated only:
 	r.Group(func(r chi.Router) {
