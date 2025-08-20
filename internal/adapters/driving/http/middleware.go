@@ -41,7 +41,7 @@ func (m Middlewares) PanicRecoveryMW(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				m.log.Error(
-					"Error occured",
+					"Error occurred",
 					"error", fmt.Sprintf("%s", err),
 				)
 				w.Header().Set("Connection", "close")

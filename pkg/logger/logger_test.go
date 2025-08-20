@@ -16,7 +16,7 @@ func TestLoggerCreation(t *testing.T) {
 	assert.IsType(t, &slog.Logger{}, devLoggerr)
 
 	assert.Panics(t, func() {
-		MustCreateNewLogger("wrong enviroment")
+		MustCreateNewLogger("wrong environment")
 	})
 }
 

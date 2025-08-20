@@ -33,7 +33,7 @@ func (app Application) Serve(ctx context.Context) {
 	}()
 
 	app.Logger.Info(
-		"Aplication successfully started",
+		"Application successfully started",
 		slog.String("address", ":"+app.Cfg.HttpServerCfg.Port),
 	)
 	if err := s.ListenAndServe(); err != nil {

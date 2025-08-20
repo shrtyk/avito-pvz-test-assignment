@@ -35,7 +35,7 @@ func MustCreateNewLogger(env string) (log *slog.Logger) {
 			}),
 		)
 	default:
-		msg := fmt.Sprintf("Failed to create new logger. Unknown enviroment: '%s'", env)
+		msg := fmt.Sprintf("Failed to create new logger. Unknown environment: '%s'", env)
 		panic(msg)
 	}
 	return
