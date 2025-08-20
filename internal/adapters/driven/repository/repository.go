@@ -151,7 +151,12 @@ func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) (
 	aggregator := newPvzAggregator()
 
 	for rows.Next() {
-		row, err := scanPvzRow(rows)
+		var row pvzRow
+		err := rows.Scan(
+			&row.PvzID, &row.PvzCity, &row.PvzCreatedAt,
+			&row.RecID, &row.RecStatus, &row.RecDateTime, &row.RecPvzID,
+			&row.ProdID, &row.ProdDateTime, &row.ProdRecID, &row.ProdType,
+		)
 		if err != nil {
 			return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
 		}

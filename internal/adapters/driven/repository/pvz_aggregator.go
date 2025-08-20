@@ -23,16 +23,6 @@ type pvzRow struct {
 	ProdType     sql.NullString
 }
 
-func scanPvzRow(rows *sql.Rows) (pvzRow, error) {
-	var row pvzRow
-	err := rows.Scan(
-		&row.PvzID, &row.PvzCity, &row.PvzCreatedAt,
-		&row.RecID, &row.RecStatus, &row.RecDateTime, &row.RecPvzID,
-		&row.ProdID, &row.ProdDateTime, &row.ProdRecID, &row.ProdType,
-	)
-	return row, err
-}
-
 type pvzAggregator struct {
 	pvzMap  map[string]*domain.PvzReceptions
 	recMap  map[string]*domain.ReceptionProducts
