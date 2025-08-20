@@ -31,8 +31,9 @@ type pvzAggregator struct {
 
 func newPvzAggregator() *pvzAggregator {
 	return &pvzAggregator{
-		pvzMap: make(map[string]*domain.PvzReceptions),
-		recMap: make(map[string]*domain.ReceptionProducts),
+		pvzMap:  make(map[string]*domain.PvzReceptions),
+		recMap:  make(map[string]*domain.ReceptionProducts),
+		ordPvzs: make([]*domain.PvzReceptions, 0),
 	}
 }
 
