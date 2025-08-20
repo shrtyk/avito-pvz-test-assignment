@@ -1,6 +1,6 @@
 include .env
 
-.PHONY: run/app start/db stop/db docker/up docker/down compile/pvz-proto migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status generate/dto
+.PHONY: docker/up docker/down migrations/new migrations/up migrations/up-by-one migrations/down migrations/down-all migrations/status
 
 MIGRATIONS_DIR=./migrations
 RSA_PRIVATE=./keys/rsa/private_key.pem
@@ -69,7 +69,16 @@ psql/pvz:
 
 # Generaate DTOs
 generate/dto:
-	@go generate ./...
+	@go generate ./internal/adapters/driving/http/dto/generate.go
+
+# Generate mocks for interfaces
+generate/mocks:
+	@go generate ./internal/core/ports/...
+
+# Generate all
+generate:
+	@make generate/dto
+	@make generate/mocks
 
 # Create keys directory and generate them
 gen/rsa:

@@ -7,6 +7,7 @@ import (
 	"github.com/shrtyk/avito-backend-spring-2025/internal/core/domain"
 )
 
+//go:generate mockery
 type Service interface {
 	NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error)
 	OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
