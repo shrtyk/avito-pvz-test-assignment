@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run Lint
+        uses: golangci/golangci-lint-action@v8
+
+      - name: Run Tests with Coverage
+        run: |
+          # Create coverage directory
+          mkdir -p coverage
+          # Run tests with coverage for all packages
+          go test -v -race -coverprofile=coverage/coverage.out -covermode=atomic \
+          $(go list ./... | grep -v /mocks | grep -v /gen | grep -v /dto | grep -v /cmd)
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/coverage.out
+          flags: go
+          verbose: true
