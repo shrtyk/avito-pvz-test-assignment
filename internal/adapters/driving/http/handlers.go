@@ -21,7 +21,7 @@ func NewHandlers(appService pService.Service, tService pAuth.TokensService) *han
 	return &handlers{
 		appService: appService,
 		tService:   tService,
-		validator:  NewValidator(),
+		validator:  MustNewValidator(),
 	}
 }
 

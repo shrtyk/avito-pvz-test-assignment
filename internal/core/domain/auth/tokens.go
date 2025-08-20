@@ -15,5 +15,5 @@ type AccessTokenClaims struct {
 }
 
 func (atc AccessTokenClaims) UserID() string {
-	return atc.RegisteredClaims.Subject
+	return atc.Subject
 }

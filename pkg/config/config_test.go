@@ -16,11 +16,11 @@ func unsetEnvForTest(t *testing.T, keys ...string) {
 		if val, ok := os.LookupEnv(key); ok {
 			originalValues[key] = val
 		}
-		os.Unsetenv(key)
+		require.NoError(t, os.Unsetenv(key))
 	}
 	t.Cleanup(func() {
 		for key, val := range originalValues {
-			os.Setenv(key, val)
+			require.NoError(t, os.Setenv(key, val))
 		}
 	})
 }
