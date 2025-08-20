@@ -124,7 +124,7 @@ func toDTOReceptionProducts(dm *domain.ReceptionProducts) *dto.ReceptionProducts
 	return dt
 }
 
-func toDTOPvzReceptionsProducts(dm *domain.PvzReceptions) *dto.PvzReceptions {
+func toDTOPvzReceptions(dm *domain.PvzReceptions) *dto.PvzReceptions {
 	if dm == nil {
 		return nil
 	}
@@ -153,7 +153,7 @@ func toDTOPvzData(dd []*domain.PvzReceptions) []*dto.PvzReceptions {
 	}
 
 	for i, d := range dd {
-		res[i] = toDTOPvzReceptionsProducts(d)
+		res[i] = toDTOPvzReceptions(d)
 	}
 	return res
 }

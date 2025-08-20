@@ -1,4 +1,3 @@
-
 package http
 
 import (
@@ -196,16 +195,16 @@ func Test_toDTOPvzReceptionsProducts(t *testing.T) {
 
 	t.Run("nil domain", func(t *testing.T) {
 		t.Parallel()
-		assert.Nil(t, toDTOPvzReceptionsProducts(nil))
+		assert.Nil(t, toDTOPvzReceptions(nil))
 	})
 
 	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 		domainPvzRecProd := &domain.PvzReceptions{
-			Pvz: &domain.Pvz{},
+			Pvz:        &domain.Pvz{},
 			Receptions: []*domain.ReceptionProducts{{}},
 		}
-		dtoPvzRecProd := toDTOPvzReceptionsProducts(domainPvzRecProd)
+		dtoPvzRecProd := toDTOPvzReceptions(domainPvzRecProd)
 		assert.NotNil(t, dtoPvzRecProd.Pvz)
 		assert.Len(t, *dtoPvzRecProd.Receptions, 1)
 	})
