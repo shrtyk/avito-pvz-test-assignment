@@ -259,7 +259,9 @@ func getDummyToken(t *testing.T, baseURL, role string) string {
 
 	resp, err := testHTTPClient.Post(fmt.Sprintf("%s/dummyLogin", baseURL), contentTypeJSON, bytes.NewBuffer(reqBody))
 	require.NoError(t, err)
-	defer require.NoError(t, resp.Body.Close())
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -282,7 +284,9 @@ func createPVZ(t *testing.T, baseURL, token string) *dto.PVZ {
 
 	resp, err := testHTTPClient.Do(req)
 	require.NoError(t, err)
-	defer require.NoError(t, resp.Body.Close())
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
@@ -305,7 +309,9 @@ func createReception(t *testing.T, baseURL, token string, pvzID uuid.UUID) *dto.
 
 	resp, err := testHTTPClient.Do(req)
 	require.NoError(t, err)
-	defer require.NoError(t, resp.Body.Close())
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
@@ -328,7 +334,9 @@ func addProduct(t *testing.T, baseURL, token string, pvzID uuid.UUID) {
 
 	resp, err := testHTTPClient.Do(req)
 	require.NoError(t, err)
-	defer require.NoError(t, resp.Body.Close())
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 }
@@ -341,7 +349,9 @@ func closeReception(t *testing.T, baseURL, token string, pvzID uuid.UUID) {
 
 	resp, err := testHTTPClient.Do(req)
 	require.NoError(t, err)
-	defer require.NoError(t, resp.Body.Close())
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 }
