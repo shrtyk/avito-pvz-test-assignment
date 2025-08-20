@@ -18,7 +18,7 @@ import (
 	"github.com/tomasen/realip"
 )
 
-func Json[T any](w http.ResponseWriter, r *http.Request, dst T) error {
+func ReadJson[T any](w http.ResponseWriter, r *http.Request, dst T) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
