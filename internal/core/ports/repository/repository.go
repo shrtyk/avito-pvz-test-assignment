@@ -15,4 +15,5 @@ type Repository interface {
 	DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)
+	GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error)
 }

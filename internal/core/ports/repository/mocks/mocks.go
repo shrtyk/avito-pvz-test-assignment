@@ -357,6 +357,68 @@ func (_c *MockRepository_DeleteLastProduct_Call) RunAndReturn(run func(ctx conte
 	return _c
 }
 
+// GetAllPvzs provides a mock function for the type MockRepository
+func (_mock *MockRepository) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllPvzs")
+	}
+
+	var r0 []*domain.Pvz
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]*domain.Pvz, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []*domain.Pvz); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Pvz)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockRepository_GetAllPvzs_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllPvzs'
+type MockRepository_GetAllPvzs_Call struct {
+	*mock.Call
+}
+
+// GetAllPvzs is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockRepository_Expecter) GetAllPvzs(ctx interface{}) *MockRepository_GetAllPvzs_Call {
+	return &MockRepository_GetAllPvzs_Call{Call: _e.mock.On("GetAllPvzs", ctx)}
+}
+
+func (_c *MockRepository_GetAllPvzs_Call) Run(run func(ctx context.Context)) *MockRepository_GetAllPvzs_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockRepository_GetAllPvzs_Call) Return(pvzs []*domain.Pvz, err error) *MockRepository_GetAllPvzs_Call {
+	_c.Call.Return(pvzs, err)
+	return _c
+}
+
+func (_c *MockRepository_GetAllPvzs_Call) RunAndReturn(run func(ctx context.Context) ([]*domain.Pvz, error)) *MockRepository_GetAllPvzs_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetPvzsData provides a mock function for the type MockRepository
 func (_mock *MockRepository) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error) {
 	ret := _mock.Called(ctx, params)

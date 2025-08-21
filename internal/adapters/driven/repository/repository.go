@@ -167,3 +167,34 @@ func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) (
 
 	return aggregator.Results(), nil
 }
+
+func (r *repo) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
+	op := "repository.GetAllPvzs"
+	l := logger.FromCtx(ctx)
+
+	rows, err := r.db.QueryContext(ctx, string(getAllPvzsQuery))
+	if err != nil {
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil {
+			l.Warn("failed to close rows", logger.WithErr(closeErr))
+		}
+	}()
+
+	pvzs := make([]*domain.Pvz, 0)
+	for rows.Next() {
+		pvz := new(domain.Pvz)
+		err := rows.Scan(&pvz.Id, &pvz.RegistrationDate, &pvz.City)
+		if err != nil {
+			return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+		}
+		pvzs = append(pvzs, pvz)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+
+	return pvzs, nil
+}

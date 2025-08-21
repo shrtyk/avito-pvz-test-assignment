@@ -60,6 +60,13 @@ const (
 		WHERE
 			id = (SELECT id FROM receptions WHERE pvz_id = $2 AND status = $3)
 	`
+
+	getAllPvzsQuery query = `
+		SELECT
+			id, created_at, city
+		FROM
+			pvzs
+	`
 )
 
 func buildGetPvzDataQuery(params *domain.PvzsReadParams) (query, []any) {

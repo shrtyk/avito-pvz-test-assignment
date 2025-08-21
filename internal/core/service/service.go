@@ -127,3 +127,17 @@ func (s *service) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams
 
 	return res, nil
 }
+
+func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
+	op := "service.GetAllPvzs"
+
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	res, err := s.GetAllPvzs(tctx)
+	if err != nil {
+		return nil, xerr.WrapErr(op, pService.Unexpected, err)
+	}
+
+	return res, nil
+}
