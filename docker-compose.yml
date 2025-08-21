@@ -9,11 +9,11 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d pvz-db"]
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DBNAME}"]
       interval: 10s
       retries: 5
     ports:
-      - "5433:5432"
+      - "5432:${PG_PORT}"
 
   goose:
     build:
@@ -28,7 +28,7 @@ services:
         condition: service_healthy
     environment:
       - GOOSE_DRIVER=${GOOSE_DRIVER}
-      - GOOSE_DBSTRING=host=postgres port=5432 user=${PG_USER} password=${PG_PASSWORD} dbname=${PG_DBNAME} sslmode=${PG_SSL_MODE}
+      - GOOSE_DBSTRING=host=postgres port=${PG_PORT} user=${PG_USER} password=${PG_PASSWORD} dbname=${PG_DBNAME} sslmode=${PG_SSLMODE}
       - GOOSE_VERBOSE=true
     command: ["up"]
     volumes:
@@ -40,7 +40,8 @@ services:
       dockerfile: build/pvz_app/Dockerfile
     container_name: pvz
     ports:
-      - "16700:16700"
+      - "8081:${HTTP_SERVER_PORT}"
+      - "3000:${GRPC_SERVER_PORT}"
     depends_on:
       postgres:
         condition: service_healthy

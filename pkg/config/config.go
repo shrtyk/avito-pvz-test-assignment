@@ -47,7 +47,7 @@ type PostgresCfg struct {
 	Host     string `yaml:"host" env:"PG_HOST" env-default:"postgres"`
 	Port     string `yaml:"port" env:"PG_PORT" env-default:"5432"`
 	DBName   string `yaml:"db_name" env:"PG_DBNAME" env-default:"pvz-db"`
-	SSLMode  string `yaml:"sslmode" env:"PG_SSL_MODE" env-default:"disable"`
+	SSLMode  string `yaml:"sslmode" env:"PG_SSLMODE" env-default:"disable"`
 
 	MaxOpenConns    int           `yaml:"max_open_conns" env:"PG_MAX_OPEN_CONNS" env-default:"20"`
 	MaxIdleConns    int           `yaml:"max_idle_conns" env:"PG_MAX_IDLE_CONS" env-default:"10"`
