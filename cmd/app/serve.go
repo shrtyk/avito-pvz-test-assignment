@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driving/grpc"
-	appHttp "github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driving/http"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/grpc"
+	appHttp "github.com/shrtyk/avito-pvz-test-assignment/internal/api/http"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 )
 

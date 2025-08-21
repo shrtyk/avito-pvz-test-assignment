@@ -134,7 +134,7 @@ func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
-	res, err := s.GetAllPvzs(tctx)
+	res, err := s.repo.GetAllPvzs(tctx)
 	if err != nil {
 		return nil, xerr.WrapErr(op, pService.Unexpected, err)
 	}

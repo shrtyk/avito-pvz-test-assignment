@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
-	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driven/token_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuthMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth/mocks"
+	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/token_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )

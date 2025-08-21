@@ -29,17 +29,16 @@ func NewGRPCServer(
 	logger *slog.Logger,
 	port string,
 ) *Server {
-	gs := grpc.NewServer()
 	s := &Server{
 		wg:         wg,
 		port:       port,
 		appService: appService,
 		logger:     logger,
-		grpcServ:   gs,
+		grpcServ:   grpc.NewServer(),
 	}
 
 	pvz.RegisterPVZServiceServer(s.grpcServ, s)
-	reflection.Register(gs)
+	reflection.Register(s.grpcServ)
 
 	return s
 }
@@ -75,7 +74,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		s.grpcServ.Stop()
 		return ctx.Err()
 	case <-done:
-		s.logger.Info("grpc server graceful shtudown complete")
+		s.logger.Info("grpc server graceful shutdown complete")
 		return nil
 	}
 }
