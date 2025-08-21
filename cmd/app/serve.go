@@ -6,16 +6,14 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	appHttp "github.com/shrtyk/avito-pvz-test-assignment/internal/adapters/driving/http"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 )
 
 func (app Application) Serve(ctx context.Context) {
 	s := http.Server{
 		Addr:         ":" + app.Cfg.HttpServerCfg.Port,
-		Handler:      app.router(),
+		Handler:      appHttp.NewRouter(app.AppService, app.TokenService, app.Logger),
 		IdleTimeout:  app.Cfg.HttpServerCfg.IdleTimeout,
 		WriteTimeout: app.Cfg.HttpServerCfg.WriteTimeout,
 		ReadTimeout:  app.Cfg.HttpServerCfg.ReadTimeout,
@@ -49,47 +47,4 @@ func (app Application) Serve(ctx context.Context) {
 	}
 
 	app.Logger.Info("Graceful shutdown completed successfully")
-}
-
-func (app *Application) router() *chi.Mux {
-	mws := appHttp.NewMiddlewares(app.TokenService, app.Logger)
-	h := appHttp.NewHandlers(app.AppService, app.TokenService)
-
-	r := chi.NewRouter()
-
-	r.Use(mws.PanicRecoveryMW, mws.LoggingMW)
-	r.Post("/dummyLogin", appHttp.Handle(h.DummyLoginHandler))
-	r.Get("/healthz", appHttp.Handle(h.HealthZ))
-
-	// Authenticated only:
-	r.Group(func(r chi.Router) {
-		r.Use(mws.AuthenticationMW)
-
-		// Moderators only:
-		r.Group(func(r chi.Router) {
-			r.Use(mws.AuthorizeRoles(auth.UserRoleModerator))
-
-			r.Post("/pvz", appHttp.Handle(h.NewPVZHandler))
-		})
-
-		// Employees only:
-		r.Group(func(r chi.Router) {
-			r.Use(mws.AuthorizeRoles(auth.UserRoleEmployee))
-
-			r.Post("/receptions", appHttp.Handle(h.NewReceptionHandler))
-			r.Post("/products", appHttp.Handle(h.AddProductHandler))
-			r.Post("/{pvzId}/delete_last_product", appHttp.Handle(h.DeleteLastProductHandler))
-			r.Post("/{pvzId}/close_last_reception", appHttp.Handle(h.CloseReceptionHandler))
-		})
-
-		// Moderators and employees:
-		r.Group(func(r chi.Router) {
-			r.Use(mws.AuthorizeRoles(auth.UserRoleEmployee, auth.UserRoleModerator))
-
-			r.Get("/pvz", appHttp.Handle(h.GetPvzHandler))
-		})
-
-	})
-
-	return r
 }

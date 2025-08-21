@@ -138,13 +138,8 @@ func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) (
 		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 	defer func() {
-		cerr := rows.Close()
-		if cerr != nil {
-			if err == nil {
-				err = xerr.WrapErr(op, pRepo.Unexpected, cerr)
-			} else {
-				l.Warn("failed to close rows", logger.WithErr(cerr))
-			}
+		if closeErr := rows.Close(); closeErr != nil {
+			l.Warn("failed to close rows", logger.WithErr(closeErr))
 		}
 	}()
 

@@ -8,7 +8,7 @@ structname: "{{.Mock}}{{.InterfaceName}}"
 recursive: false
 
 packages:
-  github.com/shrtyk/avito-backend-spring-2025/internal/core/ports:
+  github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports:
     config:
       recursive: true
       all: true

@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package main
 
 import (
@@ -210,7 +213,7 @@ func startTestApp(t *testing.T, appCfg *testAppConfig) string {
 	)
 
 	cfg := config.MustInitConfig()
-	log := logger.MustCreateNewLogger(cfg.AppCfg.Env)
+	log, _ := logger.NewTestLogger()
 	tService := tservice.MustCreateTokenService(&cfg.AuthTokenCfg)
 	db := pkgpg.MustCreateConnectionPool(&cfg.PostgresCfg)
 	repo := repository.NewRepo(db)
