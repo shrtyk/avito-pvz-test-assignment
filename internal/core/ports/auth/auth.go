@@ -7,6 +7,6 @@ import "github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 type TokenService interface {
 	GenerateAccessToken(tokenData auth.AccessTokenData) (string, error)
 	GetTokenClaims(token string) (*auth.AccessTokenClaims, error)
-	GenerateRefreshToken(userID, ua, ip string) *auth.RefreshTokenData
-	Fingerprint(rToken *auth.RefreshTokenData) string
+	GenerateRefreshToken(userID, ua, ip string) *auth.RefreshToken
+	Fingerprint(rToken *auth.RefreshToken) string
 }

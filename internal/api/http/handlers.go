@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
@@ -57,17 +58,17 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 }
 
 func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
-	pvz := new(dto.PVZ)
-	err := ReadJson(w, r, pvz)
+	rBody := new(dto.PostPvzJSONRequestBody)
+	err := ReadJson(w, r, rBody)
 	if err != nil {
 		return BadRequestBodyError(err)
 	}
 
-	if err = h.validator.Struct(pvz); err != nil {
+	if err = h.validator.Struct(rBody); err != nil {
 		return ValidationError(err)
 	}
 
-	newPvz := toDomainPVZ(pvz)
+	newPvz := toDomainPVZ(rBody)
 	newPvz, err = h.appService.NewPVZ(r.Context(), newPvz)
 	if err != nil {
 		return mapAppServiceErrsToHTTP(err)
@@ -82,16 +83,16 @@ func (h *handlers) NewPVZHandler(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) error {
-	rec := new(dto.PostReceptionsJSONBody)
-	if err := ReadJson(w, r, rec); err != nil {
+	rBody := new(dto.PostReceptionsJSONBody)
+	if err := ReadJson(w, r, rBody); err != nil {
 		return BadRequestBodyError(err)
 	}
 
-	if err := h.validator.Struct(rec); err != nil {
+	if err := h.validator.Struct(rBody); err != nil {
 		return ValidationError(err)
 	}
 
-	newRec := toDomainReception(rec)
+	newRec := toDomainReception(rBody)
 	newRec, err := h.appService.OpenNewPVZReception(r.Context(), newRec)
 	if err != nil {
 		return mapAppServiceErrsToHTTP(err)
@@ -106,16 +107,16 @@ func (h *handlers) NewReceptionHandler(w http.ResponseWriter, r *http.Request) e
 }
 
 func (h *handlers) AddProductHandler(w http.ResponseWriter, r *http.Request) error {
-	prod := new(dto.PostProductsJSONRequestBody)
-	if err := ReadJson(w, r, prod); err != nil {
+	rBody := new(dto.PostProductsJSONRequestBody)
+	if err := ReadJson(w, r, rBody); err != nil {
 		return BadRequestBodyError(err)
 	}
 
-	if err := h.validator.Struct(prod); err != nil {
+	if err := h.validator.Struct(rBody); err != nil {
 		return ValidationError(err)
 	}
 
-	newProd, err := h.appService.AddProductPVZ(r.Context(), toDomainProduct(prod))
+	newProd, err := h.appService.AddProductPVZ(r.Context(), toDomainProduct(rBody))
 	if err != nil {
 		return mapAppServiceErrsToHTTP(err)
 	}
@@ -176,16 +177,16 @@ func (h *handlers) GetPvzHandler(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *handlers) RegisterUserHandler(w http.ResponseWriter, r *http.Request) error {
-	req := new(dto.PostRegisterJSONRequestBody)
-	if err := ReadJson(w, r, req); err != nil {
+	rBody := new(dto.PostRegisterJSONRequestBody)
+	if err := ReadJson(w, r, rBody); err != nil {
 		return BadRequestBodyError(err)
 	}
 
-	if err := h.validator.Struct(req); err != nil {
+	if err := h.validator.Struct(rBody); err != nil {
 		return ValidationError(err)
 	}
 
-	newUser, err := h.appService.RegisterUser(r.Context(), toDomainUserData(req))
+	newUser, err := h.appService.RegisterUser(r.Context(), toDomainUserData(rBody))
 	if err != nil {
 		return mapAppServiceErrsToHTTP(err)
 	}
@@ -196,4 +197,47 @@ func (h *handlers) RegisterUserHandler(w http.ResponseWriter, r *http.Request) e
 	}
 
 	return nil
+}
+
+func (h *handlers) LoginUserHandler(w http.ResponseWriter, r *http.Request) error {
+	rBody := new(dto.PostLoginJSONRequestBody)
+	if err := ReadJson(w, r, rBody); err != nil {
+		return BadRequestBodyError(err)
+	}
+
+	if err := h.validator.Struct(rBody); err != nil {
+		return ValidationError(err)
+	}
+
+	ua, ip := UserAgentAndIP(r)
+	aToken, rToken, err := h.appService.LoginUser(r.Context(), &auth.LoginUserParams{
+		Email:         string(rBody.Email),
+		PlainPassword: rBody.Password,
+		UserAgent:     ua,
+		IP:            ip,
+	})
+	if err != nil {
+		return mapAppServiceErrsToHTTP(err)
+	}
+
+	h.setRefreshCookie(w, rToken)
+
+	err = WriteJSON(w, &dto.Token{Jwt: aToken}, http.StatusOK, nil)
+	if err != nil {
+		return InternalError(err)
+	}
+
+	return nil
+}
+
+func (h *handlers) setRefreshCookie(w http.ResponseWriter, rToken *auth.RefreshToken) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    rToken.Token,
+		Path:     "/refresh-token",
+		MaxAge:   int(time.Until(rToken.ExpiresAt).Seconds()),
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	})
 }

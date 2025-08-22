@@ -37,7 +37,7 @@ func (_m *MockTokenService) EXPECT() *MockTokenService_Expecter {
 }
 
 // Fingerprint provides a mock function for the type MockTokenService
-func (_mock *MockTokenService) Fingerprint(rToken *auth.RefreshTokenData) string {
+func (_mock *MockTokenService) Fingerprint(rToken *auth.RefreshToken) string {
 	ret := _mock.Called(rToken)
 
 	if len(ret) == 0 {
@@ -45,7 +45,7 @@ func (_mock *MockTokenService) Fingerprint(rToken *auth.RefreshTokenData) string
 	}
 
 	var r0 string
-	if returnFunc, ok := ret.Get(0).(func(*auth.RefreshTokenData) string); ok {
+	if returnFunc, ok := ret.Get(0).(func(*auth.RefreshToken) string); ok {
 		r0 = returnFunc(rToken)
 	} else {
 		r0 = ret.Get(0).(string)
@@ -59,16 +59,16 @@ type MockTokenService_Fingerprint_Call struct {
 }
 
 // Fingerprint is a helper method to define mock.On call
-//   - rToken *auth.RefreshTokenData
+//   - rToken *auth.RefreshToken
 func (_e *MockTokenService_Expecter) Fingerprint(rToken interface{}) *MockTokenService_Fingerprint_Call {
 	return &MockTokenService_Fingerprint_Call{Call: _e.mock.On("Fingerprint", rToken)}
 }
 
-func (_c *MockTokenService_Fingerprint_Call) Run(run func(rToken *auth.RefreshTokenData)) *MockTokenService_Fingerprint_Call {
+func (_c *MockTokenService_Fingerprint_Call) Run(run func(rToken *auth.RefreshToken)) *MockTokenService_Fingerprint_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 *auth.RefreshTokenData
+		var arg0 *auth.RefreshToken
 		if args[0] != nil {
-			arg0 = args[0].(*auth.RefreshTokenData)
+			arg0 = args[0].(*auth.RefreshToken)
 		}
 		run(
 			arg0,
@@ -82,7 +82,7 @@ func (_c *MockTokenService_Fingerprint_Call) Return(s string) *MockTokenService_
 	return _c
 }
 
-func (_c *MockTokenService_Fingerprint_Call) RunAndReturn(run func(rToken *auth.RefreshTokenData) string) *MockTokenService_Fingerprint_Call {
+func (_c *MockTokenService_Fingerprint_Call) RunAndReturn(run func(rToken *auth.RefreshToken) string) *MockTokenService_Fingerprint_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -148,19 +148,19 @@ func (_c *MockTokenService_GenerateAccessToken_Call) RunAndReturn(run func(token
 }
 
 // GenerateRefreshToken provides a mock function for the type MockTokenService
-func (_mock *MockTokenService) GenerateRefreshToken(userID string, ua string, ip string) *auth.RefreshTokenData {
+func (_mock *MockTokenService) GenerateRefreshToken(userID string, ua string, ip string) *auth.RefreshToken {
 	ret := _mock.Called(userID, ua, ip)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GenerateRefreshToken")
 	}
 
-	var r0 *auth.RefreshTokenData
-	if returnFunc, ok := ret.Get(0).(func(string, string, string) *auth.RefreshTokenData); ok {
+	var r0 *auth.RefreshToken
+	if returnFunc, ok := ret.Get(0).(func(string, string, string) *auth.RefreshToken); ok {
 		r0 = returnFunc(userID, ua, ip)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*auth.RefreshTokenData)
+			r0 = ret.Get(0).(*auth.RefreshToken)
 		}
 	}
 	return r0
@@ -202,12 +202,12 @@ func (_c *MockTokenService_GenerateRefreshToken_Call) Run(run func(userID string
 	return _c
 }
 
-func (_c *MockTokenService_GenerateRefreshToken_Call) Return(refreshTokenData *auth.RefreshTokenData) *MockTokenService_GenerateRefreshToken_Call {
-	_c.Call.Return(refreshTokenData)
+func (_c *MockTokenService_GenerateRefreshToken_Call) Return(refreshToken *auth.RefreshToken) *MockTokenService_GenerateRefreshToken_Call {
+	_c.Call.Return(refreshToken)
 	return _c
 }
 
-func (_c *MockTokenService_GenerateRefreshToken_Call) RunAndReturn(run func(userID string, ua string, ip string) *auth.RefreshTokenData) *MockTokenService_GenerateRefreshToken_Call {
+func (_c *MockTokenService_GenerateRefreshToken_Call) RunAndReturn(run func(userID string, ua string, ip string) *auth.RefreshToken) *MockTokenService_GenerateRefreshToken_Call {
 	_c.Call.Return(run)
 	return _c
 }

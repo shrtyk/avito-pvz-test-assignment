@@ -22,16 +22,17 @@ func (atc AccessTokenClaims) UserID() string {
 	return atc.Subject
 }
 
-type RefreshTokenData struct {
+type RefreshToken struct {
 	Token     string
 	UserID    string
 	IP        string
 	UserAgent string
 	CreatedAt time.Time
-	ExpireAt  time.Time
+	ExpiresAt time.Time
+	Revoked   bool
 }
 
-func (rtd *RefreshTokenData) PwdHash() []byte {
+func (rtd *RefreshToken) PwdHash() []byte {
 	h := sha256.Sum256([]byte(rtd.Token))
 	return h[:]
 }

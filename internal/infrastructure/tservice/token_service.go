@@ -71,19 +71,19 @@ func (s *tokenService) GenerateAccessToken(tokenData auth.AccessTokenData) (stri
 	return token.SignedString(s.privateKey)
 }
 
-func (s *tokenService) GenerateRefreshToken(userID, ua, ip string) *auth.RefreshTokenData {
+func (s *tokenService) GenerateRefreshToken(userID, ua, ip string) *auth.RefreshToken {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
 		// Shouldn't occur at all
 		panic("failed to generate refresh token: " + err.Error())
 	}
-	return &auth.RefreshTokenData{
+	return &auth.RefreshToken{
 		Token:     base64.URLEncoding.EncodeToString(b),
 		UserID:    userID,
 		UserAgent: ua,
 		IP:        ip,
 		CreatedAt: time.Now(),
-		ExpireAt:  time.Now().Add(s.cfg.RefreshLifetime),
+		ExpiresAt:  time.Now().Add(s.cfg.RefreshLifetime),
 	}
 }
 
@@ -92,7 +92,7 @@ func (s *tokenService) hash(token string) []byte {
 	return hash[:]
 }
 
-func (s *tokenService) Fingerprint(rToken *auth.RefreshTokenData) string {
+func (s *tokenService) Fingerprint(rToken *auth.RefreshToken) string {
 	templ := fmt.Sprintf("%s.%s.%s.%s", rToken.Token, rToken.UserAgent, rToken.IP, s.cfg.SecretKey)
 	h := s.hash(templ)
 	return hex.EncodeToString(h)

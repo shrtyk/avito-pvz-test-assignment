@@ -11,8 +11,8 @@ type query string
 
 const (
 	createPvzQuery query = `
-		INSERT INTO
-			pvzs (city)
+		INSERT INTO pvzs
+			(city)
 		VALUES
 			($1)
 		RETURNING
@@ -20,8 +20,8 @@ const (
 	`
 
 	createReceptionQuery query = `
-		INSERT INTO
-			receptions (pvz_id)
+		INSERT INTO receptions
+			(pvz_id)
 		VALUES
 			($1)
 		RETURNING
@@ -29,8 +29,8 @@ const (
 	`
 
 	createProductQuery query = `
-		INSERT INTO
-			products (reception_id, type)
+		INSERT INTO products
+	 		(reception_id, type)
 		VALUES(
 			(SELECT id FROM receptions WHERE pvz_id = $1 AND status = $2), $3
 		)
@@ -68,18 +68,9 @@ const (
 			pvzs
 	`
 
-	getUserPwdHashQuery query = `
-		SELECT
-			password_hash
-		FROM
-			users
-		WHERE
-			email = $1
-	`
-
 	insertUserQuery query = `
-		INSERT INTO
-			users (email, role, password_hash)
+		INSERT INTO users
+	 		(email, role, password_hash)
 		VALUES
 			($1, $2, $3)
 		RETURNING
@@ -96,8 +87,8 @@ const (
 	`
 
 	insertRefreshTokenQuery query = `
-		INSERT INTO
-			refresh_token (token_hash, fingerprint, user_id, user_agent, ip_address, created_at, expires_at)
+		INSERT INTO refresh_tokens
+			(token_hash, fingerprint, user_id, user_agent, ip_address, created_at, expires_at)
 		VALUES
 			($1, $2, $3, $4, $5, $6, $7)
 	`

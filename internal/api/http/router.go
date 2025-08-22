@@ -42,6 +42,7 @@ func (r *Router) initRoutes() {
 	r.Get("/healthz", Handle(h.HealthZ))
 
 	r.Post("/register", Handle(h.RegisterUserHandler))
+	r.Post("/login", Handle(h.LoginUserHandler))
 
 	// Authenticated only:
 	r.Group(func(r chi.Router) {

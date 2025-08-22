@@ -10,6 +10,11 @@ import (
 
 //go:generate mockery
 type Service interface {
+	PvzsService
+	AuthService
+}
+
+type PvzsService interface {
 	NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error)
 	OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
 	AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error)
@@ -17,5 +22,9 @@ type Service interface {
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)
 	GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error)
+}
+
+type AuthService interface {
 	RegisterUser(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error)
+	LoginUser(ctx context.Context, lParams *auth.LoginUserParams) (aToken string, rToken *auth.RefreshToken, err error)
 }

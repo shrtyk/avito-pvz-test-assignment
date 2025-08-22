@@ -185,7 +185,7 @@ paths:
                 password:
                   type: string
                   x-oapi-codegen-extra-tags:
-                    validate: "required,gte=6"
+                    validate: "required,gte=6,lte=72"
                 role:
                   type: string
                   enum: [employee, moderator]
@@ -224,7 +224,7 @@ paths:
                 password:
                   type: string
                   x-oapi-codegen-extra-tags:
-                    validate: "required,gte=6"
+                    validate: "required,gte=6,lte=72"
               required: [email, password]
       responses:
         "200":

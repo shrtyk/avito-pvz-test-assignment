@@ -186,7 +186,7 @@ func (s *service) RegisterUser(ctx context.Context, rParams *auth.RegisterUserPa
 func (s *service) LoginUser(
 	ctx context.Context,
 	lParams *auth.LoginUserParams,
-) (aToken string, rToken string, err error) {
+) (aToken string, rToken *auth.RefreshToken, err error) {
 	op := "service.LoginUser"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
@@ -196,18 +196,18 @@ func (s *service) LoginUser(
 	if err != nil {
 		var bErr *xerr.BaseErr[pr.RepoErrKind]
 		if errors.As(err, &bErr) && bErr.Kind == pr.NotFound {
-			return "", "", xerr.WrapErr(op, ps.WrongCredentials, err)
+			return "", nil, xerr.WrapErr(op, ps.WrongCredentials, err)
 		}
-		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
 	ok, err := s.pwdSrc.Compare(u.PasswordHash, lParams.PlainPassword)
 	if err != nil {
-		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
 	if !ok {
-		return "", "", xerr.NewErr(op, ps.WrongCredentials)
+		return "", nil, xerr.NewErr(op, ps.WrongCredentials)
 	}
 
 	aToken, err = s.tknSrc.GenerateAccessToken(auth.AccessTokenData{
@@ -215,7 +215,7 @@ func (s *service) LoginUser(
 		Role:   u.Role,
 	})
 	if err != nil {
-		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 	rTokenData := s.tknSrc.GenerateRefreshToken(
 		u.Id.String(),
@@ -226,8 +226,8 @@ func (s *service) LoginUser(
 	fp := s.tknSrc.Fingerprint(rTokenData)
 	err = s.repo.SaveRefreshToken(tctx, rTokenData, fp)
 	if err != nil {
-		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
-	return aToken, rTokenData.Token, nil
+	return aToken, rTokenData, nil
 }

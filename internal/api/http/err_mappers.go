@@ -27,6 +27,8 @@ func mapAppServiceErrsToHTTP(err error) *HTTPError {
 			ps.FailedToCloseReception,
 			ps.EmailAlreadyExists:
 			e.Code = http.StatusBadRequest
+		case ps.WrongCredentials:
+			e.Code = http.StatusUnauthorized
 		}
 		return e
 	}

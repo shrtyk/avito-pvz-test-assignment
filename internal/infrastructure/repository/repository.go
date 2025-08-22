@@ -247,7 +247,7 @@ func (r *repo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, err
 
 func (r *repo) SaveRefreshToken(
 	ctx context.Context,
-	rToken *auth.RefreshTokenData,
+	rToken *auth.RefreshToken,
 	fp string,
 ) error {
 	op := "repository.SaveRefreshToken"
@@ -261,7 +261,7 @@ func (r *repo) SaveRefreshToken(
 		rToken.UserAgent,
 		rToken.IP,
 		rToken.CreatedAt,
-		rToken.ExpireAt,
+		rToken.ExpiresAt,
 	)
 	if err != nil {
 		return xerr.WrapErr(op, pRepo.Unexpected, err)

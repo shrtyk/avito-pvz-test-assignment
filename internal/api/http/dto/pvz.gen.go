@@ -133,7 +133,7 @@ type PostDummyLoginJSONBodyRole string
 // PostLoginJSONBody defines parameters for PostLogin.
 type PostLoginJSONBody struct {
 	Email    openapi_types.Email `json:"email" validate:"required,email"`
-	Password string              `json:"password" validate:"required,gte=6"`
+	Password string              `json:"password" validate:"required,gte=6,lte=72"`
 }
 
 // PostProductsJSONBody defines parameters for PostProducts.
@@ -168,7 +168,7 @@ type PostReceptionsJSONBody struct {
 // PostRegisterJSONBody defines parameters for PostRegister.
 type PostRegisterJSONBody struct {
 	Email    openapi_types.Email      `json:"email" validate:"required,email"`
-	Password string                   `json:"password" validate:"required,gte=6"`
+	Password string                   `json:"password" validate:"required,gte=6,lte=72"`
 	Role     PostRegisterJSONBodyRole `json:"role" validate:"required,oneof=employee moderator"`
 }
 
