@@ -273,3 +273,56 @@ func (_c *MockTokenService_GetTokenClaims_Call) RunAndReturn(run func(token stri
 	_c.Call.Return(run)
 	return _c
 }
+
+// Hash provides a mock function for the type MockTokenService
+func (_mock *MockTokenService) Hash(token string) []byte {
+	ret := _mock.Called(token)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Hash")
+	}
+
+	var r0 []byte
+	if returnFunc, ok := ret.Get(0).(func(string) []byte); ok {
+		r0 = returnFunc(token)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]byte)
+		}
+	}
+	return r0
+}
+
+// MockTokenService_Hash_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Hash'
+type MockTokenService_Hash_Call struct {
+	*mock.Call
+}
+
+// Hash is a helper method to define mock.On call
+//   - token string
+func (_e *MockTokenService_Expecter) Hash(token interface{}) *MockTokenService_Hash_Call {
+	return &MockTokenService_Hash_Call{Call: _e.mock.On("Hash", token)}
+}
+
+func (_c *MockTokenService_Hash_Call) Run(run func(token string)) *MockTokenService_Hash_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockTokenService_Hash_Call) Return(bytes []byte) *MockTokenService_Hash_Call {
+	_c.Call.Return(bytes)
+	return _c
+}
+
+func (_c *MockTokenService_Hash_Call) RunAndReturn(run func(token string) []byte) *MockTokenService_Hash_Call {
+	_c.Call.Return(run)
+	return _c
+}

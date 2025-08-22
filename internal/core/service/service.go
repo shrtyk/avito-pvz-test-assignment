@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"crypto/subtle"
 	"errors"
 	"time"
 
@@ -192,7 +193,7 @@ func (s *service) LoginUser(
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
-	u, err := s.repo.GetUserByEmail(tctx, lParams.Email)
+	u, err := s.repo.UserByEmail(tctx, lParams.Email)
 	if err != nil {
 		var bErr *xerr.BaseErr[pr.RepoErrKind]
 		if errors.As(err, &bErr) && bErr.Kind == pr.NotFound {
@@ -223,11 +224,67 @@ func (s *service) LoginUser(
 		lParams.IP,
 	)
 
-	fp := s.tknSrc.Fingerprint(rTokenData)
-	err = s.repo.SaveRefreshToken(tctx, rTokenData, fp)
+	rTokenData.TokenHash = s.tknSrc.Hash(rTokenData.Token)
+	rTokenData.Fingerprint = s.tknSrc.Fingerprint(rTokenData)
+	err = s.repo.SaveRefreshToken(tctx, rTokenData)
 	if err != nil {
 		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
 	return aToken, rTokenData, nil
+}
+
+func (s *service) RefreshTokens(
+	ctx context.Context,
+	providedToken *auth.RefreshToken,
+) (newAToken string, newRToken *auth.RefreshToken, err error) {
+	op := "service.RefreshTokens"
+
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	providedToken.TokenHash = s.tknSrc.Hash(providedToken.Token)
+
+	ud, err := s.repo.UserRoleAndRefreshToken(tctx, providedToken.TokenHash)
+	if err != nil {
+		var bErr *xerr.BaseErr[pr.RepoErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pr.NotFound {
+			return "", nil, xerr.WrapErr(op, ps.WrongCredentials, err)
+		}
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	providedFp := s.tknSrc.Fingerprint(providedToken)
+	actualFp := s.tknSrc.Fingerprint(ud.RToken)
+	if subtle.ConstantTimeCompare([]byte(providedFp), []byte(actualFp)) != 1 {
+		return "", nil, xerr.NewErr(op, ps.WrongCredentials)
+	}
+
+	if ud.RToken.Revoked || time.Until(ud.RToken.ExpiresAt) < 0 {
+		return "", nil, xerr.NewErr(op, ps.WrongCredentials)
+	}
+
+	userID, err := uuid.Parse(ud.RToken.UserID)
+	if err != nil {
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	newAToken, err = s.tknSrc.GenerateAccessToken(auth.AccessTokenData{
+		UserID: userID,
+		Role:   ud.Role,
+	})
+	if err != nil {
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	newRToken = s.tknSrc.GenerateRefreshToken(ud.RToken.UserID, ud.RToken.UserAgent, ud.RToken.IP)
+	newRToken.TokenHash = s.tknSrc.Hash(newRToken.Token)
+	newRToken.Fingerprint = s.tknSrc.Fingerprint(newRToken)
+
+	err = s.repo.UpdateUserRefreshToken(tctx, providedToken.TokenHash, newRToken)
+	if err != nil {
+		return "", nil, xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	return newAToken, newRToken, nil
 }

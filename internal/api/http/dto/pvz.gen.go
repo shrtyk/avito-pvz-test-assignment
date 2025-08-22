@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	BearerAuthScopes = "bearerAuth.Scopes"
+	RefreshTokenCookieScopes = "RefreshTokenCookie.Scopes"
+	BearerAuthScopes         = "bearerAuth.Scopes"
 )
 
 // Defines values for PVZCity.

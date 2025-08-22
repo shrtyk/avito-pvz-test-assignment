@@ -9,4 +9,5 @@ type TokenService interface {
 	GetTokenClaims(token string) (*auth.AccessTokenClaims, error)
 	GenerateRefreshToken(userID, ua, ip string) *auth.RefreshToken
 	Fingerprint(rToken *auth.RefreshToken) string
+	Hash(token string) []byte
 }

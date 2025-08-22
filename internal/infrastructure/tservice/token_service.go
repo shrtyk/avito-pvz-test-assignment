@@ -83,18 +83,18 @@ func (s *tokenService) GenerateRefreshToken(userID, ua, ip string) *auth.Refresh
 		UserAgent: ua,
 		IP:        ip,
 		CreatedAt: time.Now(),
-		ExpiresAt:  time.Now().Add(s.cfg.RefreshLifetime),
+		ExpiresAt: time.Now().Add(s.cfg.RefreshLifetime),
 	}
 }
 
-func (s *tokenService) hash(token string) []byte {
+func (s *tokenService) Hash(token string) []byte {
 	hash := sha256.Sum256([]byte(token))
 	return hash[:]
 }
 
 func (s *tokenService) Fingerprint(rToken *auth.RefreshToken) string {
-	templ := fmt.Sprintf("%s.%s.%s.%s", rToken.Token, rToken.UserAgent, rToken.IP, s.cfg.SecretKey)
-	h := s.hash(templ)
+	templ := fmt.Sprintf("%s.%s.%s.%s", rToken.TokenHash, rToken.UserAgent, rToken.IP, s.cfg.SecretKey)
+	h := s.Hash(templ)
 	return hex.EncodeToString(h)
 }
 

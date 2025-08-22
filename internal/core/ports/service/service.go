@@ -27,4 +27,6 @@ type PvzsService interface {
 type AuthService interface {
 	RegisterUser(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error)
 	LoginUser(ctx context.Context, lParams *auth.LoginUserParams) (aToken string, rToken *auth.RefreshToken, err error)
+	RefreshTokens(ctx context.Context,
+		providedToken *auth.RefreshToken) (newAToken string, newRToken *auth.RefreshToken, err error)
 }

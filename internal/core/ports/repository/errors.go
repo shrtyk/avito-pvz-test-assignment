@@ -12,4 +12,5 @@ const (
 	NotFound         RepoErrKind = "entity not found"
 	Conflict         RepoErrKind = "entity conflicts with existing data"
 	InvalidReference RepoErrKind = "invalid reference to another entity"
+	TxRollbackFailed RepoErrKind = "failed to rollback transaction"
 )

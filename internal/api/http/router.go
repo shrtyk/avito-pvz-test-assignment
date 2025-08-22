@@ -43,6 +43,7 @@ func (r *Router) initRoutes() {
 
 	r.Post("/register", Handle(h.RegisterUserHandler))
 	r.Post("/login", Handle(h.LoginUserHandler))
+	r.Post("/tokens/refresh", Handle(h.RefreshTokensHandler))
 
 	// Authenticated only:
 	r.Group(func(r chi.Router) {

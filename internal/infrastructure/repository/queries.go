@@ -92,6 +92,27 @@ const (
 		VALUES
 			($1, $2, $3, $4, $5, $6, $7)
 	`
+
+	getRefreshTokenByHashQuery query = `
+		SELECT
+			u.role, rt.fingerprint, rt.user_id, rt.user_agent,
+			rt.ip_address, rt.created_at, rt.expires_at, rt.revoked
+		FROM
+			refresh_tokens AS rt
+		JOIN users AS u
+			ON u.id = rt.user_id
+		WHERE
+			token_hash = $1
+	`
+
+	revokeOldRefreshTokenQuery query = `
+		UPDATE
+			refresh_tokens
+		SET
+			revoked = true
+		WHERE
+			token_hash = $1
+	`
 )
 
 func buildGetPvzDataQuery(params *domain.PvzsReadParams) (query, []any) {

@@ -13,6 +13,12 @@ components:
           type: string
       required: [jwt]
 
+    RefreshTokenCookie:
+      securitySchemes:
+        type: apiKey
+        in: cookie
+        name: refresh_token
+
     User:
       type: object
       properties:
@@ -235,6 +241,26 @@ paths:
                 $ref: "#/components/schemas/Token"
         "401":
           description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /tokens/refresh:
+    post:
+      summary: Обновление токенов
+      description: Получает новый JWT и refresh токен. Refresh токен передается через http-only cookie.
+      security:
+        - RefreshTokenCookie: []
+      responses:
+        "201":
+          description: Токены успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "401":
+          description: Неверный или истекший refresh токен
           content:
             application/json:
               schema:

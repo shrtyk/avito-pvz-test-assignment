@@ -10,6 +10,11 @@ import (
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
 	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
+	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+)
+
+const (
+	refreshTokenKey = "refresh_token"
 )
 
 type handlers struct {
@@ -230,14 +235,49 @@ func (h *handlers) LoginUserHandler(w http.ResponseWriter, r *http.Request) erro
 	return nil
 }
 
+func (h *handlers) RefreshTokensHandler(w http.ResponseWriter, r *http.Request) error {
+	rtoken, err := h.getRefreshTokenOutOfCookie(r)
+	if err != nil {
+		return mapAppServiceErrsToHTTP(err)
+	}
+
+	ua, ip := UserAgentAndIP(r)
+	newAToken, newRToken, err := h.appService.RefreshTokens(r.Context(), &auth.RefreshToken{
+		Token:     rtoken,
+		UserAgent: ua,
+		IP:        ip,
+	})
+	if err != nil {
+		return mapAppServiceErrsToHTTP(err)
+	}
+
+	h.setRefreshCookie(w, newRToken)
+	err = WriteJSON(w, &dto.Token{Jwt: newAToken}, http.StatusCreated, nil)
+	if err != nil {
+		return InternalError(err)
+	}
+
+	return nil
+}
+
 func (h *handlers) setRefreshCookie(w http.ResponseWriter, rToken *auth.RefreshToken) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
+		Name:     refreshTokenKey,
 		Value:    rToken.Token,
-		Path:     "/refresh-token",
+		Path:     "/tokens/refresh",
 		MaxAge:   int(time.Until(rToken.ExpiresAt).Seconds()),
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	})
+}
+
+func (h *handlers) getRefreshTokenOutOfCookie(r *http.Request) (string, error) {
+	op := "handlers.getRefreshTokenOutOfCookie"
+
+	cookie, err := r.Cookie(refreshTokenKey)
+	if err != nil {
+		return "", xerr.WrapErr(op, pService.WrongCredentials, err)
+	}
+	return cookie.Value, nil
 }
