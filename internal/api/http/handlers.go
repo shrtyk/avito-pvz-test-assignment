@@ -12,16 +12,16 @@ import (
 )
 
 type handlers struct {
-	appService pService.Service
-	tService   pAuth.TokensService
-	validator  *validator.Validate
+	appService  pService.Service
+	authService pAuth.AuthService
+	validator   *validator.Validate
 }
 
-func NewHandlers(appService pService.Service, tService pAuth.TokensService) *handlers {
+func NewHandlers(appService pService.Service, authService pAuth.AuthService) *handlers {
 	return &handlers{
-		appService: appService,
-		tService:   tService,
-		validator:  MustNewValidator(),
+		appService:  appService,
+		authService: authService,
+		validator:   MustNewValidator(),
 	}
 }
 
@@ -40,7 +40,7 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 		return ValidationError(err)
 	}
 
-	jwt, err := h.tService.GenerateAccessToken(auth.AccessTokenData{
+	jwt, err := h.authService.GenerateAccessToken(auth.AccessTokenData{
 		UserID: 0,
 		Role:   auth.UserRole(req.Role),
 	})

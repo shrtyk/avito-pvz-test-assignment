@@ -14,6 +14,7 @@ require (
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/stretchr/testify v1.10.0
+	github.com/tailscale/golang-x-crypto v0.91.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.38.0
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce
 	google.golang.org/grpc v1.74.2

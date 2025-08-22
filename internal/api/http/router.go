@@ -12,13 +12,13 @@ import (
 type Router struct {
 	chi.Router
 	aService aService.Service
-	tService pAuth.TokensService
+	tService pAuth.AuthService
 	logger   *slog.Logger
 }
 
 func NewRouter(
 	aService aService.Service,
-	tService pAuth.TokensService,
+	tService pAuth.AuthService,
 	logger *slog.Logger,
 ) *Router {
 	r := &Router{

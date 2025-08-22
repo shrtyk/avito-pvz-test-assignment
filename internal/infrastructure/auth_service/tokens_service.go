@@ -1,7 +1,11 @@
-package tservice
+package authservice
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
@@ -16,13 +20,13 @@ import (
 	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
-type tokensService struct {
-	publicKey           *rsa.PublicKey
-	privateKey          *rsa.PrivateKey
-	accessTokenLifetime time.Duration
+type authService struct {
+	publicKey  *rsa.PublicKey
+	privateKey *rsa.PrivateKey
+	cfg        *config.AuthTokensCfg
 }
 
-func MustCreateTokenService(cfg *config.AuthTokensCfg) *tokensService {
+func MustCreateAuthService(cfg *config.AuthTokensCfg) *authService {
 	pubKeyData, err := os.ReadFile(cfg.PublicRSAPath)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read: %s: %s", cfg.PublicRSAPath, err)
@@ -47,19 +51,19 @@ func MustCreateTokenService(cfg *config.AuthTokensCfg) *tokensService {
 		panic(msg)
 	}
 
-	return &tokensService{
-		publicKey:           pub,
-		privateKey:          private,
-		accessTokenLifetime: cfg.JWTLifetime,
+	return &authService{
+		publicKey:  pub,
+		privateKey: private,
+		cfg:        cfg,
 	}
 }
 
-func (s *tokensService) GenerateAccessToken(tokenData auth.AccessTokenData) (string, error) {
+func (s *authService) GenerateAccessToken(tokenData auth.AccessTokenData) (string, error) {
 	claims := auth.AccessTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   strconv.FormatInt(tokenData.UserID, 10),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.accessTokenLifetime)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.cfg.JWTLifetime)),
 			ID:        uuid.NewString(),
 		},
 		Role: string(tokenData.Role),
@@ -68,7 +72,34 @@ func (s *tokensService) GenerateAccessToken(tokenData auth.AccessTokenData) (str
 	return token.SignedString(s.privateKey)
 }
 
-func (s *tokensService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {
+func (s *authService) GenerateRefreshToken(userID, ua, ip string) *auth.RefreshTokenData {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		// Shouldn't occur at all
+		panic("failed to generate refresh token: " + err.Error())
+	}
+	return &auth.RefreshTokenData{
+		Token:     base64.URLEncoding.EncodeToString(b),
+		UserID:    userID,
+		UserAgent: ua,
+		IP:        ip,
+		CreatedAt: time.Now(),
+		ExpireAt:  time.Now().Add(s.cfg.RefreshLifetime),
+	}
+}
+
+func (s *authService) hash(token string) []byte {
+	hash := sha256.Sum256([]byte(token))
+	return hash[:]
+}
+
+func (s *authService) Fingerprint(rToken *auth.RefreshTokenData) string {
+	templ := fmt.Sprintf("%s.%s.%s.%s", rToken.Token, rToken.UserAgent, rToken.IP, s.cfg.SecretKey)
+	h := s.hash(templ)
+	return hex.EncodeToString(h[:16])
+}
+
+func (s *authService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {
 	op := "token_service.GetTokenClaims"
 
 	tokenClaims := new(auth.AccessTokenClaims)

@@ -56,9 +56,11 @@ type PostgresCfg struct {
 }
 
 type AuthTokensCfg struct {
-	PublicRSAPath  string        `yaml:"public_key_path" env:"PUBLIC_RSA_PATH" env-default:"./keys/rsa/public_key.pem"`
-	PrivateRSAPath string        `yaml:"private_key_path" env:"PRIVATE_RSA_PATH" env-default:"./keys/rsa/private_key.pem"`
-	JWTLifetime    time.Duration `yaml:"jwt_lifetime" env:"JWT_LIFETIME" env-default:"15m"`
+	PublicRSAPath   string        `yaml:"public_key_path" env:"PUBLIC_RSA_PATH" env-default:"./keys/rsa/public_key.pem"`
+	PrivateRSAPath  string        `yaml:"private_key_path" env:"PRIVATE_RSA_PATH" env-default:"./keys/rsa/private_key.pem"`
+	JWTLifetime     time.Duration `yaml:"jwt_lifetime" env:"JWT_LIFETIME" env-default:"15m"`
+	RefreshLifetime time.Duration `yaml:"refresh_lifetime" env:"REFRESH_LIFETIME" env-default:"720h"`
+	SecretKey       string        `yaml:"secret_key" env:"SECRET_KEY" env-default:"super-secret-key"`
 }
 
 func MustInitConfig() *Config {

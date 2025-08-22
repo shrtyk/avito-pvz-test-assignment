@@ -21,8 +21,9 @@ import (
 	"github.com/pressly/goose/v3"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/service"
+	as "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/auth_service"
+	pwdservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/pwd_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/repository"
-	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/token_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/config"
 	pkgpg "github.com/shrtyk/avito-pvz-test-assignment/pkg/dbs/postgres"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
@@ -214,16 +215,17 @@ func startTestApp(t *testing.T, appCfg *testAppConfig) string {
 
 	cfg := config.MustInitConfig()
 	log, _ := logger.NewTestLogger()
-	tService := tservice.MustCreateTokenService(&cfg.AuthTokenCfg)
+	tService := as.MustCreateAuthService(&cfg.AuthTokenCfg)
 	db := pkgpg.MustCreateConnectionPool(&cfg.PostgresCfg)
 	repo := repository.NewRepo(db)
-	appService := service.NewAppService(cfg.AppCfg.Timeout, repo)
+	pwdService := pwdservice.NewPasswordService()
+	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService)
 
 	app := NewApplication()
 	app.Init(
 		WithConfig(cfg),
 		WithLogger(log),
-		WithTokenService(tService),
+		WithAuthService(tService),
 		WithRepo(repo),
 		WithService(appService),
 	)

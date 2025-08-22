@@ -10,11 +10,11 @@ import (
 )
 
 type Application struct {
-	Cfg          *config.Config
-	Logger       *slog.Logger
-	Repo         pRepo.Repository
-	TokenService pAuth.TokensService
-	AppService   pService.Service
+	Cfg         *config.Config
+	Logger      *slog.Logger
+	Repo        pRepo.Repository
+	AuthService pAuth.AuthService
+	AppService  pService.Service
 }
 
 type option func(*Application)
@@ -47,9 +47,9 @@ func WithRepo(repo pRepo.Repository) option {
 	}
 }
 
-func WithTokenService(tService pAuth.TokensService) option {
+func WithAuthService(authService pAuth.AuthService) option {
 	return func(app *Application) {
-		app.TokenService = tService
+		app.AuthService = authService
 	}
 }
 

@@ -1,4 +1,4 @@
-package tservice
+package authservice
 
 import (
 	"context"
@@ -18,16 +18,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newTestTokensService(t *testing.T, accessTokenLifetime time.Duration) *tokensService {
+func newTestTokensService(t *testing.T, accessTokenLifetime time.Duration) *authService {
 	t.Helper()
 
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
 
-	return &tokensService{
-		publicKey:           &privateKey.PublicKey,
-		privateKey:          privateKey,
-		accessTokenLifetime: accessTokenLifetime,
+	return &authService{
+		publicKey:  &privateKey.PublicKey,
+		privateKey: privateKey,
+		cfg: &config.AuthTokensCfg{
+			JWTLifetime: accessTokenLifetime,
+		},
 	}
 }
 
@@ -138,7 +140,7 @@ func TestMustCreateTokenService(t *testing.T) {
 		}
 
 		assert.NotPanics(t, func() {
-			MustCreateTokenService(cfg)
+			MustCreateAuthService(cfg)
 		})
 	})
 
@@ -152,7 +154,7 @@ func TestMustCreateTokenService(t *testing.T) {
 			PrivateRSAPath: privateKeyPath,
 		}
 		assert.Panics(t, func() {
-			MustCreateTokenService(cfg)
+			MustCreateAuthService(cfg)
 		})
 	})
 
@@ -178,7 +180,7 @@ func TestMustCreateTokenService(t *testing.T) {
 			PrivateRSAPath: "fake-file",
 		}
 		assert.Panics(t, func() {
-			MustCreateTokenService(cfg)
+			MustCreateAuthService(cfg)
 		})
 	})
 
@@ -206,7 +208,7 @@ func TestMustCreateTokenService(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			MustCreateTokenService(cfg)
+			MustCreateAuthService(cfg)
 		})
 	})
 
@@ -235,7 +237,7 @@ func TestMustCreateTokenService(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			MustCreateTokenService(cfg)
+			MustCreateAuthService(cfg)
 		})
 	})
 }
