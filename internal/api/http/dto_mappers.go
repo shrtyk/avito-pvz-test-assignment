@@ -1,8 +1,10 @@
 package http
 
 import (
+	"github.com/oapi-codegen/runtime/types"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 )
 
 const (
@@ -156,4 +158,27 @@ func toDTOPvzData(dd []*domain.PvzReceptions) []*dto.PvzReceptions {
 		res[i] = toDTOPvzReceptions(d)
 	}
 	return res
+}
+
+func toDTOUserData(domainUser *auth.User) *dto.User {
+	if domainUser == nil {
+		return nil
+	}
+	return &dto.User{
+		Id:    &domainUser.Id,
+		Email: types.Email(domainUser.Email),
+		Role:  dto.UserRole(domainUser.Role),
+	}
+}
+
+func toDomainUserData(dtoUserParams *dto.PostRegisterJSONRequestBody) *auth.RegisterUserParams {
+	if dtoUserParams == nil {
+		return nil
+	}
+
+	return &auth.RegisterUserParams{
+		Email:         string(dtoUserParams.Email),
+		PlainPassword: dtoUserParams.Password,
+		Role:          auth.UserRole(dtoUserParams.Role),
+	}
 }

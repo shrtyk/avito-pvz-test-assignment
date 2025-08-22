@@ -41,6 +41,8 @@ func (r *Router) initRoutes() {
 	r.Post("/dummyLogin", Handle(h.DummyLoginHandler))
 	r.Get("/healthz", Handle(h.HealthZ))
 
+	r.Post("/register", Handle(h.RegisterUserHandler))
+
 	// Authenticated only:
 	r.Group(func(r chi.Router) {
 		r.Use(mws.AuthenticationMW)

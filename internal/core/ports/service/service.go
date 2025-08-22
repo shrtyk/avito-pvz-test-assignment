@@ -17,5 +17,5 @@ type Service interface {
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)
 	GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error)
-	RegisterUser(ctx context.Context, userParams auth.RegisterUserParams) (*auth.User, error)
+	RegisterUser(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error)
 }

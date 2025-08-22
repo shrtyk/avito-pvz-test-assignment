@@ -174,3 +174,26 @@ func (h *handlers) GetPvzHandler(w http.ResponseWriter, r *http.Request) error {
 
 	return nil
 }
+
+func (h *handlers) RegisterUserHandler(w http.ResponseWriter, r *http.Request) error {
+	req := new(dto.PostRegisterJSONRequestBody)
+	if err := ReadJson(w, r, req); err != nil {
+		return BadRequestBodyError(err)
+	}
+
+	if err := h.validator.Struct(req); err != nil {
+		return ValidationError(err)
+	}
+
+	newUser, err := h.appService.RegisterUser(r.Context(), toDomainUserData(req))
+	if err != nil {
+		return mapAppServiceErrsToHTTP(err)
+	}
+
+	err = WriteJSON(w, toDTOUserData(newUser), http.StatusCreated, nil)
+	if err != nil {
+		return InternalError(err)
+	}
+
+	return nil
+}

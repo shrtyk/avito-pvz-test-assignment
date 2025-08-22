@@ -146,7 +146,7 @@ func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 	return res, nil
 }
 
-func (s *service) RegisterUser(ctx context.Context, userParams auth.RegisterUserParams) (*auth.User, error) {
+func (s *service) RegisterUser(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error) {
 	op := "service.RegisterUser"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)

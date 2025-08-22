@@ -489,7 +489,7 @@ func (_c *MockService_OpenNewPVZReception_Call) RunAndReturn(run func(ctx contex
 }
 
 // RegisterUser provides a mock function for the type MockService
-func (_mock *MockService) RegisterUser(ctx context.Context, userParams auth.RegisterUserParams) (*auth.User, error) {
+func (_mock *MockService) RegisterUser(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error) {
 	ret := _mock.Called(ctx, userParams)
 
 	if len(ret) == 0 {
@@ -498,17 +498,17 @@ func (_mock *MockService) RegisterUser(ctx context.Context, userParams auth.Regi
 
 	var r0 *auth.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, auth.RegisterUserParams) (*auth.User, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.RegisterUserParams) (*auth.User, error)); ok {
 		return returnFunc(ctx, userParams)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, auth.RegisterUserParams) *auth.User); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.RegisterUserParams) *auth.User); ok {
 		r0 = returnFunc(ctx, userParams)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*auth.User)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, auth.RegisterUserParams) error); ok {
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *auth.RegisterUserParams) error); ok {
 		r1 = returnFunc(ctx, userParams)
 	} else {
 		r1 = ret.Error(1)
@@ -523,20 +523,20 @@ type MockService_RegisterUser_Call struct {
 
 // RegisterUser is a helper method to define mock.On call
 //   - ctx context.Context
-//   - userParams auth.RegisterUserParams
+//   - userParams *auth.RegisterUserParams
 func (_e *MockService_Expecter) RegisterUser(ctx interface{}, userParams interface{}) *MockService_RegisterUser_Call {
 	return &MockService_RegisterUser_Call{Call: _e.mock.On("RegisterUser", ctx, userParams)}
 }
 
-func (_c *MockService_RegisterUser_Call) Run(run func(ctx context.Context, userParams auth.RegisterUserParams)) *MockService_RegisterUser_Call {
+func (_c *MockService_RegisterUser_Call) Run(run func(ctx context.Context, userParams *auth.RegisterUserParams)) *MockService_RegisterUser_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 auth.RegisterUserParams
+		var arg1 *auth.RegisterUserParams
 		if args[1] != nil {
-			arg1 = args[1].(auth.RegisterUserParams)
+			arg1 = args[1].(*auth.RegisterUserParams)
 		}
 		run(
 			arg0,
@@ -551,7 +551,7 @@ func (_c *MockService_RegisterUser_Call) Return(user *auth.User, err error) *Moc
 	return _c
 }
 
-func (_c *MockService_RegisterUser_Call) RunAndReturn(run func(ctx context.Context, userParams auth.RegisterUserParams) (*auth.User, error)) *MockService_RegisterUser_Call {
+func (_c *MockService_RegisterUser_Call) RunAndReturn(run func(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error)) *MockService_RegisterUser_Call {
 	_c.Call.Return(run)
 	return _c
 }
