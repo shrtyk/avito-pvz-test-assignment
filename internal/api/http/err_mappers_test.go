@@ -46,7 +46,7 @@ func Test_mapAppServiceErrsToHTTP(t *testing.T) {
 	}
 }
 
-func Test_mapAuthServiceErrsToHTTP(t *testing.T) {
+func Test_mapTokenServiceErrsToHTTP(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -79,7 +79,7 @@ func Test_mapAuthServiceErrsToHTTP(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			httpErr := mapAuthServiceErrsToHTTP(tt.err)
+			httpErr := mapTokenServiceErrsToHTTP(tt.err)
 			assert.Equal(t, tt.wantStatus, httpErr.Code)
 		})
 	}

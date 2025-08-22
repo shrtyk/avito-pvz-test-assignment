@@ -10,27 +10,27 @@ import (
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	as "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/auth_service"
+	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
 type Middlewares struct {
-	authService   pAuth.AuthService
+	tokenService  pAuth.TokenService
 	log           *slog.Logger
 	handleAuthErr func(http.ResponseWriter, *http.Request, error)
 }
 
 func NewMiddlewares(
-	authService pAuth.AuthService,
+	tokenService pAuth.TokenService,
 	log *slog.Logger,
 ) *Middlewares {
 	eh := func(w http.ResponseWriter, r *http.Request, err error) {
-		WriteHTTPError(w, r, mapAuthServiceErrsToHTTP(err))
+		WriteHTTPError(w, r, mapTokenServiceErrsToHTTP(err))
 	}
 
 	return &Middlewares{
-		authService:   authService,
+		tokenService:  tokenService,
 		log:           log,
 		handleAuthErr: eh,
 	}
@@ -124,7 +124,7 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 			return
 		}
 
-		claims, err := m.authService.GetTokenClaims(bt)
+		claims, err := m.tokenService.GetTokenClaims(bt)
 		if err != nil {
 			m.handleAuthErr(w, r, err)
 			return
@@ -133,7 +133,7 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 		l := logger.FromCtx(r.Context())
 		newLog := l.With(slog.String("user_id", claims.UserID()))
 		ctxWithLog := logger.ToCtx(r.Context(), newLog)
-		ctxWithClaims := as.ClaimsToCtx(ctxWithLog, claims)
+		ctxWithClaims := ts.ClaimsToCtx(ctxWithLog, claims)
 
 		newReq := r.WithContext(ctxWithClaims)
 		next.ServeHTTP(w, newReq)
@@ -145,7 +145,7 @@ func (m *Middlewares) AuthorizeRoles(allowedRoles ...auth.UserRole) func(http.Ha
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			op := "middlewares.AuthorizeRoles"
 
-			claims, err := as.ClaimsFromCtx(r.Context())
+			claims, err := ts.ClaimsFromCtx(r.Context())
 			if err != nil {
 				m.handleAuthErr(w, r, err)
 				return

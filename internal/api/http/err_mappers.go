@@ -34,7 +34,7 @@ func mapAppServiceErrsToHTTP(err error) *HTTPError {
 	return InternalError(err)
 }
 
-func mapAuthServiceErrsToHTTP(err error) *HTTPError {
+func mapTokenServiceErrsToHTTP(err error) *HTTPError {
 	e := new(HTTPError)
 
 	var bErr *xerr.BaseErr[auth.AuthErrKind]

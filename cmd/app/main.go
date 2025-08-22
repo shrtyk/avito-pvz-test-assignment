@@ -6,9 +6,9 @@ import (
 	"syscall"
 
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/service"
-	as "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/auth_service"
 	pwdservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/pwd_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/repository"
+	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/config"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/dbs/postgres"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
@@ -17,9 +17,9 @@ import (
 func main() {
 	cfg := config.MustInitConfig()
 	log := logger.MustCreateNewLogger(cfg.AppCfg.Env)
-	authService := as.MustCreateAuthService(&cfg.AuthTokenCfg)
 	db := postgres.MustCreateConnectionPool(&cfg.PostgresCfg)
 	repo := repository.NewRepo(db)
+	tokenService := ts.MustCreateTokenService(&cfg.AuthTokenCfg)
 	pwdService := pwdservice.NewPasswordService()
 	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService)
 
@@ -27,7 +27,7 @@ func main() {
 	app.Init(
 		WithConfig(cfg),
 		WithLogger(log),
-		WithAuthService(authService),
+		WithTokenService(tokenService),
 		WithRepo(repo),
 		WithService(appService),
 	)

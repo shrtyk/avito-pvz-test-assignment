@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuthMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth/mocks"
-	aservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/auth_service"
+	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
@@ -106,28 +106,28 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 	testCases := []struct {
 		name            string
 		authHeader      string
-		setupMock       func(ts *pAuthMock.MockAuthService)
+		setupMock       func(ts *pAuthMock.MockTokenService)
 		expectNext      bool
 		expectErrHandle bool
 	}{
 		{
 			name:            "no auth header",
 			authHeader:      "",
-			setupMock:       func(ts *pAuthMock.MockAuthService) {},
+			setupMock:       func(ts *pAuthMock.MockTokenService) {},
 			expectNext:      false,
 			expectErrHandle: true,
 		},
 		{
 			name:            "invalid auth header",
 			authHeader:      "Token",
-			setupMock:       func(ts *pAuthMock.MockAuthService) {},
+			setupMock:       func(ts *pAuthMock.MockTokenService) {},
 			expectNext:      false,
 			expectErrHandle: true,
 		},
 		{
 			name:       "token validation fails",
 			authHeader: "Bearer invalid-token",
-			setupMock: func(ts *pAuthMock.MockAuthService) {
+			setupMock: func(ts *pAuthMock.MockTokenService) {
 				ts.On("GetTokenClaims", "invalid-token").Return(nil, errors.New("validation failed"))
 			},
 			expectNext:      false,
@@ -136,7 +136,7 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 		{
 			name:       "success",
 			authHeader: "Bearer valid-token",
-			setupMock: func(ts *pAuthMock.MockAuthService) {
+			setupMock: func(ts *pAuthMock.MockTokenService) {
 				ts.On("GetTokenClaims", "valid-token").Return(mockClaims, nil)
 			},
 			expectNext:      true,
@@ -148,7 +148,7 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			ts := pAuthMock.NewMockAuthService(t)
+			ts := pAuthMock.NewMockTokenService(t)
 			tc.setupMock(ts)
 
 			l, _ := logger.NewTestLogger()
@@ -159,7 +159,7 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 			}
 
 			m := &Middlewares{
-				authService:   ts,
+				tokenService:  ts,
 				log:           l,
 				handleAuthErr: mockErrHandler,
 			}
@@ -168,7 +168,7 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 			nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				nextCalled = true
 				if tc.name == "success" {
-					claims, err := aservice.ClaimsFromCtx(r.Context())
+					claims, err := tservice.ClaimsFromCtx(r.Context())
 					assert.NoError(t, err)
 					assert.Equal(t, mockClaims, claims)
 				}
@@ -245,7 +245,7 @@ func TestMiddlewares_AuthorizeRoles(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
 			ctx := req.Context()
 			if tc.claimsInCtx != nil {
-				ctx = aservice.ClaimsToCtx(ctx, tc.claimsInCtx)
+				ctx = tservice.ClaimsToCtx(ctx, tc.claimsInCtx)
 			}
 			req = req.WithContext(ctx)
 

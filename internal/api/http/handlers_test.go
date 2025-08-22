@@ -21,14 +21,14 @@ import (
 
 type handlerWithMocks struct {
 	appService *pServiceMock.MockService
-	tService   *pAuthMock.MockAuthService
+	tService   *pAuthMock.MockTokenService
 }
 
 func setup(t *testing.T) (*handlers, *handlerWithMocks) {
 	t.Helper()
 	fields := &handlerWithMocks{
 		appService: pServiceMock.NewMockService(t),
-		tService:   pAuthMock.NewMockAuthService(t),
+		tService:   pAuthMock.NewMockTokenService(t),
 	}
 	h := NewHandlers(fields.appService, fields.tService)
 	return h, fields

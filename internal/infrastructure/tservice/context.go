@@ -1,4 +1,4 @@
-package authservice
+package tservice
 
 import (
 	"context"

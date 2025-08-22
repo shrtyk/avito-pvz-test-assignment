@@ -1,4 +1,4 @@
-package authservice
+package tservice
 
 import (
 	"crypto/rand"
@@ -20,13 +20,13 @@ import (
 	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
-type authService struct {
+type tokenService struct {
 	publicKey  *rsa.PublicKey
 	privateKey *rsa.PrivateKey
 	cfg        *config.AuthTokensCfg
 }
 
-func MustCreateAuthService(cfg *config.AuthTokensCfg) *authService {
+func MustCreateTokenService(cfg *config.AuthTokensCfg) *tokenService {
 	pubKeyData, err := os.ReadFile(cfg.PublicRSAPath)
 	if err != nil {
 		msg := fmt.Sprintf("failed to read: %s: %s", cfg.PublicRSAPath, err)
@@ -51,14 +51,14 @@ func MustCreateAuthService(cfg *config.AuthTokensCfg) *authService {
 		panic(msg)
 	}
 
-	return &authService{
+	return &tokenService{
 		publicKey:  pub,
 		privateKey: private,
 		cfg:        cfg,
 	}
 }
 
-func (s *authService) GenerateAccessToken(tokenData auth.AccessTokenData) (string, error) {
+func (s *tokenService) GenerateAccessToken(tokenData auth.AccessTokenData) (string, error) {
 	claims := auth.AccessTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   strconv.FormatInt(tokenData.UserID, 10),
@@ -72,7 +72,7 @@ func (s *authService) GenerateAccessToken(tokenData auth.AccessTokenData) (strin
 	return token.SignedString(s.privateKey)
 }
 
-func (s *authService) GenerateRefreshToken(userID, ua, ip string) *auth.RefreshTokenData {
+func (s *tokenService) GenerateRefreshToken(userID, ua, ip string) *auth.RefreshTokenData {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
 		// Shouldn't occur at all
@@ -88,18 +88,18 @@ func (s *authService) GenerateRefreshToken(userID, ua, ip string) *auth.RefreshT
 	}
 }
 
-func (s *authService) hash(token string) []byte {
+func (s *tokenService) hash(token string) []byte {
 	hash := sha256.Sum256([]byte(token))
 	return hash[:]
 }
 
-func (s *authService) Fingerprint(rToken *auth.RefreshTokenData) string {
+func (s *tokenService) Fingerprint(rToken *auth.RefreshTokenData) string {
 	templ := fmt.Sprintf("%s.%s.%s.%s", rToken.Token, rToken.UserAgent, rToken.IP, s.cfg.SecretKey)
 	h := s.hash(templ)
 	return hex.EncodeToString(h[:16])
 }
 
-func (s *authService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {
+func (s *tokenService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {
 	op := "token_service.GetTokenClaims"
 
 	tokenClaims := new(auth.AccessTokenClaims)

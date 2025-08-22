@@ -6,22 +6,21 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
-
 	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
 )
 
 type handlers struct {
-	appService  pService.Service
-	authService pAuth.AuthService
-	validator   *validator.Validate
+	appService   pService.Service
+	tokenService pAuth.TokenService
+	validator    *validator.Validate
 }
 
-func NewHandlers(appService pService.Service, authService pAuth.AuthService) *handlers {
+func NewHandlers(appService pService.Service, tokenService pAuth.TokenService) *handlers {
 	return &handlers{
-		appService:  appService,
-		authService: authService,
-		validator:   MustNewValidator(),
+		appService:   appService,
+		tokenService: tokenService,
+		validator:    MustNewValidator(),
 	}
 }
 
@@ -40,12 +39,12 @@ func (h *handlers) DummyLoginHandler(w http.ResponseWriter, r *http.Request) err
 		return ValidationError(err)
 	}
 
-	jwt, err := h.authService.GenerateAccessToken(auth.AccessTokenData{
+	jwt, err := h.tokenService.GenerateAccessToken(auth.AccessTokenData{
 		UserID: 0,
 		Role:   auth.UserRole(req.Role),
 	})
 	if err != nil {
-		return mapAuthServiceErrsToHTTP(err)
+		return mapTokenServiceErrsToHTTP(err)
 	}
 
 	err = WriteJSON(w, dto.Token{Jwt: jwt}, http.StatusOK, nil)

@@ -1,4 +1,4 @@
-package authservice
+package tservice
 
 import (
 	"context"
@@ -18,13 +18,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newTestTokensService(t *testing.T, accessTokenLifetime time.Duration) *authService {
+func newTestTokenService(t *testing.T, accessTokenLifetime time.Duration) *tokenService {
 	t.Helper()
 
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
 
-	return &authService{
+	return &tokenService{
 		publicKey:  &privateKey.PublicKey,
 		privateKey: privateKey,
 		cfg: &config.AuthTokensCfg{
@@ -61,17 +61,17 @@ func TestTokensService(t *testing.T) {
 	t.Run("success case", func(t *testing.T) {
 		t.Parallel()
 
-		tokensService := newTestTokensService(t, time.Hour)
+		tokenService := newTestTokenService(t, time.Hour)
 
 		tokenData := auth.AccessTokenData{
 			UserID: 1,
 			Role:   "admin",
 		}
 
-		accessToken, err := tokensService.GenerateAccessToken(tokenData)
+		accessToken, err := tokenService.GenerateAccessToken(tokenData)
 		require.NoError(t, err)
 
-		claims, err := tokensService.GetTokenClaims(accessToken)
+		claims, err := tokenService.GetTokenClaims(accessToken)
 		require.NoError(t, err)
 
 		assert.Equal(t, "1", claims.Subject)
@@ -81,7 +81,7 @@ func TestTokensService(t *testing.T) {
 	t.Run("expired token", func(t *testing.T) {
 		t.Parallel()
 
-		tokensService := newTestTokensService(t, -time.Hour)
+		tokensService := newTestTokenService(t, -time.Hour)
 
 		tokenData := auth.AccessTokenData{
 			UserID: 1,
@@ -98,7 +98,7 @@ func TestTokensService(t *testing.T) {
 	t.Run("invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		tokensService := newTestTokensService(t, time.Hour)
+		tokensService := newTestTokenService(t, time.Hour)
 
 		_, err := tokensService.GetTokenClaims("invalid-token")
 		assert.Error(t, err)
@@ -140,7 +140,7 @@ func TestMustCreateTokenService(t *testing.T) {
 		}
 
 		assert.NotPanics(t, func() {
-			MustCreateAuthService(cfg)
+			MustCreateTokenService(cfg)
 		})
 	})
 
@@ -154,7 +154,7 @@ func TestMustCreateTokenService(t *testing.T) {
 			PrivateRSAPath: privateKeyPath,
 		}
 		assert.Panics(t, func() {
-			MustCreateAuthService(cfg)
+			MustCreateTokenService(cfg)
 		})
 	})
 
@@ -180,7 +180,7 @@ func TestMustCreateTokenService(t *testing.T) {
 			PrivateRSAPath: "fake-file",
 		}
 		assert.Panics(t, func() {
-			MustCreateAuthService(cfg)
+			MustCreateTokenService(cfg)
 		})
 	})
 
@@ -208,7 +208,7 @@ func TestMustCreateTokenService(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			MustCreateAuthService(cfg)
+			MustCreateTokenService(cfg)
 		})
 	})
 
@@ -237,7 +237,7 @@ func TestMustCreateTokenService(t *testing.T) {
 		}
 
 		assert.Panics(t, func() {
-			MustCreateAuthService(cfg)
+			MustCreateTokenService(cfg)
 		})
 	})
 }
