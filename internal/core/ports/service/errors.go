@@ -14,4 +14,6 @@ const (
 	NoActiveReception       ServiceErrKind = "no opened reception"
 	NoProdOrActiveReception ServiceErrKind = "no product to delete or active reception"
 	FailedToCloseReception  ServiceErrKind = "failed to close reception"
+
+	EmailAlreadyExists ServiceErrKind = "email already exists"
 )

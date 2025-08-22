@@ -24,7 +24,8 @@ func mapAppServiceErrsToHTTP(err error) *HTTPError {
 			ps.PvzNotFound,
 			ps.NoActiveReception,
 			ps.NoProdOrActiveReception,
-			ps.FailedToCloseReception:
+			ps.FailedToCloseReception,
+			ps.EmailAlreadyExists:
 			e.Code = http.StatusBadRequest
 		}
 		return e

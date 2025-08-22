@@ -20,3 +20,9 @@ type User struct {
 	Role         UserRole
 	CreatedAt    time.Time
 }
+
+type RegisterUserParams struct {
+	Email         string
+	PlainPassword string
+	Role          UserRole
+}

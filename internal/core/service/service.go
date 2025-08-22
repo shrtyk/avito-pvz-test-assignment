@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pwd "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/pwd_service"
 	pr "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
 	ps "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
@@ -143,4 +144,33 @@ func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 	}
 
 	return res, nil
+}
+
+func (s *service) RegisterUser(ctx context.Context, userParams auth.RegisterUserParams) (*auth.User, error) {
+	op := "service.RegisterUser"
+
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	pwdHash, err := s.pwdSrc.Hash(userParams.PlainPassword)
+	if err != nil {
+		return nil, xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	user := &auth.User{
+		Email:        userParams.Email,
+		PasswordHash: pwdHash,
+		Role:         userParams.Role,
+	}
+
+	newUser, err := s.repo.CreateUser(tctx, user)
+	if err != nil {
+		var bErr *xerr.BaseErr[pr.RepoErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pr.Conflict {
+			return nil, xerr.WrapErr(op, ps.EmailAlreadyExists, err)
+		}
+		return nil, xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	return newUser, nil
 }

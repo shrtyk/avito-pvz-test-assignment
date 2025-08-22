@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 )
 
 //go:generate mockery
@@ -16,4 +17,5 @@ type Service interface {
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)
 	GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error)
+	RegisterUser(ctx context.Context, userParams auth.RegisterUserParams) (*auth.User, error)
 }
