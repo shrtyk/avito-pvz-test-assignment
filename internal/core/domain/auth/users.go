@@ -26,3 +26,10 @@ type RegisterUserParams struct {
 	PlainPassword string
 	Role          UserRole
 }
+
+type LoginUserParams struct {
+	Email         string
+	PlainPassword string
+	UserAgent     string
+	IP            string
+}

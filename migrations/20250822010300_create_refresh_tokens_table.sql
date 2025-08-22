@@ -2,11 +2,12 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS refresh_tokens (
   token_hash BYTEA PRIMARY KEY,
+  fingerprint VARCHAR(64) NOT NULL,
   user_id UUID NOT NULL REFERENCES users ON DELETE CASCADE,
   user_agent VARCHAR(255) NOT NULL,
   ip_address INET NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
-  revoked_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
   revoked BOOLEAN NOT NULL DEFAULT FALSE
 );
 

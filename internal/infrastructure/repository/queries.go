@@ -85,6 +85,22 @@ const (
 		RETURNING
 			id, email, role
 	`
+
+	getUserByEmailQuery query = `
+		SELECT
+			id, password_hash, role, created_at
+		FROM
+			users
+		WHERE
+			email = $1
+	`
+
+	insertRefreshTokenQuery query = `
+		INSERT INTO
+			refresh_token (token_hash, fingerprint, user_id, user_agent, ip_address, created_at, expires_at)
+		VALUES
+			($1, $2, $3, $4, $5, $6, $7)
+	`
 )
 
 func buildGetPvzDataQuery(params *domain.PvzsReadParams) (query, []any) {

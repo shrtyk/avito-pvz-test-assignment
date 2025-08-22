@@ -219,7 +219,7 @@ func startTestApp(t *testing.T, appCfg *testAppConfig) string {
 	db := pkgpg.MustCreateConnectionPool(&cfg.PostgresCfg)
 	repo := repository.NewRepo(db)
 	pwdService := pwdservice.NewPasswordService()
-	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService)
+	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService, tService)
 
 	app := NewApplication()
 	app.Init(

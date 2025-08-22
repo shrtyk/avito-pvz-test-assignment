@@ -1,13 +1,15 @@
 package auth
 
 import (
+	"crypto/sha256"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type AccessTokenData struct {
-	UserID int64
+	UserID uuid.UUID
 	Role   UserRole
 }
 
@@ -27,4 +29,9 @@ type RefreshTokenData struct {
 	UserAgent string
 	CreatedAt time.Time
 	ExpireAt  time.Time
+}
+
+func (rtd *RefreshTokenData) PwdHash() []byte {
+	h := sha256.Sum256([]byte(rtd.Token))
+	return h[:]
 }

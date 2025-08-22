@@ -21,7 +21,7 @@ func main() {
 	repo := repository.NewRepo(db)
 	tokenService := ts.MustCreateTokenService(&cfg.AuthTokenCfg)
 	pwdService := pwdservice.NewPasswordService()
-	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService)
+	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService, tokenService)
 
 	app := NewApplication()
 	app.Init(

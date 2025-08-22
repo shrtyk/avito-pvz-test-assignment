@@ -50,7 +50,7 @@ func TestNewPVZ(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil)
+			s := service.NewAppService(time.Second, repo, nil, nil)
 
 			repo.On("CreatePVZ", mock.Anything, tt.args).Return(tt.mockArgs.pvz, tt.mockArgs.err)
 
@@ -120,7 +120,7 @@ func TestOpenNewPVZReception(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil)
+			s := service.NewAppService(time.Second, repo, nil, nil)
 
 			repo.On("CreateReception", mock.Anything, tt.args).Return(tt.mockArgs.rec, tt.mockArgs.err)
 
@@ -181,7 +181,7 @@ func TestAddProductPVZ(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil)
+			s := service.NewAppService(time.Second, repo, nil, nil)
 
 			repo.On("CreateProduct", mock.Anything, tt.args).Return(tt.mockArgs.prod, tt.mockArgs.err)
 
@@ -225,7 +225,7 @@ func TestDeleteLastProductPvz(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil)
+			s := service.NewAppService(time.Second, repo, nil, nil)
 			pvzId := uuid.New()
 
 			repo.On("DeleteLastProduct", mock.Anything, &pvzId).Return(tt.mockErr)
@@ -268,7 +268,7 @@ func TestCloseReceptionInPvz(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil)
+			s := service.NewAppService(time.Second, repo, nil, nil)
 			pvzId := uuid.New()
 
 			repo.On("CloseReceptionInPvz", mock.Anything, &pvzId).Return(tt.mockErr)
@@ -319,7 +319,7 @@ func TestGetPvzsData(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil)
+			s := service.NewAppService(time.Second, repo, nil, nil)
 
 			repo.On("GetPvzsData", mock.Anything, tt.args).Return(tt.mockArgs.res, tt.mockArgs.err)
 

@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -61,7 +60,7 @@ func MustCreateTokenService(cfg *config.AuthTokensCfg) *tokenService {
 func (s *tokenService) GenerateAccessToken(tokenData auth.AccessTokenData) (string, error) {
 	claims := auth.AccessTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Subject:   strconv.FormatInt(tokenData.UserID, 10),
+			Subject:   tokenData.UserID.String(),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(s.cfg.JWTLifetime)),
 			ID:        uuid.NewString(),
@@ -96,7 +95,7 @@ func (s *tokenService) hash(token string) []byte {
 func (s *tokenService) Fingerprint(rToken *auth.RefreshTokenData) string {
 	templ := fmt.Sprintf("%s.%s.%s.%s", rToken.Token, rToken.UserAgent, rToken.IP, s.cfg.SecretKey)
 	h := s.hash(templ)
-	return hex.EncodeToString(h[:16])
+	return hex.EncodeToString(h)
 }
 
 func (s *tokenService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {

@@ -16,4 +16,5 @@ const (
 	FailedToCloseReception  ServiceErrKind = "failed to close reception"
 
 	EmailAlreadyExists ServiceErrKind = "email already exists"
+	WrongCredentials   ServiceErrKind = "wrong credentials"
 )

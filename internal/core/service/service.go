@@ -9,6 +9,7 @@ import (
 
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	pa "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
 	pwd "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/pwd_service"
 	pr "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
 	ps "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
@@ -19,13 +20,20 @@ type service struct {
 	timeout time.Duration
 	repo    pr.Repository
 	pwdSrc  pwd.PasswordService
+	tknSrc  pa.TokenService
 }
 
-func NewAppService(timeout time.Duration, repo pr.Repository, pwdSrc pwd.PasswordService) *service {
+func NewAppService(
+	timeout time.Duration,
+	repo pr.Repository,
+	pwdSrc pwd.PasswordService,
+	tknSrc pa.TokenService,
+) *service {
 	return &service{
 		timeout: timeout,
 		repo:    repo,
 		pwdSrc:  pwdSrc,
+		tknSrc:  tknSrc,
 	}
 }
 
@@ -146,21 +154,21 @@ func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 	return res, nil
 }
 
-func (s *service) RegisterUser(ctx context.Context, userParams *auth.RegisterUserParams) (*auth.User, error) {
+func (s *service) RegisterUser(ctx context.Context, rParams *auth.RegisterUserParams) (*auth.User, error) {
 	op := "service.RegisterUser"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
 
-	pwdHash, err := s.pwdSrc.Hash(userParams.PlainPassword)
+	pwdHash, err := s.pwdSrc.Hash(rParams.PlainPassword)
 	if err != nil {
 		return nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
 	user := &auth.User{
-		Email:        userParams.Email,
+		Email:        rParams.Email,
 		PasswordHash: pwdHash,
-		Role:         userParams.Role,
+		Role:         rParams.Role,
 	}
 
 	newUser, err := s.repo.CreateUser(tctx, user)
@@ -173,4 +181,53 @@ func (s *service) RegisterUser(ctx context.Context, userParams *auth.RegisterUse
 	}
 
 	return newUser, nil
+}
+
+func (s *service) LoginUser(
+	ctx context.Context,
+	lParams *auth.LoginUserParams,
+) (aToken string, rToken string, err error) {
+	op := "service.LoginUser"
+
+	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
+	defer tcancel()
+
+	u, err := s.repo.GetUserByEmail(tctx, lParams.Email)
+	if err != nil {
+		var bErr *xerr.BaseErr[pr.RepoErrKind]
+		if errors.As(err, &bErr) && bErr.Kind == pr.NotFound {
+			return "", "", xerr.WrapErr(op, ps.WrongCredentials, err)
+		}
+		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	ok, err := s.pwdSrc.Compare(u.PasswordHash, lParams.PlainPassword)
+	if err != nil {
+		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	if !ok {
+		return "", "", xerr.NewErr(op, ps.WrongCredentials)
+	}
+
+	aToken, err = s.tknSrc.GenerateAccessToken(auth.AccessTokenData{
+		UserID: u.Id,
+		Role:   u.Role,
+	})
+	if err != nil {
+		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+	}
+	rTokenData := s.tknSrc.GenerateRefreshToken(
+		u.Id.String(),
+		lParams.UserAgent,
+		lParams.IP,
+	)
+
+	fp := s.tknSrc.Fingerprint(rTokenData)
+	err = s.repo.SaveRefreshToken(tctx, rTokenData, fp)
+	if err != nil {
+		return "", "", xerr.WrapErr(op, ps.Unexpected, err)
+	}
+
+	return aToken, rTokenData.Token, nil
 }

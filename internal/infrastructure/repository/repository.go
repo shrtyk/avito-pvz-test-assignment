@@ -200,16 +200,24 @@ func (r *repo) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 	return pvzs, nil
 }
 
-func (r *repo) PasswordHashByEmail(ctx context.Context, email string) ([]byte, error) {
-	op := "repository.PasswordHashByEmail"
+func (r *repo) GetUserByEmail(ctx context.Context, email string) (*auth.User, error) {
+	op := "repository.GetUserByEmail"
 
-	var ph []byte
-	err := r.db.QueryRow(string(getUserPwdHashQuery), email).Scan(&ph)
+	u := new(auth.User)
+	err := r.db.QueryRow(string(getUserByEmailQuery), email).Scan(
+		&u.Id,
+		&u.PasswordHash,
+		&u.Role,
+		&u.CreatedAt,
+	)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, xerr.WrapErr(op, pRepo.NotFound, err)
+		}
 		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
 	}
 
-	return ph, nil
+	return u, nil
 }
 
 func (r *repo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, error) {
@@ -235,4 +243,29 @@ func (r *repo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, err
 	}
 
 	return user, nil
+}
+
+func (r *repo) SaveRefreshToken(
+	ctx context.Context,
+	rToken *auth.RefreshTokenData,
+	fp string,
+) error {
+	op := "repository.SaveRefreshToken"
+
+	_, err := r.db.ExecContext(
+		ctx,
+		string(insertRefreshTokenQuery),
+		rToken.PwdHash(),
+		fp,
+		rToken.UserID,
+		rToken.UserAgent,
+		rToken.IP,
+		rToken.CreatedAt,
+		rToken.ExpireAt,
+	)
+	if err != nil {
+		return xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+
+	return nil
 }

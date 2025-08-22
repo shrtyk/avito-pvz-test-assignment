@@ -556,24 +556,24 @@ func (_c *MockRepository_GetPvzsData_Call) RunAndReturn(run func(ctx context.Con
 	return _c
 }
 
-// PasswordHashByEmail provides a mock function for the type MockRepository
-func (_mock *MockRepository) PasswordHashByEmail(ctx context.Context, email string) ([]byte, error) {
+// GetUserByEmail provides a mock function for the type MockRepository
+func (_mock *MockRepository) GetUserByEmail(ctx context.Context, email string) (*auth.User, error) {
 	ret := _mock.Called(ctx, email)
 
 	if len(ret) == 0 {
-		panic("no return value specified for PasswordHashByEmail")
+		panic("no return value specified for GetUserByEmail")
 	}
 
-	var r0 []byte
+	var r0 *auth.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]byte, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*auth.User, error)); ok {
 		return returnFunc(ctx, email)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []byte); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *auth.User); ok {
 		r0 = returnFunc(ctx, email)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
+			r0 = ret.Get(0).(*auth.User)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
@@ -584,19 +584,19 @@ func (_mock *MockRepository) PasswordHashByEmail(ctx context.Context, email stri
 	return r0, r1
 }
 
-// MockRepository_PasswordHashByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PasswordHashByEmail'
-type MockRepository_PasswordHashByEmail_Call struct {
+// MockRepository_GetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByEmail'
+type MockRepository_GetUserByEmail_Call struct {
 	*mock.Call
 }
 
-// PasswordHashByEmail is a helper method to define mock.On call
+// GetUserByEmail is a helper method to define mock.On call
 //   - ctx context.Context
 //   - email string
-func (_e *MockRepository_Expecter) PasswordHashByEmail(ctx interface{}, email interface{}) *MockRepository_PasswordHashByEmail_Call {
-	return &MockRepository_PasswordHashByEmail_Call{Call: _e.mock.On("PasswordHashByEmail", ctx, email)}
+func (_e *MockRepository_Expecter) GetUserByEmail(ctx interface{}, email interface{}) *MockRepository_GetUserByEmail_Call {
+	return &MockRepository_GetUserByEmail_Call{Call: _e.mock.On("GetUserByEmail", ctx, email)}
 }
 
-func (_c *MockRepository_PasswordHashByEmail_Call) Run(run func(ctx context.Context, email string)) *MockRepository_PasswordHashByEmail_Call {
+func (_c *MockRepository_GetUserByEmail_Call) Run(run func(ctx context.Context, email string)) *MockRepository_GetUserByEmail_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -614,12 +614,75 @@ func (_c *MockRepository_PasswordHashByEmail_Call) Run(run func(ctx context.Cont
 	return _c
 }
 
-func (_c *MockRepository_PasswordHashByEmail_Call) Return(bytes []byte, err error) *MockRepository_PasswordHashByEmail_Call {
-	_c.Call.Return(bytes, err)
+func (_c *MockRepository_GetUserByEmail_Call) Return(user *auth.User, err error) *MockRepository_GetUserByEmail_Call {
+	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockRepository_PasswordHashByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) ([]byte, error)) *MockRepository_PasswordHashByEmail_Call {
+func (_c *MockRepository_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*auth.User, error)) *MockRepository_GetUserByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SaveRefreshToken provides a mock function for the type MockRepository
+func (_mock *MockRepository) SaveRefreshToken(ctx context.Context, rToken *auth.RefreshTokenData, fp string) error {
+	ret := _mock.Called(ctx, rToken, fp)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SaveRefreshToken")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.RefreshTokenData, string) error); ok {
+		r0 = returnFunc(ctx, rToken, fp)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockRepository_SaveRefreshToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveRefreshToken'
+type MockRepository_SaveRefreshToken_Call struct {
+	*mock.Call
+}
+
+// SaveRefreshToken is a helper method to define mock.On call
+//   - ctx context.Context
+//   - rToken *auth.RefreshTokenData
+//   - fp string
+func (_e *MockRepository_Expecter) SaveRefreshToken(ctx interface{}, rToken interface{}, fp interface{}) *MockRepository_SaveRefreshToken_Call {
+	return &MockRepository_SaveRefreshToken_Call{Call: _e.mock.On("SaveRefreshToken", ctx, rToken, fp)}
+}
+
+func (_c *MockRepository_SaveRefreshToken_Call) Run(run func(ctx context.Context, rToken *auth.RefreshTokenData, fp string)) *MockRepository_SaveRefreshToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *auth.RefreshTokenData
+		if args[1] != nil {
+			arg1 = args[1].(*auth.RefreshTokenData)
+		}
+		var arg2 string
+		if args[2] != nil {
+			arg2 = args[2].(string)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockRepository_SaveRefreshToken_Call) Return(err error) *MockRepository_SaveRefreshToken_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockRepository_SaveRefreshToken_Call) RunAndReturn(run func(ctx context.Context, rToken *auth.RefreshTokenData, fp string) error) *MockRepository_SaveRefreshToken_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -1194,24 +1257,24 @@ func (_c *MockAuthRepo_CreateUser_Call) RunAndReturn(run func(ctx context.Contex
 	return _c
 }
 
-// PasswordHashByEmail provides a mock function for the type MockAuthRepo
-func (_mock *MockAuthRepo) PasswordHashByEmail(ctx context.Context, email string) ([]byte, error) {
+// GetUserByEmail provides a mock function for the type MockAuthRepo
+func (_mock *MockAuthRepo) GetUserByEmail(ctx context.Context, email string) (*auth.User, error) {
 	ret := _mock.Called(ctx, email)
 
 	if len(ret) == 0 {
-		panic("no return value specified for PasswordHashByEmail")
+		panic("no return value specified for GetUserByEmail")
 	}
 
-	var r0 []byte
+	var r0 *auth.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]byte, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*auth.User, error)); ok {
 		return returnFunc(ctx, email)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []byte); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *auth.User); ok {
 		r0 = returnFunc(ctx, email)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
+			r0 = ret.Get(0).(*auth.User)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
@@ -1222,19 +1285,19 @@ func (_mock *MockAuthRepo) PasswordHashByEmail(ctx context.Context, email string
 	return r0, r1
 }
 
-// MockAuthRepo_PasswordHashByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PasswordHashByEmail'
-type MockAuthRepo_PasswordHashByEmail_Call struct {
+// MockAuthRepo_GetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByEmail'
+type MockAuthRepo_GetUserByEmail_Call struct {
 	*mock.Call
 }
 
-// PasswordHashByEmail is a helper method to define mock.On call
+// GetUserByEmail is a helper method to define mock.On call
 //   - ctx context.Context
 //   - email string
-func (_e *MockAuthRepo_Expecter) PasswordHashByEmail(ctx interface{}, email interface{}) *MockAuthRepo_PasswordHashByEmail_Call {
-	return &MockAuthRepo_PasswordHashByEmail_Call{Call: _e.mock.On("PasswordHashByEmail", ctx, email)}
+func (_e *MockAuthRepo_Expecter) GetUserByEmail(ctx interface{}, email interface{}) *MockAuthRepo_GetUserByEmail_Call {
+	return &MockAuthRepo_GetUserByEmail_Call{Call: _e.mock.On("GetUserByEmail", ctx, email)}
 }
 
-func (_c *MockAuthRepo_PasswordHashByEmail_Call) Run(run func(ctx context.Context, email string)) *MockAuthRepo_PasswordHashByEmail_Call {
+func (_c *MockAuthRepo_GetUserByEmail_Call) Run(run func(ctx context.Context, email string)) *MockAuthRepo_GetUserByEmail_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -1252,12 +1315,75 @@ func (_c *MockAuthRepo_PasswordHashByEmail_Call) Run(run func(ctx context.Contex
 	return _c
 }
 
-func (_c *MockAuthRepo_PasswordHashByEmail_Call) Return(bytes []byte, err error) *MockAuthRepo_PasswordHashByEmail_Call {
-	_c.Call.Return(bytes, err)
+func (_c *MockAuthRepo_GetUserByEmail_Call) Return(user *auth.User, err error) *MockAuthRepo_GetUserByEmail_Call {
+	_c.Call.Return(user, err)
 	return _c
 }
 
-func (_c *MockAuthRepo_PasswordHashByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) ([]byte, error)) *MockAuthRepo_PasswordHashByEmail_Call {
+func (_c *MockAuthRepo_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*auth.User, error)) *MockAuthRepo_GetUserByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SaveRefreshToken provides a mock function for the type MockAuthRepo
+func (_mock *MockAuthRepo) SaveRefreshToken(ctx context.Context, rToken *auth.RefreshTokenData, fp string) error {
+	ret := _mock.Called(ctx, rToken, fp)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SaveRefreshToken")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.RefreshTokenData, string) error); ok {
+		r0 = returnFunc(ctx, rToken, fp)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockAuthRepo_SaveRefreshToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveRefreshToken'
+type MockAuthRepo_SaveRefreshToken_Call struct {
+	*mock.Call
+}
+
+// SaveRefreshToken is a helper method to define mock.On call
+//   - ctx context.Context
+//   - rToken *auth.RefreshTokenData
+//   - fp string
+func (_e *MockAuthRepo_Expecter) SaveRefreshToken(ctx interface{}, rToken interface{}, fp interface{}) *MockAuthRepo_SaveRefreshToken_Call {
+	return &MockAuthRepo_SaveRefreshToken_Call{Call: _e.mock.On("SaveRefreshToken", ctx, rToken, fp)}
+}
+
+func (_c *MockAuthRepo_SaveRefreshToken_Call) Run(run func(ctx context.Context, rToken *auth.RefreshTokenData, fp string)) *MockAuthRepo_SaveRefreshToken_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *auth.RefreshTokenData
+		if args[1] != nil {
+			arg1 = args[1].(*auth.RefreshTokenData)
+		}
+		var arg2 string
+		if args[2] != nil {
+			arg2 = args[2].(string)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *MockAuthRepo_SaveRefreshToken_Call) Return(err error) *MockAuthRepo_SaveRefreshToken_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockAuthRepo_SaveRefreshToken_Call) RunAndReturn(run func(ctx context.Context, rToken *auth.RefreshTokenData, fp string) error) *MockAuthRepo_SaveRefreshToken_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/config"
 	"github.com/stretchr/testify/assert"
@@ -63,8 +64,9 @@ func TestTokensService(t *testing.T) {
 
 		tokenService := newTestTokenService(t, time.Hour)
 
+		uid := uuid.New()
 		tokenData := auth.AccessTokenData{
-			UserID: 1,
+			UserID: uid,
 			Role:   "admin",
 		}
 
@@ -74,7 +76,7 @@ func TestTokensService(t *testing.T) {
 		claims, err := tokenService.GetTokenClaims(accessToken)
 		require.NoError(t, err)
 
-		assert.Equal(t, "1", claims.Subject)
+		assert.Equal(t, uid.String(), claims.Subject)
 		assert.Equal(t, "admin", claims.Role)
 	})
 
@@ -84,7 +86,7 @@ func TestTokensService(t *testing.T) {
 		tokensService := newTestTokenService(t, -time.Hour)
 
 		tokenData := auth.AccessTokenData{
-			UserID: 1,
+			UserID: uuid.New(),
 			Role:   "admin",
 		}
 

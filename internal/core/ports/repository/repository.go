@@ -25,6 +25,7 @@ type PvzsRepo interface {
 }
 
 type AuthRepo interface {
-	PasswordHashByEmail(ctx context.Context, email string) ([]byte, error)
+	GetUserByEmail(ctx context.Context, email string) (*auth.User, error)
 	CreateUser(ctx context.Context, user *auth.User) (*auth.User, error)
+	SaveRefreshToken(ctx context.Context, rToken *auth.RefreshTokenData, fp string) error
 }
