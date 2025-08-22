@@ -42,7 +42,7 @@ test: unit-tests/run integration-tests/run
 unit-tests/run:
 	@mkdir -p coverage
 	@go test -v -race \
- -coverprofile=coverage/coverage.out -covermode=atomic ${UNIT_TESTS_PKGS}
+    -coverprofile=coverage/coverage.out -covermode=atomic ${UNIT_TESTS_PKGS}
 
 # Run intgration tests
 integration-tests/run:
@@ -93,7 +93,7 @@ psql/pvz:
 
 # Generate DTOs
 dto/generate:
-	@go generate ./internal/adapters/driving/http/dto/generate.go
+	@go generate ./internal/api/http/dto/generate.go
 
 # Generate mocks for interfaces
 mocks/generate:
