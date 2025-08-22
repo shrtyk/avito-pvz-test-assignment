@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -300,6 +301,74 @@ func (_c *MockRepository_CreateReception_Call) RunAndReturn(run func(ctx context
 	return _c
 }
 
+// CreateUser provides a mock function for the type MockRepository
+func (_mock *MockRepository) CreateUser(ctx context.Context, user *auth.User) (*auth.User, error) {
+	ret := _mock.Called(ctx, user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateUser")
+	}
+
+	var r0 *auth.User
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.User) (*auth.User, error)); ok {
+		return returnFunc(ctx, user)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.User) *auth.User); ok {
+		r0 = returnFunc(ctx, user)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auth.User)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *auth.User) error); ok {
+		r1 = returnFunc(ctx, user)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockRepository_CreateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateUser'
+type MockRepository_CreateUser_Call struct {
+	*mock.Call
+}
+
+// CreateUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - user *auth.User
+func (_e *MockRepository_Expecter) CreateUser(ctx interface{}, user interface{}) *MockRepository_CreateUser_Call {
+	return &MockRepository_CreateUser_Call{Call: _e.mock.On("CreateUser", ctx, user)}
+}
+
+func (_c *MockRepository_CreateUser_Call) Run(run func(ctx context.Context, user *auth.User)) *MockRepository_CreateUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *auth.User
+		if args[1] != nil {
+			arg1 = args[1].(*auth.User)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockRepository_CreateUser_Call) Return(user1 *auth.User, err error) *MockRepository_CreateUser_Call {
+	_c.Call.Return(user1, err)
+	return _c
+}
+
+func (_c *MockRepository_CreateUser_Call) RunAndReturn(run func(ctx context.Context, user *auth.User) (*auth.User, error)) *MockRepository_CreateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteLastProduct provides a mock function for the type MockRepository
 func (_mock *MockRepository) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 	ret := _mock.Called(ctx, pvzId)
@@ -483,6 +552,712 @@ func (_c *MockRepository_GetPvzsData_Call) Return(pvzReceptionss []*domain.PvzRe
 }
 
 func (_c *MockRepository_GetPvzsData_Call) RunAndReturn(run func(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)) *MockRepository_GetPvzsData_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// PasswordHashByEmail provides a mock function for the type MockRepository
+func (_mock *MockRepository) PasswordHashByEmail(ctx context.Context, email string) ([]byte, error) {
+	ret := _mock.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PasswordHashByEmail")
+	}
+
+	var r0 []byte
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]byte, error)); ok {
+		return returnFunc(ctx, email)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []byte); ok {
+		r0 = returnFunc(ctx, email)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]byte)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockRepository_PasswordHashByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PasswordHashByEmail'
+type MockRepository_PasswordHashByEmail_Call struct {
+	*mock.Call
+}
+
+// PasswordHashByEmail is a helper method to define mock.On call
+//   - ctx context.Context
+//   - email string
+func (_e *MockRepository_Expecter) PasswordHashByEmail(ctx interface{}, email interface{}) *MockRepository_PasswordHashByEmail_Call {
+	return &MockRepository_PasswordHashByEmail_Call{Call: _e.mock.On("PasswordHashByEmail", ctx, email)}
+}
+
+func (_c *MockRepository_PasswordHashByEmail_Call) Run(run func(ctx context.Context, email string)) *MockRepository_PasswordHashByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockRepository_PasswordHashByEmail_Call) Return(bytes []byte, err error) *MockRepository_PasswordHashByEmail_Call {
+	_c.Call.Return(bytes, err)
+	return _c
+}
+
+func (_c *MockRepository_PasswordHashByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) ([]byte, error)) *MockRepository_PasswordHashByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// NewMockPvzzRepo creates a new instance of MockPvzzRepo. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
+func NewMockPvzzRepo(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *MockPvzzRepo {
+	mock := &MockPvzzRepo{}
+	mock.Mock.Test(t)
+
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+
+	return mock
+}
+
+// MockPvzzRepo is an autogenerated mock type for the PvzzRepo type
+type MockPvzzRepo struct {
+	mock.Mock
+}
+
+type MockPvzzRepo_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *MockPvzzRepo) EXPECT() *MockPvzzRepo_Expecter {
+	return &MockPvzzRepo_Expecter{mock: &_m.Mock}
+}
+
+// CloseReceptionInPvz provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error {
+	ret := _mock.Called(ctx, pvzId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CloseReceptionInPvz")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, pvzId)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockPvzzRepo_CloseReceptionInPvz_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CloseReceptionInPvz'
+type MockPvzzRepo_CloseReceptionInPvz_Call struct {
+	*mock.Call
+}
+
+// CloseReceptionInPvz is a helper method to define mock.On call
+//   - ctx context.Context
+//   - pvzId *uuid.UUID
+func (_e *MockPvzzRepo_Expecter) CloseReceptionInPvz(ctx interface{}, pvzId interface{}) *MockPvzzRepo_CloseReceptionInPvz_Call {
+	return &MockPvzzRepo_CloseReceptionInPvz_Call{Call: _e.mock.On("CloseReceptionInPvz", ctx, pvzId)}
+}
+
+func (_c *MockPvzzRepo_CloseReceptionInPvz_Call) Run(run func(ctx context.Context, pvzId *uuid.UUID)) *MockPvzzRepo_CloseReceptionInPvz_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(*uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_CloseReceptionInPvz_Call) Return(err error) *MockPvzzRepo_CloseReceptionInPvz_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_CloseReceptionInPvz_Call) RunAndReturn(run func(ctx context.Context, pvzId *uuid.UUID) error) *MockPvzzRepo_CloseReceptionInPvz_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreatePVZ provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) CreatePVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error) {
+	ret := _mock.Called(ctx, pvz)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreatePVZ")
+	}
+
+	var r0 *domain.Pvz
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.Pvz) (*domain.Pvz, error)); ok {
+		return returnFunc(ctx, pvz)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.Pvz) *domain.Pvz); ok {
+		r0 = returnFunc(ctx, pvz)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.Pvz)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *domain.Pvz) error); ok {
+		r1 = returnFunc(ctx, pvz)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockPvzzRepo_CreatePVZ_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreatePVZ'
+type MockPvzzRepo_CreatePVZ_Call struct {
+	*mock.Call
+}
+
+// CreatePVZ is a helper method to define mock.On call
+//   - ctx context.Context
+//   - pvz *domain.Pvz
+func (_e *MockPvzzRepo_Expecter) CreatePVZ(ctx interface{}, pvz interface{}) *MockPvzzRepo_CreatePVZ_Call {
+	return &MockPvzzRepo_CreatePVZ_Call{Call: _e.mock.On("CreatePVZ", ctx, pvz)}
+}
+
+func (_c *MockPvzzRepo_CreatePVZ_Call) Run(run func(ctx context.Context, pvz *domain.Pvz)) *MockPvzzRepo_CreatePVZ_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *domain.Pvz
+		if args[1] != nil {
+			arg1 = args[1].(*domain.Pvz)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_CreatePVZ_Call) Return(pvz1 *domain.Pvz, err error) *MockPvzzRepo_CreatePVZ_Call {
+	_c.Call.Return(pvz1, err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_CreatePVZ_Call) RunAndReturn(run func(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error)) *MockPvzzRepo_CreatePVZ_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateProduct provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
+	ret := _mock.Called(ctx, prod)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateProduct")
+	}
+
+	var r0 *domain.Product
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.Product) (*domain.Product, error)); ok {
+		return returnFunc(ctx, prod)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.Product) *domain.Product); ok {
+		r0 = returnFunc(ctx, prod)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.Product)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *domain.Product) error); ok {
+		r1 = returnFunc(ctx, prod)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockPvzzRepo_CreateProduct_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateProduct'
+type MockPvzzRepo_CreateProduct_Call struct {
+	*mock.Call
+}
+
+// CreateProduct is a helper method to define mock.On call
+//   - ctx context.Context
+//   - prod *domain.Product
+func (_e *MockPvzzRepo_Expecter) CreateProduct(ctx interface{}, prod interface{}) *MockPvzzRepo_CreateProduct_Call {
+	return &MockPvzzRepo_CreateProduct_Call{Call: _e.mock.On("CreateProduct", ctx, prod)}
+}
+
+func (_c *MockPvzzRepo_CreateProduct_Call) Run(run func(ctx context.Context, prod *domain.Product)) *MockPvzzRepo_CreateProduct_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *domain.Product
+		if args[1] != nil {
+			arg1 = args[1].(*domain.Product)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_CreateProduct_Call) Return(product *domain.Product, err error) *MockPvzzRepo_CreateProduct_Call {
+	_c.Call.Return(product, err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_CreateProduct_Call) RunAndReturn(run func(ctx context.Context, prod *domain.Product) (*domain.Product, error)) *MockPvzzRepo_CreateProduct_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateReception provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
+	ret := _mock.Called(ctx, rec)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateReception")
+	}
+
+	var r0 *domain.Reception
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.Reception) (*domain.Reception, error)); ok {
+		return returnFunc(ctx, rec)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.Reception) *domain.Reception); ok {
+		r0 = returnFunc(ctx, rec)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.Reception)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *domain.Reception) error); ok {
+		r1 = returnFunc(ctx, rec)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockPvzzRepo_CreateReception_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateReception'
+type MockPvzzRepo_CreateReception_Call struct {
+	*mock.Call
+}
+
+// CreateReception is a helper method to define mock.On call
+//   - ctx context.Context
+//   - rec *domain.Reception
+func (_e *MockPvzzRepo_Expecter) CreateReception(ctx interface{}, rec interface{}) *MockPvzzRepo_CreateReception_Call {
+	return &MockPvzzRepo_CreateReception_Call{Call: _e.mock.On("CreateReception", ctx, rec)}
+}
+
+func (_c *MockPvzzRepo_CreateReception_Call) Run(run func(ctx context.Context, rec *domain.Reception)) *MockPvzzRepo_CreateReception_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *domain.Reception
+		if args[1] != nil {
+			arg1 = args[1].(*domain.Reception)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_CreateReception_Call) Return(reception *domain.Reception, err error) *MockPvzzRepo_CreateReception_Call {
+	_c.Call.Return(reception, err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_CreateReception_Call) RunAndReturn(run func(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)) *MockPvzzRepo_CreateReception_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// DeleteLastProduct provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
+	ret := _mock.Called(ctx, pvzId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteLastProduct")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *uuid.UUID) error); ok {
+		r0 = returnFunc(ctx, pvzId)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockPvzzRepo_DeleteLastProduct_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteLastProduct'
+type MockPvzzRepo_DeleteLastProduct_Call struct {
+	*mock.Call
+}
+
+// DeleteLastProduct is a helper method to define mock.On call
+//   - ctx context.Context
+//   - pvzId *uuid.UUID
+func (_e *MockPvzzRepo_Expecter) DeleteLastProduct(ctx interface{}, pvzId interface{}) *MockPvzzRepo_DeleteLastProduct_Call {
+	return &MockPvzzRepo_DeleteLastProduct_Call{Call: _e.mock.On("DeleteLastProduct", ctx, pvzId)}
+}
+
+func (_c *MockPvzzRepo_DeleteLastProduct_Call) Run(run func(ctx context.Context, pvzId *uuid.UUID)) *MockPvzzRepo_DeleteLastProduct_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *uuid.UUID
+		if args[1] != nil {
+			arg1 = args[1].(*uuid.UUID)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_DeleteLastProduct_Call) Return(err error) *MockPvzzRepo_DeleteLastProduct_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_DeleteLastProduct_Call) RunAndReturn(run func(ctx context.Context, pvzId *uuid.UUID) error) *MockPvzzRepo_DeleteLastProduct_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetAllPvzs provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAllPvzs")
+	}
+
+	var r0 []*domain.Pvz
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) ([]*domain.Pvz, error)); ok {
+		return returnFunc(ctx)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context) []*domain.Pvz); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Pvz)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = returnFunc(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockPvzzRepo_GetAllPvzs_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllPvzs'
+type MockPvzzRepo_GetAllPvzs_Call struct {
+	*mock.Call
+}
+
+// GetAllPvzs is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockPvzzRepo_Expecter) GetAllPvzs(ctx interface{}) *MockPvzzRepo_GetAllPvzs_Call {
+	return &MockPvzzRepo_GetAllPvzs_Call{Call: _e.mock.On("GetAllPvzs", ctx)}
+}
+
+func (_c *MockPvzzRepo_GetAllPvzs_Call) Run(run func(ctx context.Context)) *MockPvzzRepo_GetAllPvzs_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_GetAllPvzs_Call) Return(pvzs []*domain.Pvz, err error) *MockPvzzRepo_GetAllPvzs_Call {
+	_c.Call.Return(pvzs, err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_GetAllPvzs_Call) RunAndReturn(run func(ctx context.Context) ([]*domain.Pvz, error)) *MockPvzzRepo_GetAllPvzs_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetPvzsData provides a mock function for the type MockPvzzRepo
+func (_mock *MockPvzzRepo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error) {
+	ret := _mock.Called(ctx, params)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPvzsData")
+	}
+
+	var r0 []*domain.PvzReceptions
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)); ok {
+		return returnFunc(ctx, params)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *domain.PvzsReadParams) []*domain.PvzReceptions); ok {
+		r0 = returnFunc(ctx, params)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.PvzReceptions)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *domain.PvzsReadParams) error); ok {
+		r1 = returnFunc(ctx, params)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockPvzzRepo_GetPvzsData_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetPvzsData'
+type MockPvzzRepo_GetPvzsData_Call struct {
+	*mock.Call
+}
+
+// GetPvzsData is a helper method to define mock.On call
+//   - ctx context.Context
+//   - params *domain.PvzsReadParams
+func (_e *MockPvzzRepo_Expecter) GetPvzsData(ctx interface{}, params interface{}) *MockPvzzRepo_GetPvzsData_Call {
+	return &MockPvzzRepo_GetPvzsData_Call{Call: _e.mock.On("GetPvzsData", ctx, params)}
+}
+
+func (_c *MockPvzzRepo_GetPvzsData_Call) Run(run func(ctx context.Context, params *domain.PvzsReadParams)) *MockPvzzRepo_GetPvzsData_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *domain.PvzsReadParams
+		if args[1] != nil {
+			arg1 = args[1].(*domain.PvzsReadParams)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockPvzzRepo_GetPvzsData_Call) Return(pvzReceptionss []*domain.PvzReceptions, err error) *MockPvzzRepo_GetPvzsData_Call {
+	_c.Call.Return(pvzReceptionss, err)
+	return _c
+}
+
+func (_c *MockPvzzRepo_GetPvzsData_Call) RunAndReturn(run func(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)) *MockPvzzRepo_GetPvzsData_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// NewMockAuthRepo creates a new instance of MockAuthRepo. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
+// The first argument is typically a *testing.T value.
+func NewMockAuthRepo(t interface {
+	mock.TestingT
+	Cleanup(func())
+}) *MockAuthRepo {
+	mock := &MockAuthRepo{}
+	mock.Mock.Test(t)
+
+	t.Cleanup(func() { mock.AssertExpectations(t) })
+
+	return mock
+}
+
+// MockAuthRepo is an autogenerated mock type for the AuthRepo type
+type MockAuthRepo struct {
+	mock.Mock
+}
+
+type MockAuthRepo_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *MockAuthRepo) EXPECT() *MockAuthRepo_Expecter {
+	return &MockAuthRepo_Expecter{mock: &_m.Mock}
+}
+
+// CreateUser provides a mock function for the type MockAuthRepo
+func (_mock *MockAuthRepo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, error) {
+	ret := _mock.Called(ctx, user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateUser")
+	}
+
+	var r0 *auth.User
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.User) (*auth.User, error)); ok {
+		return returnFunc(ctx, user)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, *auth.User) *auth.User); ok {
+		r0 = returnFunc(ctx, user)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auth.User)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, *auth.User) error); ok {
+		r1 = returnFunc(ctx, user)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockAuthRepo_CreateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateUser'
+type MockAuthRepo_CreateUser_Call struct {
+	*mock.Call
+}
+
+// CreateUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - user *auth.User
+func (_e *MockAuthRepo_Expecter) CreateUser(ctx interface{}, user interface{}) *MockAuthRepo_CreateUser_Call {
+	return &MockAuthRepo_CreateUser_Call{Call: _e.mock.On("CreateUser", ctx, user)}
+}
+
+func (_c *MockAuthRepo_CreateUser_Call) Run(run func(ctx context.Context, user *auth.User)) *MockAuthRepo_CreateUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 *auth.User
+		if args[1] != nil {
+			arg1 = args[1].(*auth.User)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockAuthRepo_CreateUser_Call) Return(user1 *auth.User, err error) *MockAuthRepo_CreateUser_Call {
+	_c.Call.Return(user1, err)
+	return _c
+}
+
+func (_c *MockAuthRepo_CreateUser_Call) RunAndReturn(run func(ctx context.Context, user *auth.User) (*auth.User, error)) *MockAuthRepo_CreateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// PasswordHashByEmail provides a mock function for the type MockAuthRepo
+func (_mock *MockAuthRepo) PasswordHashByEmail(ctx context.Context, email string) ([]byte, error) {
+	ret := _mock.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PasswordHashByEmail")
+	}
+
+	var r0 []byte
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) ([]byte, error)); ok {
+		return returnFunc(ctx, email)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) []byte); ok {
+		r0 = returnFunc(ctx, email)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]byte)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockAuthRepo_PasswordHashByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PasswordHashByEmail'
+type MockAuthRepo_PasswordHashByEmail_Call struct {
+	*mock.Call
+}
+
+// PasswordHashByEmail is a helper method to define mock.On call
+//   - ctx context.Context
+//   - email string
+func (_e *MockAuthRepo_Expecter) PasswordHashByEmail(ctx interface{}, email interface{}) *MockAuthRepo_PasswordHashByEmail_Call {
+	return &MockAuthRepo_PasswordHashByEmail_Call{Call: _e.mock.On("PasswordHashByEmail", ctx, email)}
+}
+
+func (_c *MockAuthRepo_PasswordHashByEmail_Call) Run(run func(ctx context.Context, email string)) *MockAuthRepo_PasswordHashByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockAuthRepo_PasswordHashByEmail_Call) Return(bytes []byte, err error) *MockAuthRepo_PasswordHashByEmail_Call {
+	_c.Call.Return(bytes, err)
+	return _c
+}
+
+func (_c *MockAuthRepo_PasswordHashByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) ([]byte, error)) *MockAuthRepo_PasswordHashByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }

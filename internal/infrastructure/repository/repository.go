@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
@@ -197,4 +198,41 @@ func (r *repo) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 	}
 
 	return pvzs, nil
+}
+
+func (r *repo) PasswordHashByEmail(ctx context.Context, email string) ([]byte, error) {
+	op := "repository.PasswordHashByEmail"
+
+	var ph []byte
+	err := r.db.QueryRow(string(getUserPwdHashQuery), email).Scan(&ph)
+	if err != nil {
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+
+	return ph, nil
+}
+
+func (r *repo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, error) {
+	op := "repository.CreateUser"
+
+	err := r.db.QueryRowContext(
+		ctx,
+		string(insertUserQuery),
+		user.Email,
+		user.Role,
+		user.PasswordHash).
+		Scan(
+			&user.Id,
+			&user.Email,
+			&user.Role,
+		)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, xerr.WrapErr(op, pRepo.Conflict, err)
+		}
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+
+	return user, nil
 }

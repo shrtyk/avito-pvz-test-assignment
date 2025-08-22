@@ -5,10 +5,16 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 )
 
 //go:generate mockery
 type Repository interface {
+	PvzsRepo
+	AuthRepo
+}
+
+type PvzsRepo interface {
 	CreatePVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error)
 	CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error)
 	CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error)
@@ -16,4 +22,9 @@ type Repository interface {
 	CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error
 	GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error)
 	GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error)
+}
+
+type AuthRepo interface {
+	PasswordHashByEmail(ctx context.Context, email string) ([]byte, error)
+	CreateUser(ctx context.Context, user *auth.User) (*auth.User, error)
 }

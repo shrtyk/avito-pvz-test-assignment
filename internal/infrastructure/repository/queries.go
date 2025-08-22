@@ -67,6 +67,24 @@ const (
 		FROM
 			pvzs
 	`
+
+	getUserPwdHashQuery query = `
+		SELECT
+			password_hash
+		FROM
+			users
+		WHERE
+			email = $1
+	`
+
+	insertUserQuery query = `
+		INSERT INTO
+			users (email, role, password_hash)
+		VALUES
+			($1, $2, $3)
+		RETURNING
+			id, email, role
+	`
 )
 
 func buildGetPvzDataQuery(params *domain.PvzsReadParams) (query, []any) {
