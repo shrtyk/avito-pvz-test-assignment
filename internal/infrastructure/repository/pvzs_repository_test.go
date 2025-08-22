@@ -14,6 +14,7 @@ import (
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreatePVZ(t *testing.T) {
@@ -530,4 +531,96 @@ func TestGetPvzsData(t *testing.T) {
 		assert.Nil(t, result)
 		assert.NoError(t, mock.ExpectationsWereMet())
 	})
+}
+
+func TestGetAllPvzs(t *testing.T) {
+	t.Parallel()
+
+	l, _ := logger.NewTestLogger()
+	ctx := logger.ToCtx(context.Background(), l)
+
+	tests := []struct {
+		name    string
+		setup   func(mock sqlmock.Sqlmock)
+		wantErr bool
+		assert  func(t *testing.T, pvzs []*domain.Pvz)
+	}{
+		{
+			name: "success - multiple pvzs",
+			setup: func(mock sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "created_at", "city"}).
+					AddRow(uuid.New(), time.Now(), "Moscow").
+					AddRow(uuid.New(), time.Now(), "Kazan")
+				mock.ExpectQuery("SELECT id, created_at, city FROM pvzs").WillReturnRows(rows)
+			},
+			wantErr: false,
+			assert: func(t *testing.T, pvzs []*domain.Pvz) {
+				assert.Len(t, pvzs, 2)
+			},
+		},
+		{
+			name: "success - no pvzs",
+			setup: func(mock sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "created_at", "city"})
+				mock.ExpectQuery("SELECT id, created_at, city FROM pvzs").WillReturnRows(rows)
+			},
+			wantErr: false,
+			assert: func(t *testing.T, pvzs []*domain.Pvz) {
+				assert.Len(t, pvzs, 0)
+			},
+		},
+		{
+			name: "query error",
+			setup: func(mock sqlmock.Sqlmock) {
+				mock.ExpectQuery("SELECT id, created_at, city FROM pvzs").WillReturnError(errors.New("db error"))
+			},
+			wantErr: true,
+			assert:  func(t *testing.T, pvzs []*domain.Pvz) {},
+		},
+		{
+			name: "scan error",
+			setup: func(mock sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "created_at", "city"}).
+					AddRow("not-a-uuid", time.Now(), "Moscow")
+				mock.ExpectQuery("SELECT id, created_at, city FROM pvzs").WillReturnRows(rows)
+			},
+			wantErr: true,
+			assert:  func(t *testing.T, pvzs []*domain.Pvz) {},
+		},
+		{
+			name: "rows error",
+			setup: func(mock sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "created_at", "city"}).
+					AddRow(uuid.New(), time.Now(), "Moscow").
+					RowError(0, errors.New("rows error"))
+				mock.ExpectQuery("SELECT id, created_at, city FROM pvzs").WillReturnRows(rows)
+			},
+			wantErr: true,
+			assert:  func(t *testing.T, pvzs []*domain.Pvz) {},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+			require.NoError(t, err)
+			defer db.Close()
+
+			repo := NewRepo(db)
+			tt.setup(mock)
+
+			result, err := repo.GetAllPvzs(ctx)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.Nil(t, result)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, result)
+				tt.assert(t, result)
+			}
+			assert.NoError(t, mock.ExpectationsWereMet())
+		})
+	}
 }
