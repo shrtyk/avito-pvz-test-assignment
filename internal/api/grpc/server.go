@@ -53,7 +53,6 @@ func (s *Server) MustStart() {
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
-		s.logger.Info("grpc server runnning", slog.String("port", s.port))
 		if err := s.grpcServ.Serve(l); err != nil {
 			msg := fmt.Sprintf("failed to start grpc server: %s", err)
 			panic(msg)

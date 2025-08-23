@@ -107,3 +107,11 @@ rsa/generate:
 
 # Generate all
 generate: dto/generate mocks/generate rsa/generate
+
+# Run k6 load test
+load-test/run:
+	@docker run --rm -i \
+	--network=pvz-net \
+	-v $(CURDIR)/load-tests:/src \
+	-e BASE_URL=http://pvz:8080 \
+	grafana/k6 run /src/scenario.js
