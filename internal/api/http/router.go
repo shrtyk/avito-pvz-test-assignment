@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
-	aService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pAuth "github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	"github.com/shrtyk/pvz-service/internal/core/ports/metrics"
+	aService "github.com/shrtyk/pvz-service/internal/core/ports/service"
 )
 
 type Router struct {

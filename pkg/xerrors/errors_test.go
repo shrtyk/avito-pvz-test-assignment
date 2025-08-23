@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 	"github.com/stretchr/testify/assert"
 )
 

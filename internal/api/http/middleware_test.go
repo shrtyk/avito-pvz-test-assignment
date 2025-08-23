@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pAuthMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth/mocks"
-	metricsmocks "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics/mocks"
-	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pAuthMock "github.com/shrtyk/pvz-service/internal/core/ports/auth/mocks"
+	metricsmocks "github.com/shrtyk/pvz-service/internal/core/ports/metrics/mocks"
+	tservice "github.com/shrtyk/pvz-service/internal/infrastructure/tservice"
+	"github.com/shrtyk/pvz-service/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

@@ -13,8 +13,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	"github.com/shrtyk/pvz-service/internal/config"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

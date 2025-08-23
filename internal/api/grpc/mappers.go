@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
-	pvz "github.com/shrtyk/avito-pvz-test-assignment/proto/pvz/gen"
+	"github.com/shrtyk/pvz-service/internal/core/domain"
+	pvz "github.com/shrtyk/pvz-service/proto/pvz/gen"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

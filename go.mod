@@ -1,4 +1,4 @@
-module github.com/shrtyk/avito-pvz-test-assignment
+module github.com/shrtyk/pvz-service
 
 go 1.24.6
 

@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
-	pvz "github.com/shrtyk/avito-pvz-test-assignment/proto/pvz/gen"
+	"github.com/shrtyk/pvz-service/pkg/logger"
+	pvz "github.com/shrtyk/pvz-service/proto/pvz/gen"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -3,11 +3,11 @@ package main
 import (
 	"log/slog"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
-	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
-	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
-	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
+	"github.com/shrtyk/pvz-service/internal/config"
+	pAuth "github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	"github.com/shrtyk/pvz-service/internal/core/ports/metrics"
+	pRepo "github.com/shrtyk/pvz-service/internal/core/ports/repository"
+	pService "github.com/shrtyk/pvz-service/internal/core/ports/service"
 )
 
 type Application struct {

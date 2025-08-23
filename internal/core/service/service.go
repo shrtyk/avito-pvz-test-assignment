@@ -8,14 +8,14 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pa "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
-	pwd "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/pwd_service"
-	pr "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
-	ps "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	"github.com/shrtyk/pvz-service/internal/core/domain"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pa "github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	"github.com/shrtyk/pvz-service/internal/core/ports/metrics"
+	pwd "github.com/shrtyk/pvz-service/internal/core/ports/pwd_service"
+	pr "github.com/shrtyk/pvz-service/internal/core/ports/repository"
+	ps "github.com/shrtyk/pvz-service/internal/core/ports/service"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 type service struct {

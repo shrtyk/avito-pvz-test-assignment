@@ -7,10 +7,10 @@ import (
 	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pRepo "github.com/shrtyk/pvz-service/internal/core/ports/repository"
+	"github.com/shrtyk/pvz-service/pkg/logger"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 func (r *repo) UserByEmail(ctx context.Context, email string) (*auth.User, error) {

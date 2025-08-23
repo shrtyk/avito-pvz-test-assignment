@@ -6,11 +6,11 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	"github.com/shrtyk/pvz-service/internal/api/http/dto"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pAuth "github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	pService "github.com/shrtyk/pvz-service/internal/core/ports/service"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 const (

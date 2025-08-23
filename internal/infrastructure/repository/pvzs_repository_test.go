@@ -11,8 +11,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
+	"github.com/shrtyk/pvz-service/internal/core/domain"
+	"github.com/shrtyk/pvz-service/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

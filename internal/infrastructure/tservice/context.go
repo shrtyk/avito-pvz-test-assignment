@@ -3,9 +3,9 @@ package tservice
 import (
 	"context"
 
-	dAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	dAuth "github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pAuth "github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 type ctxKey string

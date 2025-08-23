@@ -7,10 +7,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
-	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	"github.com/shrtyk/pvz-service/internal/core/domain"
+	pRepo "github.com/shrtyk/pvz-service/internal/core/ports/repository"
+	"github.com/shrtyk/pvz-service/pkg/logger"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error) {

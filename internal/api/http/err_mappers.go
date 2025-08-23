@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	ps "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	"github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	ps "github.com/shrtyk/pvz-service/internal/core/ports/service"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 func mapAppServiceErrsToHTTP(err error) *HTTPError {

@@ -7,8 +7,8 @@ import (
 	"net"
 	"sync"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
-	pvz "github.com/shrtyk/avito-pvz-test-assignment/proto/pvz/gen"
+	"github.com/shrtyk/pvz-service/internal/core/ports/service"
+	pvz "github.com/shrtyk/pvz-service/proto/pvz/gen"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

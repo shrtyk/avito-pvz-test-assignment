@@ -5,14 +5,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/service"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/dbs/postgres"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/prometheus"
-	pwdservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/pwd_service"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/repository"
-	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
+	"github.com/shrtyk/pvz-service/internal/config"
+	"github.com/shrtyk/pvz-service/internal/core/service"
+	"github.com/shrtyk/pvz-service/internal/dbs/postgres"
+	"github.com/shrtyk/pvz-service/internal/infrastructure/prometheus"
+	pwdservice "github.com/shrtyk/pvz-service/internal/infrastructure/pwd_service"
+	"github.com/shrtyk/pvz-service/internal/infrastructure/repository"
+	ts "github.com/shrtyk/pvz-service/internal/infrastructure/tservice"
+	"github.com/shrtyk/pvz-service/pkg/logger"
 )
 
 func main() {

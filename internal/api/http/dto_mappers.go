@@ -2,9 +2,9 @@ package http
 
 import (
 	"github.com/oapi-codegen/runtime/types"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
+	"github.com/shrtyk/pvz-service/internal/api/http/dto"
+	"github.com/shrtyk/pvz-service/internal/core/domain"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
 )
 
 const (

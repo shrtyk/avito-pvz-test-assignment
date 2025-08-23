@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/pvz-service/internal/core/domain"
 	"github.com/stretchr/testify/assert"
 )
 

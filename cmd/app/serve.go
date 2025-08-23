@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/grpc"
-	appHttp "github.com/shrtyk/avito-pvz-test-assignment/internal/api/http"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
+	"github.com/shrtyk/pvz-service/internal/api/grpc"
+	appHttp "github.com/shrtyk/pvz-service/internal/api/http"
+	"github.com/shrtyk/pvz-service/pkg/logger"
 )
 
 func (app Application) Serve(ctx context.Context) {

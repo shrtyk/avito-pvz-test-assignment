@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
-	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
-	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
-	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
+	"github.com/shrtyk/pvz-service/internal/core/domain/auth"
+	pAuth "github.com/shrtyk/pvz-service/internal/core/ports/auth"
+	"github.com/shrtyk/pvz-service/internal/core/ports/metrics"
+	ts "github.com/shrtyk/pvz-service/internal/infrastructure/tservice"
+	"github.com/shrtyk/pvz-service/pkg/logger"
+	xerr "github.com/shrtyk/pvz-service/pkg/xerrors"
 )
 
 type Middlewares struct {
