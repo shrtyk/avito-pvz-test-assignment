@@ -10,6 +10,7 @@ import (
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuthMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth/mocks"
+	metricsmocks "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics/mocks"
 	pwdmocks "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/pwd_service/mocks"
 	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
 	repomocks "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository/mocks"
@@ -57,9 +58,13 @@ func TestNewPVZ(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 
 			repo.On("CreatePVZ", mock.Anything, tt.args).Return(tt.mockArgs.pvz, tt.mockArgs.err)
+			if !tt.wantErr {
+				metrics.On("IncPVZsCreated").Return()
+			}
 
 			result, err := s.NewPVZ(context.Background(), tt.args)
 
@@ -131,9 +136,13 @@ func TestOpenNewPVZReception(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 
 			repo.On("CreateReception", mock.Anything, tt.args).Return(tt.mockArgs.rec, tt.mockArgs.err)
+			if !tt.wantErr {
+				metrics.On("IncReceptionsCreated").Return()
+			}
 
 			result, err := s.OpenNewPVZReception(context.Background(), tt.args)
 
@@ -196,9 +205,13 @@ func TestAddProductPVZ(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 
 			repo.On("CreateProduct", mock.Anything, tt.args).Return(tt.mockArgs.prod, tt.mockArgs.err)
+			if !tt.wantErr {
+				metrics.On("IncProductsAdded").Return()
+			}
 
 			result, err := s.AddProductPVZ(context.Background(), tt.args)
 
@@ -244,7 +257,8 @@ func TestDeleteLastProductPvz(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 			pvzId := uuid.New()
 
 			repo.On("DeleteLastProduct", mock.Anything, &pvzId).Return(tt.mockErr)
@@ -291,7 +305,8 @@ func TestCloseReceptionInPvz(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 			pvzId := uuid.New()
 
 			repo.On("CloseReceptionInPvz", mock.Anything, &pvzId).Return(tt.mockErr)
@@ -346,7 +361,8 @@ func TestGetPvzsData(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 
 			repo.On("GetPvzsData", mock.Anything, tt.args).Return(tt.mockArgs.res, tt.mockArgs.err)
 
@@ -399,7 +415,8 @@ func TestGetAllPvzs(t *testing.T) {
 			t.Parallel()
 
 			repo := new(repomocks.MockRepository)
-			s := service.NewAppService(time.Second, repo, nil, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, nil, metrics)
 
 			repo.On("GetAllPvzs", mock.Anything).Return(tt.mockArgs.res, tt.mockArgs.err)
 
@@ -476,7 +493,8 @@ func TestRegisterUser(t *testing.T) {
 
 			repo := new(repomocks.MockRepository)
 			pwdSvc := new(pwdmocks.MockPasswordService)
-			s := service.NewAppService(time.Second, repo, pwdSvc, nil)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, pwdSvc, nil, metrics)
 
 			tt.setup(mocks{repo, pwdSvc})
 
@@ -578,7 +596,8 @@ func TestLoginUser(t *testing.T) {
 			repo := new(repomocks.MockRepository)
 			pwdSvc := new(pwdmocks.MockPasswordService)
 			tknSvc := new(pAuthMock.MockTokenService)
-			s := service.NewAppService(time.Second, repo, pwdSvc, tknSvc)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, pwdSvc, tknSvc, metrics)
 
 			tt.setup(mocks{repo, pwdSvc, tknSvc})
 
@@ -693,7 +712,8 @@ func TestRefreshTokens(t *testing.T) {
 
 			repo := new(repomocks.MockRepository)
 			tknSvc := new(pAuthMock.MockTokenService)
-			s := service.NewAppService(time.Second, repo, nil, tknSvc)
+			metrics := new(metricsmocks.MockCollector)
+			s := service.NewAppService(time.Second, repo, nil, tknSvc, metrics)
 
 			tt.setup(mocks{repo, tknSvc})
 

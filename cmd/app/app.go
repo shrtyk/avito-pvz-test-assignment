@@ -5,6 +5,7 @@ import (
 
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
 	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
 	pRepo "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
 	pService "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
 )
@@ -15,6 +16,7 @@ type Application struct {
 	Repo         pRepo.Repository
 	TokenService pAuth.TokenService
 	AppService   pService.Service
+	Metrics      metrics.Collector
 }
 
 type option func(*Application)
@@ -56,5 +58,11 @@ func WithTokenService(tokenService pAuth.TokenService) option {
 func WithService(s pService.Service) option {
 	return func(app *Application) {
 		app.AppService = s
+	}
+}
+
+func WithMetrics(m metrics.Collector) option {
+	return func(app *Application) {
+		app.Metrics = m
 	}
 }

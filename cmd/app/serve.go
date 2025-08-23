@@ -17,7 +17,7 @@ func (app Application) Serve(ctx context.Context) {
 
 	httpServ := http.Server{
 		Addr:         ":" + app.Cfg.HttpServerCfg.Port,
-		Handler:      appHttp.NewRouter(app.AppService, app.TokenService, app.Logger),
+		Handler:      appHttp.NewRouter(app.AppService, app.TokenService, app.Logger, app.Metrics),
 		IdleTimeout:  app.Cfg.HttpServerCfg.IdleTimeout,
 		WriteTimeout: app.Cfg.HttpServerCfg.WriteTimeout,
 		ReadTimeout:  app.Cfg.HttpServerCfg.ReadTimeout,

@@ -22,6 +22,7 @@ import (
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/service"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/prometheus"
 	pwdservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/pwd_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/repository"
 	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
@@ -218,8 +219,9 @@ func startTestApp(t *testing.T, appCfg *testAppConfig) string {
 	tService := ts.MustCreateTokenService(&cfg.AuthTokenCfg)
 	db := pkgpg.MustCreateConnectionPool(&cfg.PostgresCfg)
 	repo := repository.NewRepo(db)
+	metrics := prometheus.NewPrometheusCollector()
 	pwdService := pwdservice.NewPasswordService()
-	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService, tService)
+	appService := service.NewAppService(cfg.AppCfg.Timeout, repo, pwdService, tService, metrics)
 
 	app := NewApplication()
 	app.Init(
@@ -228,6 +230,7 @@ func startTestApp(t *testing.T, appCfg *testAppConfig) string {
 		WithTokenService(tService),
 		WithRepo(repo),
 		WithService(appService),
+		WithMetrics(metrics),
 	)
 
 	go func() {

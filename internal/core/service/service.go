@@ -11,6 +11,7 @@ import (
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pa "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
 	pwd "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/pwd_service"
 	pr "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/repository"
 	ps "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service"
@@ -22,6 +23,7 @@ type service struct {
 	repo    pr.Repository
 	pwdSrc  pwd.PasswordService
 	tknSrc  pa.TokenService
+	metrics metrics.Collector
 }
 
 func NewAppService(
@@ -29,12 +31,14 @@ func NewAppService(
 	repo pr.Repository,
 	pwdSrc pwd.PasswordService,
 	tknSrc pa.TokenService,
+	metrics metrics.Collector,
 ) *service {
 	return &service{
 		timeout: timeout,
 		repo:    repo,
 		pwdSrc:  pwdSrc,
 		tknSrc:  tknSrc,
+		metrics: metrics,
 	}
 }
 
@@ -49,6 +53,7 @@ func (s *service) NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, err
 		return nil, xerr.WrapErr(op, ps.FailedToAddPvz, err)
 	}
 
+	s.metrics.IncPVZsCreated()
 	return pvz, nil
 }
 
@@ -72,6 +77,7 @@ func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception
 		return nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
+	s.metrics.IncReceptionsCreated()
 	return newRec, nil
 }
 
@@ -90,6 +96,7 @@ func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*dom
 		return nil, xerr.WrapErr(op, ps.Unexpected, err)
 	}
 
+	s.metrics.IncProductsAdded()
 	return newProd, nil
 }
 

@@ -9,9 +9,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuthMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth/mocks"
+	metricsmocks "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics/mocks"
 	tservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestMiddlewares_PanicRecoveryMW(t *testing.T) {
@@ -47,7 +49,8 @@ func TestMiddlewares_PanicRecoveryMW(t *testing.T) {
 			t.Parallel()
 
 			l, logs := logger.NewTestLogger()
-			m := NewMiddlewares(nil, l)
+			metrics := new(metricsmocks.MockCollector)
+			m := NewMiddlewares(nil, l, metrics)
 
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
 			rr := httptest.NewRecorder()
@@ -69,7 +72,11 @@ func TestMiddlewares_LoggingMW(t *testing.T) {
 	t.Parallel()
 
 	l, logs := logger.NewTestLogger()
-	m := NewMiddlewares(nil, l)
+	metrics := new(metricsmocks.MockCollector)
+	m := NewMiddlewares(nil, l, metrics)
+
+	metrics.On("ObserveHTTPRequestDuration", http.MethodGet, mock.AnythingOfType("float64")).Return()
+	metrics.On("IncHTTPRequestsTotal", http.MethodGet, "202").Return()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctxL := logger.FromCtx(r.Context())
@@ -152,6 +159,7 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 			tc.setupMock(ts)
 
 			l, _ := logger.NewTestLogger()
+			metrics := new(metricsmocks.MockCollector)
 
 			errHandled := false
 			mockErrHandler := func(w http.ResponseWriter, r *http.Request, err error) {
@@ -161,6 +169,7 @@ func TestMiddlewares_AuthenticationMW(t *testing.T) {
 			m := &Middlewares{
 				tokenService:  ts,
 				log:           l,
+				metrics:       metrics,
 				handleAuthErr: mockErrHandler,
 			}
 
@@ -226,6 +235,7 @@ func TestMiddlewares_AuthorizeRoles(t *testing.T) {
 			t.Parallel()
 
 			l, _ := logger.NewTestLogger()
+			metrics := new(metricsmocks.MockCollector)
 
 			errHandled := false
 			mockErrHandler := func(w http.ResponseWriter, r *http.Request, err error) {
@@ -234,6 +244,7 @@ func TestMiddlewares_AuthorizeRoles(t *testing.T) {
 
 			m := &Middlewares{
 				log:           l,
+				metrics:       metrics,
 				handleAuthErr: mockErrHandler,
 			}
 

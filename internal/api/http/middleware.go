@@ -5,11 +5,13 @@ import (
 	"log/slog"
 	"net/http"
 	"slices"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuth "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/metrics"
 	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
@@ -18,12 +20,14 @@ import (
 type Middlewares struct {
 	tokenService  pAuth.TokenService
 	log           *slog.Logger
+	metrics       metrics.Collector
 	handleAuthErr func(http.ResponseWriter, *http.Request, error)
 }
 
 func NewMiddlewares(
 	tokenService pAuth.TokenService,
 	log *slog.Logger,
+	metrics metrics.Collector,
 ) *Middlewares {
 	eh := func(w http.ResponseWriter, r *http.Request, err error) {
 		WriteHTTPError(w, r, mapTokenServiceErrsToHTTP(err))
@@ -32,6 +36,7 @@ func NewMiddlewares(
 	return &Middlewares{
 		tokenService:  tokenService,
 		log:           log,
+		metrics:       metrics,
 		handleAuthErr: eh,
 	}
 }
@@ -104,6 +109,9 @@ func (m Middlewares) LoggingMW(next http.Handler) http.Handler {
 		reqStart := time.Now()
 		next.ServeHTTP(custWriter, newReq)
 		reqEnd := time.Since(reqStart)
+
+		m.metrics.ObserveHTTPRequestDuration(r.Method, reqEnd.Seconds())
+		m.metrics.IncHTTPRequestsTotal(r.Method, strconv.Itoa(custWriter.statusCode))
 
 		ttp := fmt.Sprintf("%.5fs", reqEnd.Seconds())
 		l.Debug(
