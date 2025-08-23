@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -223,5 +224,50 @@ func Test_toDTOPvzData(t *testing.T) {
 		domainPvzData := []*domain.PvzReceptions{{}}
 		dtoPvzData := toDTOPvzData(domainPvzData)
 		assert.Len(t, dtoPvzData, 1)
+	})
+}
+
+func Test_toDTOUserData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nil domain", func(t *testing.T) {
+		t.Parallel()
+		assert.Nil(t, toDTOUserData(nil))
+	})
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+		userID := uuid.New()
+		domainUser := &auth.User{
+			Id:    userID,
+			Email: "test@example.com",
+			Role:  auth.UserRoleEmployee,
+		}
+		dtoUser := toDTOUserData(domainUser)
+		assert.Equal(t, &userID, dtoUser.Id)
+		assert.Equal(t, "test@example.com", string(dtoUser.Email))
+		assert.Equal(t, dto.UserRoleEmployee, dtoUser.Role)
+	})
+}
+
+func Test_toDomainUserData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("nil dto", func(t *testing.T) {
+		t.Parallel()
+		assert.Nil(t, toDomainUserData(nil))
+	})
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+		dtoUser := &dto.PostRegisterJSONRequestBody{
+			Email:    "test@example.com",
+			Password: "password",
+			Role:     dto.Employee,
+		}
+		domainUser := toDomainUserData(dtoUser)
+		assert.Equal(t, "test@example.com", domainUser.Email)
+		assert.Equal(t, "password", domainUser.PlainPassword)
+		assert.Equal(t, auth.UserRoleEmployee, domainUser.Role)
 	})
 }

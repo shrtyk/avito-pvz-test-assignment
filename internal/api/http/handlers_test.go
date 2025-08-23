@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/api/http/dto"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pAuthMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth/mocks"
 	pServiceMock "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/service/mocks"
 	"github.com/stretchr/testify/assert"
@@ -69,7 +71,8 @@ func TestHandlers_DummyLoginHandler(t *testing.T) {
 			name: "success",
 			body: dto.PostDummyLoginJSONRequestBody{Role: "employee"},
 			setup: func(f *handlerWithMocks) {
-				f.tService.On("GenerateAccessToken", mock.Anything).Return("token", nil).Once()
+				f.tService.On("GenerateAccessToken", mock.Anything).
+					Return("token", nil).Once()
 			},
 			wantStatus: http.StatusOK,
 			writer:     httptest.NewRecorder(),
@@ -92,7 +95,8 @@ func TestHandlers_DummyLoginHandler(t *testing.T) {
 			name: "token service error",
 			body: dto.PostDummyLoginJSONRequestBody{Role: "employee"},
 			setup: func(f *handlerWithMocks) {
-				f.tService.On("GenerateAccessToken", mock.Anything).Return("", assert.AnError).Once()
+				f.tService.On("GenerateAccessToken", mock.Anything).
+					Return("", assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 			writer:     httptest.NewRecorder(),
@@ -101,7 +105,8 @@ func TestHandlers_DummyLoginHandler(t *testing.T) {
 			name: "writejson error",
 			body: dto.PostDummyLoginJSONRequestBody{Role: "employee"},
 			setup: func(f *handlerWithMocks) {
-				f.tService.On("GenerateAccessToken", mock.Anything).Return("token", nil).Once()
+				f.tService.On("GenerateAccessToken", mock.Anything).
+					Return("token", nil).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 			writer:     &failingWriter{},
@@ -144,7 +149,8 @@ func TestHandlers_NewPVZHandler(t *testing.T) {
 			name: "success",
 			body: dto.PVZ{City: "Москва"},
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("NewPVZ", mock.Anything, mock.Anything).Return(&domain.Pvz{}, nil).Once()
+				f.appService.On("NewPVZ", mock.Anything, mock.Anything).
+					Return(&domain.Pvz{}, nil).Once()
 			},
 			wantStatus: http.StatusCreated,
 		},
@@ -158,7 +164,8 @@ func TestHandlers_NewPVZHandler(t *testing.T) {
 			name: "service error",
 			body: dto.PVZ{City: "Москва"},
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("NewPVZ", mock.Anything, mock.Anything).Return(nil, assert.AnError).Once()
+				f.appService.On("NewPVZ", mock.Anything, mock.Anything).
+					Return(nil, assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 		},
@@ -208,7 +215,8 @@ func TestHandlers_NewReceptionHandler(t *testing.T) {
 			name: "success",
 			body: dto.PostReceptionsJSONBody{PvzId: uuid.New()},
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("OpenNewPVZReception", mock.Anything, mock.Anything).Return(&domain.Reception{}, nil).Once()
+				f.appService.On("OpenNewPVZReception", mock.Anything, mock.Anything).
+					Return(&domain.Reception{}, nil).Once()
 			},
 			wantStatus: http.StatusCreated,
 		},
@@ -222,7 +230,8 @@ func TestHandlers_NewReceptionHandler(t *testing.T) {
 			name: "service error",
 			body: dto.PostReceptionsJSONBody{PvzId: uuid.New()},
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("OpenNewPVZReception", mock.Anything, mock.Anything).Return(nil, assert.AnError).Once()
+				f.appService.On("OpenNewPVZReception", mock.Anything, mock.Anything).
+					Return(nil, assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 		},
@@ -272,7 +281,8 @@ func TestHandlers_AddProductHandler(t *testing.T) {
 			name: "success",
 			body: dto.PostProductsJSONRequestBody{PvzId: uuid.New(), Type: "одежда"},
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("AddProductPVZ", mock.Anything, mock.Anything).Return(&domain.Product{}, nil).Once()
+				f.appService.On("AddProductPVZ", mock.Anything, mock.Anything).
+					Return(&domain.Product{}, nil).Once()
 			},
 			wantStatus: http.StatusCreated,
 		},
@@ -286,7 +296,8 @@ func TestHandlers_AddProductHandler(t *testing.T) {
 			name: "service error",
 			body: dto.PostProductsJSONRequestBody{PvzId: uuid.New(), Type: "одежда"},
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("AddProductPVZ", mock.Anything, mock.Anything).Return(nil, assert.AnError).Once()
+				f.appService.On("AddProductPVZ", mock.Anything, mock.Anything).
+					Return(nil, assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 		},
@@ -338,7 +349,8 @@ func TestHandlers_DeleteLastProductHandler(t *testing.T) {
 			name:  "success",
 			pvzID: pvzID.String(),
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("DeleteLastProductPvz", mock.Anything, &pvzID).Return(nil).Once()
+				f.appService.On("DeleteLastProductPvz", mock.Anything, &pvzID).
+					Return(nil).Once()
 			},
 			wantStatus: http.StatusOK,
 		},
@@ -352,7 +364,8 @@ func TestHandlers_DeleteLastProductHandler(t *testing.T) {
 			name:  "service error",
 			pvzID: pvzID.String(),
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("DeleteLastProductPvz", mock.Anything, &pvzID).Return(assert.AnError).Once()
+				f.appService.On("DeleteLastProductPvz", mock.Anything, &pvzID).
+					Return(assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 		},
@@ -400,7 +413,8 @@ func TestHandlers_CloseReceptionHandler(t *testing.T) {
 			name:  "success",
 			pvzID: pvzID.String(),
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("CloseReceptionInPvz", mock.Anything, &pvzID).Return(nil).Once()
+				f.appService.On("CloseReceptionInPvz", mock.Anything, &pvzID).
+					Return(nil).Once()
 			},
 			wantStatus: http.StatusOK,
 		},
@@ -414,7 +428,8 @@ func TestHandlers_CloseReceptionHandler(t *testing.T) {
 			name:  "service error",
 			pvzID: pvzID.String(),
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("CloseReceptionInPvz", mock.Anything, &pvzID).Return(assert.AnError).Once()
+				f.appService.On("CloseReceptionInPvz", mock.Anything, &pvzID).
+					Return(assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 		},
@@ -460,7 +475,8 @@ func TestHandlers_GetPvzHandler(t *testing.T) {
 			name: "success",
 			url:  "/pvz",
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("GetPvzsData", mock.Anything, mock.Anything).Return([]*domain.PvzReceptions{}, nil).Once()
+				f.appService.On("GetPvzsData", mock.Anything, mock.Anything).
+					Return([]*domain.PvzReceptions{}, nil).Once()
 			},
 			wantStatus: http.StatusOK,
 		},
@@ -474,7 +490,8 @@ func TestHandlers_GetPvzHandler(t *testing.T) {
 			name: "service error",
 			url:  "/pvz",
 			setup: func(f *handlerWithMocks) {
-				f.appService.On("GetPvzsData", mock.Anything, mock.Anything).Return(nil, assert.AnError).Once()
+				f.appService.On("GetPvzsData", mock.Anything, mock.Anything).
+					Return(nil, assert.AnError).Once()
 			},
 			wantStatus: http.StatusInternalServerError,
 		},
@@ -499,6 +516,290 @@ func TestHandlers_GetPvzHandler(t *testing.T) {
 			} else {
 				assert.Equal(t, tt.wantStatus, rr.Code)
 			}
+		})
+	}
+}
+
+func TestHandlers_HealthZ(t *testing.T) {
+	t.Parallel()
+
+	h, _ := setup(t)
+	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
+	rr := httptest.NewRecorder()
+
+	err := h.HealthZ(rr, req)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestHandlers_RegisterUserHandler(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name       string
+		body       any
+		setup      func(f *handlerWithMocks)
+		wantStatus int
+		writer     http.ResponseWriter
+	}{
+		{
+			name: "success",
+			body: dto.PostRegisterJSONRequestBody{Email: "test@test.com", Password: "password", Role: "employee"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("RegisterUser", mock.Anything, mock.Anything).
+					Return(&auth.User{
+						Id:    uuid.New(),
+						Role:  "moderator",
+						Email: "a@a.com",
+					}, nil).Once()
+			},
+			wantStatus: http.StatusCreated,
+			writer:     httptest.NewRecorder(),
+		},
+		{
+			name:       "bad request",
+			body:       "not json",
+			setup:      func(f *handlerWithMocks) {},
+			wantStatus: http.StatusBadRequest,
+			writer:     httptest.NewRecorder(),
+		},
+		{
+			name:       "validation error",
+			body:       dto.PostRegisterJSONRequestBody{Email: "not-an-email", Password: "password", Role: "employee"},
+			setup:      func(f *handlerWithMocks) {},
+			wantStatus: http.StatusBadRequest,
+			writer:     httptest.NewRecorder(),
+		},
+		{
+			name: "service error",
+			body: dto.PostRegisterJSONRequestBody{Email: "test@test.com", Password: "password", Role: "employee"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("RegisterUser", mock.Anything, mock.Anything).
+					Return(nil, assert.AnError).Once()
+			},
+			wantStatus: http.StatusInternalServerError,
+			writer:     httptest.NewRecorder(),
+		},
+		{
+			name: "write json error",
+			body: dto.PostRegisterJSONRequestBody{Email: "test@test.com", Password: "password", Role: "employee"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("RegisterUser", mock.Anything, mock.Anything).
+					Return(&auth.User{}, nil).Once()
+			},
+			wantStatus: http.StatusInternalServerError,
+			writer:     &failingWriter{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			h, f := setup(t)
+			tt.setup(f)
+
+			bodyBytes, _ := json.Marshal(tt.body)
+			req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewReader(bodyBytes))
+
+			err := h.RegisterUserHandler(tt.writer, req)
+
+			if err != nil {
+				var httpErr *HTTPError
+				if errors.As(err, &httpErr) {
+					assert.Equal(t, tt.wantStatus, httpErr.Code)
+				}
+			} else if rr, ok := tt.writer.(*httptest.ResponseRecorder); ok {
+				assert.Equal(t, tt.wantStatus, rr.Code)
+			}
+		})
+	}
+}
+
+func TestHandlers_LoginUserHandler(t *testing.T) {
+	t.Parallel()
+
+	rToken := &auth.RefreshToken{
+		Token:     "refresh-token",
+		ExpiresAt: time.Now().Add(time.Hour),
+	}
+
+	tests := []struct {
+		name       string
+		body       any
+		setup      func(f *handlerWithMocks)
+		wantStatus int
+		writer     http.ResponseWriter
+		check      func(t *testing.T, w http.ResponseWriter)
+	}{
+		{
+			name: "success",
+			body: dto.PostLoginJSONRequestBody{Email: "test@test.com", Password: "password"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("LoginUser", mock.Anything, mock.Anything).
+					Return("access-token", rToken, nil).Once()
+			},
+			wantStatus: http.StatusOK,
+			writer:     httptest.NewRecorder(),
+			check: func(t *testing.T, w http.ResponseWriter) {
+				rr := w.(*httptest.ResponseRecorder)
+				cookies := rr.Result().Cookies()
+				assert.Len(t, cookies, 1)
+				assert.Equal(t, refreshTokenKey, cookies[0].Name)
+				assert.Equal(t, "refresh-token", cookies[0].Value)
+			},
+		},
+		{
+			name:       "bad request",
+			body:       "not json",
+			setup:      func(f *handlerWithMocks) {},
+			wantStatus: http.StatusBadRequest,
+			writer:     httptest.NewRecorder(),
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+		{
+			name:       "validation error",
+			body:       dto.PostLoginJSONRequestBody{Email: "not-an-email", Password: "password"},
+			setup:      func(f *handlerWithMocks) {},
+			wantStatus: http.StatusBadRequest,
+			writer:     httptest.NewRecorder(),
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+		{
+			name: "service error",
+			body: dto.PostLoginJSONRequestBody{Email: "test@test.com", Password: "password"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("LoginUser", mock.Anything, mock.Anything).
+					Return("", nil, assert.AnError).Once()
+			},
+			wantStatus: http.StatusInternalServerError,
+			writer:     httptest.NewRecorder(),
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+		{
+			name: "writejson error",
+			body: dto.PostLoginJSONRequestBody{Email: "test@test.com", Password: "password"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("LoginUser", mock.Anything, mock.Anything).
+					Return("access-token", rToken, nil).Once()
+			},
+			wantStatus: http.StatusInternalServerError,
+			writer:     &failingWriter{},
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			h, f := setup(t)
+			tt.setup(f)
+
+			bodyBytes, _ := json.Marshal(tt.body)
+			req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewReader(bodyBytes))
+
+			err := h.LoginUserHandler(tt.writer, req)
+
+			if err != nil {
+				var httpErr *HTTPError
+				if errors.As(err, &httpErr) {
+					assert.Equal(t, tt.wantStatus, httpErr.Code)
+				}
+			} else if rr, ok := tt.writer.(*httptest.ResponseRecorder); ok {
+				assert.Equal(t, tt.wantStatus, rr.Code)
+			}
+			tt.check(t, tt.writer)
+		})
+	}
+}
+
+func TestHandlers_RefreshTokensHandler(t *testing.T) {
+	t.Parallel()
+
+	newRToken := &auth.RefreshToken{
+		Token:     "new-refresh-token",
+		ExpiresAt: time.Now().Add(time.Hour),
+	}
+
+	tests := []struct {
+		name       string
+		cookie     *http.Cookie
+		setup      func(f *handlerWithMocks)
+		wantStatus int
+		writer     http.ResponseWriter
+		check      func(t *testing.T, w http.ResponseWriter)
+	}{
+		{
+			name:   "success",
+			cookie: &http.Cookie{Name: refreshTokenKey, Value: "old-refresh-token"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("RefreshTokens", mock.Anything, mock.Anything).
+					Return("new-access-token", newRToken, nil).Once()
+			},
+			wantStatus: http.StatusCreated,
+			writer:     httptest.NewRecorder(),
+			check: func(t *testing.T, w http.ResponseWriter) {
+				rr := w.(*httptest.ResponseRecorder)
+				cookies := rr.Result().Cookies()
+				assert.Len(t, cookies, 1)
+				assert.Equal(t, refreshTokenKey, cookies[0].Name)
+				assert.Equal(t, "new-refresh-token", cookies[0].Value)
+			},
+		},
+		{
+			name:       "no cookie",
+			cookie:     nil,
+			setup:      func(f *handlerWithMocks) {},
+			wantStatus: http.StatusUnauthorized,
+			writer:     httptest.NewRecorder(),
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+		{
+			name:   "service error",
+			cookie: &http.Cookie{Name: refreshTokenKey, Value: "old-refresh-token"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("RefreshTokens", mock.Anything, mock.Anything).
+					Return("", nil, assert.AnError).Once()
+			},
+			wantStatus: http.StatusInternalServerError,
+			writer:     httptest.NewRecorder(),
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+		{
+			name:   "writejson error",
+			cookie: &http.Cookie{Name: refreshTokenKey, Value: "old-refresh-token"},
+			setup: func(f *handlerWithMocks) {
+				f.appService.On("RefreshTokens", mock.Anything, mock.Anything).
+					Return("new-access-token", newRToken, nil).Once()
+			},
+			wantStatus: http.StatusInternalServerError,
+			writer:     &failingWriter{},
+			check:      func(t *testing.T, w http.ResponseWriter) {},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			h, f := setup(t)
+			tt.setup(f)
+
+			req := httptest.NewRequest(http.MethodPost, "/tokens/refresh", nil)
+			if tt.cookie != nil {
+				req.AddCookie(tt.cookie)
+			}
+
+			err := h.RefreshTokensHandler(tt.writer, req)
+
+			if err != nil {
+				var httpErr *HTTPError
+				if errors.As(err, &httpErr) {
+					assert.Equal(t, tt.wantStatus, httpErr.Code)
+				}
+			} else if rr, ok := tt.writer.(*httptest.ResponseRecorder); ok {
+				assert.Equal(t, tt.wantStatus, rr.Code)
+			}
+			tt.check(t, tt.writer)
 		})
 	}
 }

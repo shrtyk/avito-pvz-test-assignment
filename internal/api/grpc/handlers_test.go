@@ -18,6 +18,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// TODO: Add tests for authentication and authorization scenarios
+// once gRPC interceptors for auth are implemented.
+
 func TestGetPVZList(t *testing.T) {
 	t.Parallel()
 
@@ -47,6 +50,17 @@ func TestGetPVZList(t *testing.T) {
 				require.NotNil(t, resp)
 				assert.Len(t, resp.Pvzs, 1)
 				assert.Equal(t, sampleDomainPvzs[0].Id.String(), resp.Pvzs[0].Id)
+			},
+		},
+		{
+			name: "success with empty list",
+			setupMock: func(mockService *mocks.MockService) {
+				mockService.EXPECT().GetAllPvzs(mock.Anything).Return([]*domain.Pvz{}, nil)
+			},
+			checkResponse: func(t *testing.T, resp *pvz.GetPVZListResponse, err error) {
+				require.NoError(t, err)
+				require.NotNil(t, resp)
+				assert.Len(t, resp.Pvzs, 0)
 			},
 		},
 		{
