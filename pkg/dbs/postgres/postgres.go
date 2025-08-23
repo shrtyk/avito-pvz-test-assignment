@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/config"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
 )
 
 func MustCreateConnectionPool(cfg *config.PostgresCfg) *sql.DB {

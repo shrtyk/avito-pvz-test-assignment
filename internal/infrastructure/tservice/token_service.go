@@ -13,9 +13,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/domain/auth"
 	pa "github.com/shrtyk/avito-pvz-test-assignment/internal/core/ports/auth"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/config"
 	xerr "github.com/shrtyk/avito-pvz-test-assignment/pkg/xerrors"
 )
 
