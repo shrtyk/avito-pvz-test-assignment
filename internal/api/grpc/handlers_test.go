@@ -18,9 +18,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// TODO: Add tests for authentication and authorization scenarios
-// once gRPC interceptors for auth are implemented.
-
 func TestGetPVZList(t *testing.T) {
 	t.Parallel()
 

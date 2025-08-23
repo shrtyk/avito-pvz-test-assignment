@@ -7,11 +7,11 @@ import (
 
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/config"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/core/service"
+	"github.com/shrtyk/avito-pvz-test-assignment/internal/dbs/postgres"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/prometheus"
 	pwdservice "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/pwd_service"
 	"github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/repository"
 	ts "github.com/shrtyk/avito-pvz-test-assignment/internal/infrastructure/tservice"
-	"github.com/shrtyk/avito-pvz-test-assignment/pkg/dbs/postgres"
 	"github.com/shrtyk/avito-pvz-test-assignment/pkg/logger"
 )
 

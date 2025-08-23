@@ -44,7 +44,7 @@ services:
       dockerfile: build/pvz_app/Dockerfile
     container_name: pvz
     ports:
-      - "${HTTP_SERVER_PORT}:${HTTP_SERVER_PORT}"
+      - "8080:${HTTP_SERVER_PORT}"
       - "3000:${GRPC_SERVER_PORT}"
     depends_on:
       postgres:
