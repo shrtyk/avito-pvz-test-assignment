@@ -11,6 +11,7 @@ import (
 
 func Test_pvzAggregator(t *testing.T) {
 	t.Parallel()
+
 	pvzID1 := uuid.New()
 	recID1 := uuid.New()
 	prodID1 := uuid.New()
@@ -121,6 +122,7 @@ func Test_pvzAggregator_untested_parts(t *testing.T) {
 
 	t.Run("no reception id", func(t *testing.T) {
 		t.Parallel()
+
 		aggregator := newPvzAggregator()
 		row := pvzRow{
 			PvzID: uuid.New().String(),
@@ -145,6 +147,7 @@ func Test_pvzAggregator_untested_parts(t *testing.T) {
 
 	t.Run("invalid reception pvz uuid", func(t *testing.T) {
 		t.Parallel()
+
 		aggregator := newPvzAggregator()
 		row := pvzRow{
 			PvzID:    uuid.New().String(),
@@ -158,6 +161,7 @@ func Test_pvzAggregator_untested_parts(t *testing.T) {
 
 	t.Run("invalid product reception uuid", func(t *testing.T) {
 		t.Parallel()
+
 		aggregator := newPvzAggregator()
 		row := pvzRow{
 			PvzID:     uuid.New().String(),
@@ -173,6 +177,7 @@ func Test_pvzAggregator_untested_parts(t *testing.T) {
 
 	t.Run("existing pvz", func(t *testing.T) {
 		t.Parallel()
+
 		aggregator := newPvzAggregator()
 		pvzID := uuid.New().String()
 		row1 := pvzRow{PvzID: pvzID}
@@ -186,6 +191,7 @@ func Test_pvzAggregator_untested_parts(t *testing.T) {
 
 	t.Run("existing reception", func(t *testing.T) {
 		t.Parallel()
+
 		aggregator := newPvzAggregator()
 		pvzID := uuid.New().String()
 		recID := uuid.New().String()
