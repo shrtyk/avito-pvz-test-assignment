@@ -30,22 +30,27 @@ A backend service for managing package pickup points (PVZ) and goods reception, 
 1.  **Prerequisites:** Go 1.24+, Docker, Make.
 
 2.  **Clone the repository:**
+
     ```sh
     git clone https://github.com/shrtyk/avito-pvz-test-assignment.git && cd avito-pvz-test-assignment
     ```
 
 3.  **Initial Setup:**
+
     ```sh
     # Creates .env from .env_example and generates RSA keys
     make setup
     ```
 
 4.  **Run the application:**
+
     ```sh
     # Starts all services (app, db, prometheus) and applies migrations
     make docker/up
     ```
+
     The services will be available at:
+
     - HTTP API: `http://localhost:8080`
     - gRPC API: `localhost:3000`
     - Prometheus: `http://localhost:9000`
@@ -73,6 +78,11 @@ make linter/run
 ```sh
 # Generate mocks, DTOs, and RSA keys
 make generate
+```
+
+```sh
+# Run k6 load test
+make load-test/run
 ```
 
 ## Performance
