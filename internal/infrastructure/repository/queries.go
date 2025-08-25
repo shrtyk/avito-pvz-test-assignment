@@ -2,8 +2,8 @@ package repository
 
 import (
 	"fmt"
-	"strings"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/shrtyk/pvz-service/internal/core/domain"
 )
 
@@ -115,58 +115,49 @@ const (
 	`
 )
 
-func buildGetPvzDataQuery(params *domain.PvzsReadParams) (query, []any) {
-	var qBuilder strings.Builder
-	var args []any
-	argID := 1
-
-	qBuilder.WriteString(`
-		WITH pvzs_ids AS (
-			SELECT DISTINCT pvz.id
-			FROM pvzs AS pvz
-	`)
+func buildGetPvzDataQuery(params *domain.PvzsReadParams) (string, []any, error) {
+	sb := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sub := sb.
+		Select("DISTINCT pvz.id").
+		From("pvzs AS pvz")
 
 	if params.StartDate != nil || params.EndDate != nil {
-		qBuilder.WriteString(" INNER JOIN receptions AS r ON pvz.id = r.pvz_id ")
-		var whereConds []string
+		sub = sub.Join("receptions AS r ON pvz.id = r.pvz_id")
 		if params.StartDate != nil {
-			whereConds = append(whereConds, fmt.Sprintf("r.created_at >= $%d", argID))
-			args = append(args, params.StartDate)
-			argID++
+			sub = sub.Where("r.created_at >= ?", params.StartDate)
 		}
 		if params.EndDate != nil {
-			whereConds = append(whereConds, fmt.Sprintf("r.created_at <= $%d", argID))
-			args = append(args, params.EndDate)
-			argID++
+			sub = sub.Where("r.created_at <= ?", params.EndDate)
 		}
-		qBuilder.WriteString("WHERE " + strings.Join(whereConds, " AND "))
 	}
 
-	qBuilder.WriteString(fmt.Sprintf(`
-			ORDER BY pvz.id
-			LIMIT $%d
-			OFFSET $%d
-		)
-	`, argID, argID+1))
-
 	offset := (params.Page - 1) * params.Limit
-	args = append(args, params.Limit, offset)
+	sub = sub.
+		OrderBy("pvz.id").
+		Limit(uint64(params.Limit)).
+		Offset(uint64(offset))
 
-	qBuilder.WriteString(`
-		SELECT
-			pvz.id, pvz.city, pvz.created_at,
-			r.id, r.status, r.created_at, r.pvz_id,
-			p.id, p.added_at, p.reception_id, p.type
-		FROM pvzs AS pvz
-		LEFT JOIN receptions AS r
-			ON pvz.id = r.pvz_id
-		LEFT JOIN products AS p
-			ON p.reception_id = r.id
-		WHERE
-			pvz.id IN (SELECT id FROM pvzs_ids)
-		ORDER BY
-			pvz.id, r.id, p.id
-	`)
+	subSQL, subArgs, err := sub.ToSql()
+	if err != nil {
+		return "", nil, err
+	}
 
-	return query(qBuilder.String()), args
+	mainSQL := fmt.Sprintf(`
+WITH pvzs_ids AS (%s)
+SELECT
+	pvz.id, pvz.city, pvz.created_at,
+	r.id, r.status, r.created_at, r.pvz_id,
+	p.id, p.added_at, p.reception_id, p.type
+FROM pvzs AS pvz
+LEFT JOIN receptions AS r
+	ON pvz.id = r.pvz_id
+LEFT JOIN products AS p
+	ON p.reception_id = r.id
+WHERE
+	pvz.id IN (SELECT id FROM pvzs_ids)
+ORDER BY
+	pvz.id, r.id, p.id
+`, subSQL)
+
+	return mainSQL, subArgs, nil
 }

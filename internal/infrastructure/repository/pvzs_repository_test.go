@@ -415,7 +415,8 @@ func TestGetPvzsData(t *testing.T) {
 
 	t.Run("success no rows", func(t *testing.T) {
 		params := &domain.PvzsReadParams{Page: 1, Limit: 10}
-		_, args := buildGetPvzDataQuery(params)
+		_, args, err := buildGetPvzDataQuery(params)
+		require.NoError(t, err)
 		driverArgs := make([]driver.Value, len(args))
 		for i, v := range args {
 			driverArgs[i] = v
@@ -439,7 +440,8 @@ func TestGetPvzsData(t *testing.T) {
 
 	t.Run("success one row", func(t *testing.T) {
 		params := &domain.PvzsReadParams{Page: 1, Limit: 10}
-		_, args := buildGetPvzDataQuery(params)
+		_, args, err := buildGetPvzDataQuery(params)
+		require.NoError(t, err)
 		driverArgs := make([]driver.Value, len(args))
 		for i, v := range args {
 			driverArgs[i] = v
@@ -471,7 +473,8 @@ func TestGetPvzsData(t *testing.T) {
 
 	t.Run("query error", func(t *testing.T) {
 		params := &domain.PvzsReadParams{Page: 1, Limit: 10}
-		_, args := buildGetPvzDataQuery(params)
+		_, args, err := buildGetPvzDataQuery(params)
+		require.NoError(t, err)
 		driverArgs := make([]driver.Value, len(args))
 		for i, v := range args {
 			driverArgs[i] = v
@@ -488,7 +491,8 @@ func TestGetPvzsData(t *testing.T) {
 
 	t.Run("scan error", func(t *testing.T) {
 		params := &domain.PvzsReadParams{Page: 1, Limit: 10}
-		_, args := buildGetPvzDataQuery(params)
+		_, args, err := buildGetPvzDataQuery(params)
+		require.NoError(t, err)
 		driverArgs := make([]driver.Value, len(args))
 		for i, v := range args {
 			driverArgs[i] = v
@@ -507,7 +511,8 @@ func TestGetPvzsData(t *testing.T) {
 
 	t.Run("rows error", func(t *testing.T) {
 		params := &domain.PvzsReadParams{Page: 1, Limit: 10}
-		_, args := buildGetPvzDataQuery(params)
+		_, args, err := buildGetPvzDataQuery(params)
+		require.NoError(t, err)
 		driverArgs := make([]driver.Value, len(args))
 		for i, v := range args {
 			driverArgs[i] = v

@@ -122,7 +122,11 @@ func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) (
 	op := "repository.GetPvzsData"
 	l := logger.FromCtx(ctx)
 
-	q, args := buildGetPvzDataQuery(params)
+	q, args, err := buildGetPvzDataQuery(params)
+	if err != nil {
+		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
+	}
+
 	rows, err := r.db.QueryContext(ctx, string(q), args...)
 	if err != nil {
 		return nil, xerr.WrapErr(op, pRepo.Unexpected, err)
