@@ -99,7 +99,7 @@ func (s *tokenService) Fingerprint(rToken *auth.RefreshToken) string {
 }
 
 func (s *tokenService) GetTokenClaims(token string) (*auth.AccessTokenClaims, error) {
-	op := "token_service.GetTokenClaims"
+	const op = "token_service.GetTokenClaims"
 
 	tokenClaims := new(auth.AccessTokenClaims)
 	t, err := jwt.ParseWithClaims(token, tokenClaims, func(t *jwt.Token) (any, error) {

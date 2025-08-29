@@ -18,7 +18,7 @@ func ClaimsToCtx(ctx context.Context, claims *dAuth.AccessTokenClaims) context.C
 }
 
 func ClaimsFromCtx(ctx context.Context) (*dAuth.AccessTokenClaims, error) {
-	op := "tokens.ClaimsFromCtx"
+	const op = "tokens.ClaimsFromCtx"
 
 	claims, ok := ctx.Value(claimsKey).(*dAuth.AccessTokenClaims)
 	if !ok {

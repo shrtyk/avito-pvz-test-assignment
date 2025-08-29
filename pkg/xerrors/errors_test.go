@@ -21,7 +21,7 @@ func (t testKind) String() string {
 }
 
 func TestErrors(t *testing.T) {
-	op := "errors.Test"
+	const op = "errors.Test"
 
 	nerr := errors.New("new error")
 

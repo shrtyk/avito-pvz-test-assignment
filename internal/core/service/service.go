@@ -43,7 +43,7 @@ func NewAppService(
 }
 
 func (s *service) NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error) {
-	op := "service.NewPVZ"
+	const op = "service.NewPVZ"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -58,7 +58,7 @@ func (s *service) NewPVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, err
 }
 
 func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
-	op := "service.OpenNewPVZReception"
+	const op = "service.OpenNewPVZReception"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -82,7 +82,7 @@ func (s *service) OpenNewPVZReception(ctx context.Context, rec *domain.Reception
 }
 
 func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
-	op := "service.AddProductPVZ"
+	const op = "service.AddProductPVZ"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -101,7 +101,7 @@ func (s *service) AddProductPVZ(ctx context.Context, prod *domain.Product) (*dom
 }
 
 func (s *service) DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) error {
-	op := "service.DeleteLastProductPvz"
+	const op = "service.DeleteLastProductPvz"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -118,7 +118,7 @@ func (s *service) DeleteLastProductPvz(ctx context.Context, pvzId *uuid.UUID) er
 }
 
 func (s *service) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error {
-	op := "service.CloseReceptionInPvz"
+	const op = "service.CloseReceptionInPvz"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -135,7 +135,7 @@ func (s *service) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) err
 }
 
 func (s *service) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error) {
-	op := "service.GetPvzsData"
+	const op = "service.GetPvzsData"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -149,7 +149,7 @@ func (s *service) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams
 }
 
 func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
-	op := "service.GetAllPvzs"
+	const op = "service.GetAllPvzs"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -163,7 +163,7 @@ func (s *service) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
 }
 
 func (s *service) RegisterUser(ctx context.Context, rParams *auth.RegisterUserParams) (*auth.User, error) {
-	op := "service.RegisterUser"
+	const op = "service.RegisterUser"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -195,7 +195,7 @@ func (s *service) LoginUser(
 	ctx context.Context,
 	lParams *auth.LoginUserParams,
 ) (aToken string, rToken *auth.RefreshToken, err error) {
-	op := "service.LoginUser"
+	const op = "service.LoginUser"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()
@@ -245,7 +245,7 @@ func (s *service) RefreshTokens(
 	ctx context.Context,
 	providedToken *auth.RefreshToken,
 ) (newAToken string, newRToken *auth.RefreshToken, err error) {
-	op := "service.RefreshTokens"
+	const op = "service.RefreshTokens"
 
 	tctx, tcancel := context.WithTimeout(ctx, s.timeout)
 	defer tcancel()

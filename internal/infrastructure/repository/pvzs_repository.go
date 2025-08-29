@@ -14,7 +14,7 @@ import (
 )
 
 func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, error) {
-	op := "repository.CreatePVZ"
+	const op = "repository.CreatePVZ"
 
 	err := r.db.QueryRowContext(ctx, string(createPvzQuery), pvz.City).Scan(
 		&pvz.Id,
@@ -28,7 +28,7 @@ func (r *repo) CreatePVZ(ctx context.Context, pvz *domain.Pvz) (*domain.Pvz, err
 }
 
 func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*domain.Reception, error) {
-	op := "repository.CreateReception"
+	const op = "repository.CreateReception"
 
 	err := r.db.QueryRowContext(
 		ctx,
@@ -52,7 +52,7 @@ func (r *repo) CreateReception(ctx context.Context, rec *domain.Reception) (*dom
 }
 
 func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain.Product, error) {
-	op := "repository.CreateProduct"
+	const op = "repository.CreateProduct"
 
 	err := r.db.QueryRowContext(
 		ctx,
@@ -73,7 +73,7 @@ func (r *repo) CreateProduct(ctx context.Context, prod *domain.Product) (*domain
 }
 
 func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
-	op := "repository.DeleteLastProduct"
+	const op = "repository.DeleteLastProduct"
 
 	res, err := r.db.ExecContext(ctx, string(deleteLastProductQuery), pvzId, domain.InProgress)
 	if err != nil {
@@ -93,7 +93,7 @@ func (r *repo) DeleteLastProduct(ctx context.Context, pvzId *uuid.UUID) error {
 }
 
 func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error {
-	op := "repository.CloseReceptionInPvz"
+	const op = "repository.CloseReceptionInPvz"
 
 	res, err := r.db.ExecContext(
 		ctx,
@@ -119,7 +119,7 @@ func (r *repo) CloseReceptionInPvz(ctx context.Context, pvzId *uuid.UUID) error 
 }
 
 func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) ([]*domain.PvzReceptions, error) {
-	op := "repository.GetPvzsData"
+	const op = "repository.GetPvzsData"
 	l := logger.FromCtx(ctx)
 
 	q, args, err := buildGetPvzDataQuery(params)
@@ -163,7 +163,7 @@ func (r *repo) GetPvzsData(ctx context.Context, params *domain.PvzsReadParams) (
 }
 
 func (r *repo) GetAllPvzs(ctx context.Context) ([]*domain.Pvz, error) {
-	op := "repository.GetAllPvzs"
+	const op = "repository.GetAllPvzs"
 	l := logger.FromCtx(ctx)
 
 	rows, err := r.db.QueryContext(ctx, string(getAllPvzsQuery))

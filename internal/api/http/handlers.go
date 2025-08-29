@@ -273,7 +273,7 @@ func (h *handlers) setRefreshCookie(w http.ResponseWriter, rToken *auth.RefreshT
 }
 
 func (h *handlers) getRefreshTokenOutOfCookie(r *http.Request) (string, error) {
-	op := "handlers.getRefreshTokenOutOfCookie"
+	const op = "handlers.getRefreshTokenOutOfCookie"
 
 	cookie, err := r.Cookie(refreshTokenKey)
 	if err != nil {

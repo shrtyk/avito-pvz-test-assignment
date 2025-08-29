@@ -151,7 +151,7 @@ func (m Middlewares) AuthenticationMW(next http.Handler) http.Handler {
 func (m *Middlewares) AuthorizeRoles(allowedRoles ...auth.UserRole) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			op := "middlewares.AuthorizeRoles"
+			const op = "middlewares.AuthorizeRoles"
 
 			claims, err := ts.ClaimsFromCtx(r.Context())
 			if err != nil {

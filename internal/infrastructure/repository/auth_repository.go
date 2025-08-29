@@ -14,7 +14,7 @@ import (
 )
 
 func (r *repo) UserByEmail(ctx context.Context, email string) (*auth.User, error) {
-	op := "repository.GetUserByEmail"
+	const op = "repository.GetUserByEmail"
 
 	u := new(auth.User)
 	err := r.db.QueryRow(string(getUserByEmailQuery), email).Scan(
@@ -34,7 +34,7 @@ func (r *repo) UserByEmail(ctx context.Context, email string) (*auth.User, error
 }
 
 func (r *repo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, error) {
-	op := "repository.CreateUser"
+	const op = "repository.CreateUser"
 
 	err := r.db.QueryRowContext(
 		ctx,
@@ -59,7 +59,7 @@ func (r *repo) CreateUser(ctx context.Context, user *auth.User) (*auth.User, err
 }
 
 func (r *repo) SaveRefreshToken(ctx context.Context, rToken *auth.RefreshToken) error {
-	op := "repository.SaveRefreshToken"
+	const op = "repository.SaveRefreshToken"
 
 	_, err := r.db.ExecContext(
 		ctx,
@@ -80,7 +80,7 @@ func (r *repo) SaveRefreshToken(ctx context.Context, rToken *auth.RefreshToken) 
 }
 
 func (r *repo) UserRoleAndRefreshToken(ctx context.Context, tokenHash []byte) (*auth.UserRoleAndRToken, error) {
-	op := "repository.UserRoleAndRefreshToken"
+	const op = "repository.UserRoleAndRefreshToken"
 
 	urt := &auth.UserRoleAndRToken{
 		RToken: new(auth.RefreshToken),
@@ -112,7 +112,7 @@ func (r *repo) UserRoleAndRefreshToken(ctx context.Context, tokenHash []byte) (*
 }
 
 func (r *repo) UpdateUserRefreshToken(ctx context.Context, usedHash []byte, rToken *auth.RefreshToken) error {
-	op := "repository.UpdateUserRefreshToken"
+	const op = "repository.UpdateUserRefreshToken"
 	l := logger.FromCtx(ctx)
 
 	tx, err := r.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
@@ -147,7 +147,7 @@ func (r *repo) UpdateUserRefreshToken(ctx context.Context, usedHash []byte, rTok
 }
 
 func (r *repo) FinishTx(tx *sql.Tx, err *error, l *slog.Logger) error {
-	op := "repository.FinishTx"
+	const op = "repository.FinishTx"
 
 	if *err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {

@@ -93,7 +93,7 @@ func UserAgentAndIP(r *http.Request) (string, string) {
 }
 
 func BearerToken(r *http.Request) (string, error) {
-	op := "helpers.ExtractBearerToken"
+	const op = "helpers.ExtractBearerToken"
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		return "", xerr.NewErr(op, auth.NotAuthenticated)
