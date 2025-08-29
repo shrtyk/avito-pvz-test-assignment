@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pvz.v1;
 
-option go_package = "github.com/shrtyk/avito-backend-spring-2025/proto/gen;pvz_v1";
+option go_package = "github.com/shrtyk/pvz-service/proto/gen;pvz_v1";
 
 import "google/protobuf/timestamp.proto";
 
