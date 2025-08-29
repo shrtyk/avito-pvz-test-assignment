@@ -97,8 +97,3 @@ The following results were achieved on an **Intel Core i9-9900KF** CPU:
 | **p(95) Latency**       | 40.05ms      |
 | **Success Rate**        | 100%         |
 | **Total Requests**      | ~510,000     |
-
-All performance thresholds passed:
-
-- `p(95) < 100ms`: **✓ Passed** (40.05ms)
-- `checks > 99.99%`: **✓ Passed** (100%)
